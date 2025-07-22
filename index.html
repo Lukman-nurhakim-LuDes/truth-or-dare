@@ -11,8 +11,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="T or D">
     <meta name="description" content="Game Truth or Dare seru untuk dimainkan bersama teman-teman.">
-    <link rel="apple-touch-icon" href="https://placehold.co/192x192/4c1d95/ffffff?text=ToD">
-    <link id="manifest-link" rel="manifest">
+    <!-- Tautan ke manifest.json eksternal -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="ikon/icon-192x192.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -99,8 +100,8 @@
 
         <!-- Layar Awal -->
         <div id="start-screen" class="flex flex-col justify-center items-center h-full text-center fade-in">
-            <!-- Ganti URL di bawah dengan URL logo Anda -->
-            <img src="https://placehold.co/150x150/ffffff/4c1d95?text=Logo+Anda" alt="Logo Game" class="w-32 h-32 mb-6 rounded-full shadow-lg logo-pulse">
+            <!-- LOGO DIUBAH DI SINI: Path menunjuk ke folder 'ikon' Anda -->
+            <img src="ikon/logo.png" alt="Logo Game" class="w-32 h-32 mb-6 rounded-full shadow-lg logo-pulse" onerror="this.style.display='none'">
             <h1 class="text-5xl md:text-6xl font-bold mb-2 text-shadow-lg">Truth or Dare</h1>
             <p class="text-lg md:text-xl mb-8">Edisi Paling Seru!</p>
             <button id="start-game-btn" class="bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-8 rounded-full text-xl shadow-lg transform hover:scale-105 transition-transform duration-300">
@@ -234,63 +235,12 @@
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         // --- PWA SETUP ---
-        const manifest = {
-            "name": "Truth or Dare - Edisi Seru",
-            "short_name": "T or D",
-            "start_url": location.pathname,
-            "display": "standalone",
-            "background_color": "#1e3a8a",
-            "theme_color": "#4c1d95",
-            "orientation": "portrait-primary",
-            "icons": [
-                { "src": "https://placehold.co/192x192/4c1d95/ffffff?text=ToD", "type": "image/png", "sizes": "192x192" },
-                { "src": "https://placehold.co/512x512/4c1d95/ffffff?text=ToD", "type": "image/png", "sizes": "512x512" }
-            ]
-        };
-        const manifestURL = `data:application/json;charset=utf-8,${encodeURIComponent(JSON.stringify(manifest))}`;
-        document.getElementById('manifest-link').setAttribute('href', manifestURL);
-
+        // Mendaftarkan service worker dari file eksternal
         if ('serviceWorker' in navigator) {
-            const swContent = `
-                const CACHE_NAME = 'truth-or-dare-cache-v1';
-                const urlsToCache = [
-                    '${location.pathname}',
-                    'https://cdn.tailwindcss.com',
-                    'https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap',
-                    'https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js',
-                    'https://img.icons8.com/plasticine/200/000000/bottle-of-water.png'
-                ];
-
-                self.addEventListener('install', event => {
-                    event.waitUntil(
-                        caches.open(CACHE_NAME)
-                            .then(cache => {
-                                console.log('Opened cache');
-                                return cache.addAll(urlsToCache);
-                            })
-                    );
-                });
-
-                self.addEventListener('fetch', event => {
-                    event.respondWith(
-                        caches.match(event.request)
-                            .then(response => {
-                                if (response) {
-                                    return response;
-                                }
-                                return fetch(event.request);
-                            })
-                    );
-                });
-            `;
-            const swBlob = new Blob([swContent], { type: 'application/javascript' });
-            const swURL = URL.createObjectURL(swBlob);
-
-            navigator.serviceWorker.register(swURL)
+            navigator.serviceWorker.register('service-worker.js')
                 .then(registration => console.log('Service Worker registered with scope:', registration.scope))
                 .catch(error => console.log('Service Worker registration failed:', error));
         }
-
 
         // --- GAME LOGIC ---
         const synth = new Tone.Synth().toDestination();
