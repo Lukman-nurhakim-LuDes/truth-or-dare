@@ -2,474 +2,694 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Truth or Dare - Edisi Seru</title>
+    
     <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#121212"/>
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <meta name="theme-color" content="#4c1d95"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="T or D">
+    <meta name="description" content="Game Truth or Dare seru untuk dimainkan bersama teman-teman.">
+    <link rel="apple-touch-icon" href="https://placehold.co/192x192/4c1d95/ffffff?text=ToD">
+    <link id="manifest-link" rel="manifest">
 
-    <title>Truth or Dare - Game Paling Seru</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #121212;
-            overflow: hidden;
-            touch-action: manipulation;
+            touch-action: manipulation; /* Mencegah zoom saat double tap di mobile */
             -webkit-tap-highlight-color: transparent;
         }
-        #background-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(-45deg, #1a1a2e, #3c1a4e, #1a3a4e, #3c1a2e);
+        .animated-gradient {
+            background: linear-gradient(-45deg, #1e3a8a, #4c1d95, #be185d, #b91c1c);
             background-size: 400% 400%;
-            animation: gradientBG 25s ease infinite;
-            z-index: -1;
+            animation: gradient 15s ease infinite;
         }
-        @keyframes gradientBG {
+        @keyframes gradient {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-        .title-font { font-family: 'Fredoka One', cursive; }
-        .screen {
+        .card-container { perspective: 1000px; }
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+        .card-container.is-flipped .card-inner { transform: rotateY(180deg); }
+        .card-face {
             position: absolute;
             width: 100%;
             height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
             display: flex;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
-            transform: scale(0.98);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+            border-radius: 1.5rem;
         }
-        .screen.active {
-            opacity: 1;
-            visibility: visible;
-            transform: scale(1);
+        .card-back { transform: rotateY(180deg); }
+        #bottle {
+            transition: transform 4s cubic-bezier(0.25, 1, 0.5, 1);
+            transform-origin: center;
         }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        .fade-out { animation: fadeOut 0.5s ease-in-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes fadeOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.95); } }
+        .player-chip {
+            transition: all 0.3s ease;
         }
-        /* Spinner Styles */
-        #spinner-canvas { transition: transform 5s cubic-bezier(0.25, 1, 0.5, 1); }
-        .spinner-container::before {
-            content: '▼';
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 2.5rem;
-            color: #fde047; /* yellow-300 */
-            text-shadow: 0 0 10px black;
+        .player-chip.active {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px 3px rgba(255, 255, 255, 0.7);
         }
-        /* Pack Selection Styles */
-        .pack-item {
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: 2px solid transparent;
+        /* Animasi untuk logo dan input error */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
-        .pack-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        .logo-pulse {
+            animation: pulse 2.5s infinite ease-in-out;
         }
-        .pack-item.selected {
-            border-color: #f472b6; /* pink-400 */
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 0 25px rgba(244, 114, 182, 0.5);
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+        .shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
         }
     </style>
 </head>
-<body class="text-white flex items-center justify-center min-h-screen p-4">
-    <div id="background-animation"></div>
-    <div id="game-container" class="w-full max-w-md mx-auto h-full relative">
+<body class="animated-gradient text-white overflow-hidden h-screen flex items-center justify-center">
 
-        <!-- LAYAR 1: TAMBAH PEMAIN -->
-        <div id="player-screen" class="screen active flex-col justify-between h-full p-2">
-            <div class="text-center">
-                <h1 class="text-3xl sm:text-4xl title-font text-pink-400">Tambah Pemain</h1>
-                <p class="text-gray-300 mt-2 text-sm sm:text-base">Masukkan nama pemain (min. 2)</p>
-            </div>
-            <div class="my-4">
-                <div class="flex gap-2">
-                    <input type="text" id="player-input" placeholder="Nama pemain..." class="w-full bg-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-400">
-                    <button id="add-player-btn" class="bg-pink-500 hover:bg-pink-600 rounded-lg px-5 py-3 font-bold transition-colors">ADD</button>
+    <!-- Kontainer Utama Game -->
+    <div id="game-container" class="w-full max-w-md h-full mx-auto bg-black bg-opacity-30 backdrop-blur-sm p-4 flex flex-col overflow-hidden">
+
+        <!-- Layar Awal -->
+        <div id="start-screen" class="flex flex-col justify-center items-center h-full text-center fade-in">
+            <!-- Ganti URL di bawah dengan URL logo Anda -->
+            <img src="https://placehold.co/150x150/ffffff/4c1d95?text=Logo+Anda" alt="Logo Game" class="w-32 h-32 mb-6 rounded-full shadow-lg logo-pulse">
+            <h1 class="text-5xl md:text-6xl font-bold mb-2 text-shadow-lg">Truth or Dare</h1>
+            <p class="text-lg md:text-xl mb-8">Edisi Paling Seru!</p>
+            <button id="start-game-btn" class="bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-8 rounded-full text-xl shadow-lg transform hover:scale-105 transition-transform duration-300">
+                Mulai Main
+            </button>
+        </div>
+
+        <!-- Layar Tambah Pemain -->
+        <div id="player-setup-screen" class="hidden flex-col justify-center items-center h-full fade-in">
+            <h2 class="text-3xl font-bold mb-4">Siapa Aja yang Main?</h2>
+            <div class="w-full max-w-sm">
+                <div class="flex items-center border-b-2 border-pink-500 py-2 mb-4">
+                    <input id="player-name-input" class="appearance-none bg-transparent border-none w-full text-white mr-3 py-1 px-2 leading-tight focus:outline-none" type="text" placeholder="Nama Pemain" maxlength="15">
+                    <button id="add-player-btn" class="flex-shrink-0 bg-pink-600 hover:bg-pink-700 border-pink-600 hover:border-pink-700 text-sm border-4 text-white py-1 px-2 rounded" type="button">
+                        Tambah
+                    </button>
+                </div>
+                <div id="player-list" class="flex flex-wrap gap-2 justify-center mb-4 min-h-[40px]"></div>
+                <p class="text-center text-xs text-gray-300 mb-4">Minimal 2 pemain untuk memulai.</p>
+                <div class="flex gap-4 w-full">
+                    <button id="back-to-start-btn" class="w-1/3 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-4 rounded-full shadow-lg transition-transform duration-300">Kembali</button>
+                    <button id="confirm-players-btn" class="w-2/3 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-full text-xl shadow-lg transform hover:scale-105 transition-transform duration-300 disabled:bg-gray-500 disabled:cursor-not-allowed" disabled>
+                        Lanjut
+                    </button>
                 </div>
             </div>
-            <div id="player-list" class="flex-grow space-y-2 overflow-y-auto pr-2"></div>
-            <button id="go-to-packs-btn" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 rounded-lg py-4 font-bold text-lg transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed" disabled>Pilih Kategori</button>
-        </div>
-        
-        <!-- LAYAR 2: PILIH KATEGORI -->
-        <div id="pack-screen" class="screen flex-col justify-between h-full p-2">
-             <div class="text-center">
-                <h1 class="text-3xl sm:text-4xl title-font text-sky-400">Pilih Kategori</h1>
-                <p class="text-gray-300 mt-2 text-sm sm:text-base">Pilih satu paket pertanyaan untuk dimainkan.</p>
-            </div>
-            <div id="pack-list" class="flex-grow space-y-3 overflow-y-auto my-4 pr-2"></div>
-            <button id="go-to-spinner-btn" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 rounded-lg py-4 font-bold text-lg transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed" disabled>Lanjutkan ke Undian</button>
         </div>
 
-        <!-- LAYAR 3: SPINNER -->
-        <div id="spinner-screen" class="screen flex-col items-center justify-center h-full">
-            <h1 class="text-3xl sm:text-4xl title-font text-center mb-8">Putar Roda Keberuntungan!</h1>
-            <div class="spinner-container relative w-72 h-72 sm:w-80 sm:h-80 md:w-96 md:h-96">
-                <canvas id="spinner-canvas" width="500" height="500"></canvas>
+        <!-- Layar Pilih Kategori -->
+        <div id="category-screen" class="hidden flex-col justify-center items-center h-full fade-in text-center">
+            <h2 class="text-3xl font-bold mb-6">Pilih Kategori Pertanyaan</h2>
+            <div id="category-buttons" class="grid grid-cols-2 gap-4 w-full">
+                <!-- Tombol kategori akan ditambahkan oleh JS -->
             </div>
-            <button id="spin-btn" class="w-full max-w-xs mt-8 bg-pink-500 hover:bg-pink-600 rounded-lg py-4 font-bold text-lg transition-colors">PUTAR!</button>
+            <button id="back-to-players-btn" class="mt-8 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-transform duration-300">
+                Kembali ke Pemain
+            </button>
         </div>
-        
-        <!-- LAYAR 4: GAME UTAMA -->
-        <div id="game-screen" class="screen flex-col items-center justify-center h-full">
-            <div id="turn-display" class="w-full text-center mb-4">
-                <p class="text-gray-400">Giliran:</p>
-                <h2 id="current-player-name" class="text-3xl title-font text-yellow-300"></h2>
-                <p id="current-player-score" class="text-lg text-gray-300"></p>
+
+        <!-- Layar Utama Permainan -->
+        <main id="main-game-screen" class="hidden flex-col h-full w-full">
+            <!-- Header: Info Pemain & Poin -->
+            <header class="flex-shrink-0 mb-2 relative h-16">
+                 <button id="exit-game-btn" class="absolute top-0 left-0 text-white bg-red-700 hover:bg-red-800 rounded-full p-2 shadow-lg z-10">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+                <div id="player-chips-container" class="flex flex-wrap gap-2 justify-center items-center w-full">
+                    <!-- Chips pemain akan ditambahkan oleh JS -->
+                </div>
+            </header>
+
+            <!-- Spinner Botol -->
+            <div id="spinner-container" class="flex-grow flex flex-col items-center justify-center relative">
+                <p id="turn-indicator" class="text-2xl font-bold mb-4 text-center"></p>
+                <div id="bottle-container" class="relative w-64 h-64 md:w-72 md:h-72 flex items-center justify-center">
+                    <img id="bottle" src="https://img.icons8.com/plasticine/200/000000/bottle-of-water.png" alt="Bottle Spinner" class="w-16 h-48 md:w-20 md:h-56 cursor-pointer transform hover:scale-110 transition-transform">
+                </div>
+                <p id="spin-result" class="mt-4 text-xl font-semibold h-8"></p>
             </div>
-            <div class="card-container w-full h-[60vh] max-h-[450px]">
-                <div id="card" class="card rounded-3xl">
-                    <div class="card-face card-front flex-col justify-center items-center glass-card p-4">
-                        <h2 id="card-type-title" class="text-5xl md:text-6xl title-font font-bold"></h2>
-                        <p class="mt-4 text-lg md:text-xl text-gray-300">Ketuk untuk membuka</p>
-                    </div>
-                    <div id="card-back" class="card-face card-back transform rotate-y-180 p-6">
-                        <p id="question-text" class="text-xl md:text-2xl font-semibold text-center"></p>
+
+            <!-- Kontrol Truth or Dare -->
+            <div id="choice-container" class="hidden flex-col items-center justify-center flex-grow">
+                 <p id="player-choice-indicator" class="text-2xl font-bold mb-6 text-center"></p>
+                 <div class="flex gap-4">
+                    <button id="truth-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-10 rounded-full text-xl shadow-lg transform hover:scale-105 transition-transform duration-300">
+                        Truth
+                    </button>
+                    <button id="dare-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-10 rounded-full text-xl shadow-lg transform hover:scale-105 transition-transform duration-300">
+                        Dare
+                    </button>
+                 </div>
+            </div>
+
+            <!-- Tampilan Kartu -->
+            <div id="card-display" class="hidden flex-grow items-center justify-center">
+                <div class="card-container w-full h-64 md:h-80">
+                    <div class="card-inner">
+                        <div class="card-face card-front bg-white/20 backdrop-blur-md flex flex-col justify-center items-center text-center p-4">
+                            <h3 id="card-type" class="text-4xl font-bold"></h3>
+                            <p class="mt-2 text-lg">Klik untuk membuka</p>
+                        </div>
+                        <div id="card-back-content" class="card-face card-back bg-white/20 backdrop-blur-md flex flex-col justify-center items-center text-center p-4">
+                            <p id="card-text" class="text-xl md:text-2xl font-semibold"></p>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div id="action-buttons" class="mt-6 w-full space-y-3 hidden">
-                 <button id="next-player-btn" class="w-full bg-green-500/80 hover:bg-green-600/80 backdrop-blur-sm text-white font-bold py-4 px-4 rounded-2xl shadow-lg transition-colors">Selesai (+10 Poin)</button>
-                 <button id="penalty-btn" class="w-full bg-red-600/80 hover:bg-red-700/80 backdrop-blur-sm text-white font-bold py-3 px-4 rounded-2xl shadow-lg transition-colors text-sm">Tolak & Ambil Hukuman (-5 Poin)</button>
+            
+            <!-- Tombol Selesai & Hukuman -->
+            <div id="action-buttons" class="hidden flex-shrink-0 mt-4 flex justify-center gap-4">
+                <button id="complete-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-full shadow-lg">Selesai (+10 Poin)</button>
+                <button id="fail-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded-full shadow-lg">Gagal (Hukuman)</button>
             </div>
-             <div id="main-menu-buttons" class="mt-6 w-full text-center">
-                 <button id="truth-btn" class="w-5/12 bg-pink-500 hover:bg-pink-600 text-white font-bold py-6 px-4 rounded-2xl shadow-lg transform hover:scale-105 transition-all">TRUTH</button>
-                 <button id="dare-btn" class="w-5/12 bg-sky-500 hover:bg-sky-600 text-white font-bold py-6 px-4 rounded-2xl shadow-lg transform hover:scale-105 transition-all">DARE</button>
-             </div>
-             <button id="end-game-btn" class="w-full mt-8 bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 rounded-lg text-sm">Akhiri Permainan & Lihat Skor</button>
-        </div>
+        </main>
 
-        <!-- LAYAR 5: SKOR AKHIR -->
-        <div id="score-screen" class="screen flex-col justify-center h-full p-2">
-            <div class="text-center">
-                <h1 class="text-4xl sm:text-5xl title-font text-yellow-400">Skor Akhir</h1>
-                <p class="text-gray-300 mt-2">Selamat kepada pemenang!</p>
+        <!-- Modal Hukuman -->
+        <div id="penalty-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4">
+            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl text-center w-full max-w-sm fade-in">
+                <h2 class="text-3xl font-bold text-yellow-400 mb-4">HUKUMAN!</h2>
+                <p id="penalty-text" class="text-lg mb-6"></p>
+                <button id="close-penalty-modal" class="bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-8 rounded-full">Tutup</button>
             </div>
-            <div id="score-list" class="w-full my-6 space-y-3 overflow-y-auto pr-2"></div>
-            <button id="play-again-btn" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 rounded-lg py-4 font-bold text-lg transition-colors">Main Lagi</button>
         </div>
-    </div>
 
-    <!-- MODALS -->
-    <div id="penalty-modal" class="modal-backdrop fixed inset-0 flex items-center justify-center p-4 hidden opacity-0">
-        <div class="glass-card border-red-500 rounded-2xl shadow-2xl p-8 text-center max-w-sm mx-auto transform transition-transform duration-300 scale-95">
-            <h3 class="text-3xl font-bold title-font text-red-300">HUKUMAN!</h3>
-            <p id="penalty-text" class="my-6 text-xl text-white"></p>
-            <button id="close-penalty-btn" class="w-full bg-white/20 hover:bg-white/30 text-white font-bold py-3 px-4 rounded-lg transition-colors">Tutup</button>
+        <!-- Modal Pemenang -->
+        <div id="winner-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4">
+            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl text-center w-full max-w-sm fade-in">
+                <h2 class="text-4xl font-bold text-yellow-400 mb-4">🎉 PEMENANG 🎉</h2>
+                <p id="winner-name" class="text-3xl font-bold mb-2"></p>
+                <p id="winner-score" class="text-xl text-gray-300 mb-6"></p>
+                <button id="play-again-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-full">Main Lagi</button>
+            </div>
         </div>
-    </div>
-    <div id="spinner-winner-modal" class="modal-backdrop fixed inset-0 flex items-center justify-center p-4 hidden opacity-0">
-        <div class="glass-card border-yellow-400 rounded-2xl shadow-2xl p-8 text-center max-w-sm mx-auto transform transition-transform duration-300 scale-95">
-            <h3 class="text-3xl font-bold title-font text-yellow-300">Selamat!</h3>
-            <p class="my-6 text-xl text-white">Giliran pertama jatuh kepada <strong id="winner-name" class="font-bold"></strong>!</p>
-            <button id="start-game-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">Mulai Permainan!</button>
+        
+        <!-- Modal Konfirmasi -->
+        <div id="confirm-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4">
+            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl text-center w-full max-w-sm fade-in">
+                <h2 id="confirm-title" class="text-2xl font-bold mb-4"></h2>
+                <p id="confirm-text" class="text-lg mb-6"></p>
+                <div class="flex justify-end gap-4">
+                    <button id="confirm-cancel-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-full">Batal</button>
+                    <button id="confirm-ok-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full">Ya</button>
+                </div>
+            </div>
         </div>
-    </div>
 
+    </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- DATABASE PERTANYAAN ---
-            const QUESTION_PACKS = {
-                classic: { name: "Classic Pack (Umum)", icon: "🎲", truths: ["Apa hal paling memalukan yang pernah kamu lakukan di depan umum?", "Siapa orang yang paling kamu percaya saat ini?", "Apa ketakutan terbesarmu?", "Pernahkah kamu curang di sekolah?", "Apa kebohongan terbesar yang pernah kamu katakan?", "Siapa orang terakhir yang membuatmu kesal?", "Apa rahasia teraneh yang kamu punya?", "Siapa selebriti yang paling kamu kagumi?", "Apa kebiasaan burukmu yang orang lain tidak tahu?", "Pernahkah kamu pura-pura sakit agar tidak sekolah/kerja?"], dares: ["Lakukan 10 push-up sekarang.", "Tiru suara hewan selama 30 detik.", "Kirim pesan “Aku kangen” ke kontak terakhir di WhatsApp.", "Jalan mundur mengelilingi ruangan.", "Bernyanyi lagu anak-anak dengan suara keras.", "Tulis status aneh di media sosialmu.", "Berjalan seperti robot selama 1 menit.", "Lakukan tarian lucu selama 20 detik.", "Buat ekspresi wajah paling aneh dan tahan 15 detik.", "Telepon teman dan ucapkan “Aku kangen” tanpa penjelasan."] },
-                wildDares: { name: "Wild Dares (Ekstrem & Lucu)", icon: "🤪", truths: ["Apa hal paling memalukan di ponselmu?", "Siapa orang terakhir yang kamu stalk di media sosial?", "Apa kebohongan terbodoh yang pernah kamu buat?", "Apa video terakhir yang kamu tonton di YouTube?", "Siapa orang yang paling sering muncul di pikiranmu?", "Apa hal paling aneh yang pernah kamu makan?", "Pernahkah kamu berbohong demi terlihat keren?", "Apa kenangan masa kecil yang paling konyol?", "Pernahkah kamu pura-pura kenal orang padahal tidak?", "Siapa orang terakhir yang bikin kamu ketawa keras?"], dares: ["Menyanyi dengan suara aneh selama 1 menit.", "Tulis pesan acak ke 3 teman di kontakmu.", "Makan sesuatu yang rasanya aneh.", "Tiru gaya jalan orang di sebelahmu.", "Berjalan seperti kucing selama 30 detik.", "Lakukan tarian TikTok yang kamu tahu.", "Kirim emoji random ke 5 kontakmu.", "Bicara dengan suara bayi selama 2 menit.", "Buat pose aneh dan kirim foto ke grup.", "Pura-pura jadi presenter berita selama 30 detik."] },
-                couples: { name: "Couple’s Edition (Pasangan)", icon: "❤️", truths: ["Kapan pertama kali kamu jatuh cinta?", "Siapa mantan yang paling sulit dilupakan?", "Apa hal paling romantis yang pernah kamu lakukan?", "Apa bagian tubuh pasangan yang paling kamu suka?", "Apakah kamu percaya pada cinta sejati?", "Apa hadiah terbaik yang pernah kamu berikan?", "Siapa orang yang pertama kali kamu chat hari ini?", "Apakah kamu masih ingat kata pertama pasanganmu saat PDKT?", "Apa momen paling lucu dengan pasanganmu?", "Apa kenangan kencan pertama yang kamu ingat?"], dares: ["Cium tangan pasangan selama 10 detik.", "Kirim pesan manis ke pasanganmu sekarang.", "Katakan “Aku sayang kamu” dengan cara paling lucu.", "Peluk pasanganmu selama 20 detik.", "Kirim voice note romantis ke pasangan.", "Sebutkan 3 alasan kamu cinta pasanganmu.", "Nyanyikan lagu cinta untuk pasanganmu.", "Berikan pijatan 1 menit ke pasangan.", "Tulis pesan cinta di tangan pasanganmu.", "Tatap mata pasangan tanpa bicara selama 30 detik."] },
-                romantic: { name: "Romantic Prompts", icon: "🌹", truths: ["Apa hal paling romantis yang kamu bayangkan?", "Kapan terakhir kali kamu merasa sangat dicintai?", "Apakah kamu percaya pada takdir dalam cinta?", "Apa lagu yang paling mengingatkanmu pada seseorang spesial?", "Apa hadiah paling berkesan dari orang tersayang?", "Siapa yang paling sering membuatmu tersenyum?", "Apa film romantis favoritmu?", "Apa kejutan romantis impianmu?", "Apa kenangan paling manis dengan pasanganmu?", "Jika kamu bisa mengajak pasangan liburan ke mana saja, mau ke mana?"], dares: ["Buat puisi singkat tentang cinta dalam 1 menit.", "Katakan 5 hal manis kepada pasanganmu.", "Tulis pesan cinta di kertas dan tunjukkan.", "Kirim emoji hati ke pasangan.", "Ceritakan kenangan romantis terbaik dalam 1 menit.", "Nyanyikan lagu cinta pilihanmu.", "Kirim selfie romantis ke pasangan.", "Peluk seseorang di ruangan ini.", "Kirim voice note “Aku sayang kamu” ke pasangan.", "Tatap mata pasangan dan katakan “Aku cinta kamu.”"] },
-                lateNight: { name: "Late Night (Rahasia & Dewasa)", icon: "🌙", truths: ["Siapa orang pertama yang kamu pikirkan sebelum tidur?", "Apa hal paling nakal yang pernah kamu lakukan?", "Pernahkah kamu jatuh cinta pada pandangan pertama?", "Apa fantasi rahasiamu?", "Siapa orang yang kamu anggap paling menarik?", "Pernahkah kamu mimpi tentang seseorang di sini?", "Apa rahasia malam paling memalukanmu?", "Apa pesan paling aneh yang pernah kamu terima tengah malam?", "Siapa mantan yang ingin kamu hubungi kembali?", "Apa hal gila yang pernah kamu lakukan di malam hari?"], dares: ["Kirim emoji “🔥❤️” ke 3 kontak acak.", "Bisikkan rahasia ke orang di sebelahmu.", "Ceritakan pengalaman paling memalukan saat malam hari.", "Berikan pijatan 1 menit pada teman di sebelahmu.", "Menari dengan gaya seksi selama 20 detik.", "Kirim pesan “Aku kangen” ke mantan (jika berani).", "Ceritakan pengalaman cinta teranehmu.", "Katakan 3 hal menarik tentang orang di sebelahmu.", "Berikan senyuman paling manis ke semua pemain.", "Lakukan tarian lambat dengan teman di sebelahmu."] },
-                lateNightHot: { name: "Late Night – HOT (21++)", icon: "🌶️", truths: ["Apa bagian tubuh lawan jenis yang paling kamu sukai?", "Pernahkah kamu punya mimpi “nakal” tentang seseorang di ruangan ini?", "Apa fantasi terliarmu?", "Siapa orang paling seksi menurutmu di sini?", "Pernahkah kamu kirim pesan atau foto 'nakal' ke seseorang?", "Apa hal paling menggoda yang pernah kamu lakukan?", "Kapan terakhir kali kamu merasa “tertarik” secara fisik dengan seseorang?", "Siapa orang terakhir yang pernah kamu peluk dengan romantis?", "Pernahkah kamu menyukai seseorang diam-diam di grup teman ini?", "Apa momen paling “panas” yang pernah kamu alami?"], dares: ["Bisikkan sesuatu yang menggoda ke telinga orang di sebelahmu.", "Kirim pesan “Aku kangen pelukanmu” ke kontak random lawan jenis.", "Tatap mata orang yang kamu pilih dengan intens selama 20 detik tanpa senyum.", "Ucapkan 3 kalimat paling romantis atau “menggoda” ke seseorang di sini.", "Tunjukkan pose paling seksi untuk difoto.", "Pura-pura rayu seseorang di ruangan ini selama 30 detik.", "Lakukan gerakan “slow dance” dengan orang yang kamu pilih.", "Ceritakan 1 pengalaman kencan paling romantis atau panas yang pernah kamu alami.", "Bisikkan rahasia terpanas yang kamu punya ke orang di sebelahmu.", "Pura-pura bilang 'Aku suka kamu' ke orang acak di grup."] }
-            };
-            const PENALTY_CHALLENGES = [
-                "Minum segelas air dengan tambahan sedikit garam.", "Biarkan pemain lain mencoret wajahmu dengan bedak.", "Lakukan 15x squat jump.", "Tidak boleh bicara selama 2 putaran.", "Serahkan ponselmu, biarkan pemain lain mengirim pesan acak.", "Menyanyikan lagu 'Potong Bebek Angsa' dengan gaya rock.", "Pakai kaus kaki di tanganmu sampai giliranmu berikutnya.", "Puji 3 benda mati di sekitarmu.", "Update status 'Lagi galau, butuh sandaran'.", "Makan satu sendok sambal (jika aman).", "Bicara dengan nada seperti robot sampai giliranmu berikutnya.", "Gunakan sikumu untuk mengetik pesan 'Halo' ke teman.", "Buat topi dari tisu dan pakai selama 3 putaran.", "Umumkan secara dramatis bahwa kamu adalah seekor penguin.", "Berikan nama panggilan lucu untuk setiap pemain di ruangan.", "Coba seimbangkan sendok di hidungmu selama 10 detik.", "Berpura-pura menjadi seekor T-Rex yang mencoba mengambil segelas air.", "Nyanyikan semua yang kamu katakan dengan nada lagu 'Twinkle, Twinkle, Little Star'.", "Berjalan jinjit selama sisa permainan.", "Minta maaf kepada kursi karena telah mendudukinya."
-            ];
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- PWA SETUP ---
+        const manifest = {
+            "name": "Truth or Dare - Edisi Seru",
+            "short_name": "T or D",
+            "start_url": location.pathname,
+            "display": "standalone",
+            "background_color": "#1e3a8a",
+            "theme_color": "#4c1d95",
+            "orientation": "portrait-primary",
+            "icons": [
+                { "src": "https://placehold.co/192x192/4c1d95/ffffff?text=ToD", "type": "image/png", "sizes": "192x192" },
+                { "src": "https://placehold.co/512x512/4c1d95/ffffff?text=ToD", "type": "image/png", "sizes": "512x512" }
+            ]
+        };
+        const manifestURL = `data:application/json;charset=utf-8,${encodeURIComponent(JSON.stringify(manifest))}`;
+        document.getElementById('manifest-link').setAttribute('href', manifestURL);
 
-            // --- STATE APLIKASI ---
-            let players = [];
-            let selectedPackId = null;
-            let currentPlayerIndex = 0;
-            let availableTruths = [];
-            let availableDares = [];
+        if ('serviceWorker' in navigator) {
+            const swContent = `
+                const CACHE_NAME = 'truth-or-dare-cache-v1';
+                const urlsToCache = [
+                    '${location.pathname}',
+                    'https://cdn.tailwindcss.com',
+                    'https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap',
+                    'https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js',
+                    'https://img.icons8.com/plasticine/200/000000/bottle-of-water.png'
+                ];
 
-            // --- ELEMEN DOM ---
-            const screens = { player: document.getElementById('player-screen'), pack: document.getElementById('pack-screen'), spinner: document.getElementById('spinner-screen'), game: document.getElementById('game-screen'), score: document.getElementById('score-screen') };
-            const playerInput = document.getElementById('player-input');
-            const addPlayerBtn = document.getElementById('add-player-btn');
-            const playerList = document.getElementById('player-list');
-            const goToPacksBtn = document.getElementById('go-to-packs-btn');
-            const packList = document.getElementById('pack-list');
-            const goToSpinnerBtn = document.getElementById('go-to-spinner-btn');
-            const spinnerCanvas = document.getElementById('spinner-canvas');
-            const spinBtn = document.getElementById('spin-btn');
-            const currentPlayerName = document.getElementById('current-player-name');
-            const currentPlayerScore = document.getElementById('current-player-score');
-            const card = document.getElementById('card');
-            const cardBack = card.querySelector('.card-back');
-            const cardTypeTitle = document.getElementById('card-type-title');
-            const questionText = document.getElementById('question-text');
-            const actionButtons = document.getElementById('action-buttons');
-            const nextPlayerBtn = document.getElementById('next-player-btn');
-            const penaltyBtn = document.getElementById('penalty-btn');
-            const mainMenuButtons = document.getElementById('main-menu-buttons');
-            const truthBtn = document.getElementById('truth-btn');
-            const dareBtn = document.getElementById('dare-btn');
-            const endGameBtn = document.getElementById('end-game-btn');
-            const scoreList = document.getElementById('score-list');
-            const playAgainBtn = document.getElementById('play-again-btn');
-            const penaltyModal = document.getElementById('penalty-modal');
-            const penaltyText = document.getElementById('penalty-text');
-            const closePenaltyBtn = document.getElementById('close-penalty-btn');
-            const spinnerWinnerModal = document.getElementById('spinner-winner-modal');
-            const winnerName = document.getElementById('winner-name');
-            const startGameBtn = document.getElementById('start-game-btn');
-            const sCtx = spinnerCanvas.getContext('2d');
-
-            // --- FUNGSI-FUNGSI ---
-            function showScreen(screenId) {
-                const currentActive = document.querySelector('.screen.active');
-                if (currentActive) {
-                    currentActive.classList.remove('active');
-                }
-                screens[screenId].classList.add('active');
-            }
-
-            function updatePlayerList() {
-                playerList.innerHTML = '';
-                players.forEach(player => {
-                    const playerEl = document.createElement('div');
-                    playerEl.className = 'flex items-center justify-between glass-card p-3 rounded-lg';
-                    playerEl.innerHTML = `
-                        <span class="text-white">${player.name}</span>
-                        <div class="flex items-center gap-4">
-                            <span class="font-bold text-yellow-400">${player.score} Poin</span>
-                            <button data-player-name="${player.name}" class="remove-player-btn text-red-400 hover:text-red-600 font-bold text-xl">&times;</button>
-                        </div>
-                    `;
-                    playerList.appendChild(playerEl);
+                self.addEventListener('install', event => {
+                    event.waitUntil(
+                        caches.open(CACHE_NAME)
+                            .then(cache => {
+                                console.log('Opened cache');
+                                return cache.addAll(urlsToCache);
+                            })
+                    );
                 });
-                goToPacksBtn.disabled = players.length < 2;
-            }
 
-            function addPlayer() {
-                const playerName = playerInput.value.trim();
-                if (playerName && players.length < 20 && !players.find(p => p.name === playerName)) {
-                    players.push({ name: playerName, score: 0 });
-                    playerInput.value = '';
-                    updatePlayerList();
-                }
-                playerInput.focus();
+                self.addEventListener('fetch', event => {
+                    event.respondWith(
+                        caches.match(event.request)
+                            .then(response => {
+                                if (response) {
+                                    return response;
+                                }
+                                return fetch(event.request);
+                            })
+                    );
+                });
+            `;
+            const swBlob = new Blob([swContent], { type: 'application/javascript' });
+            const swURL = URL.createObjectURL(swBlob);
+
+            navigator.serviceWorker.register(swURL)
+                .then(registration => console.log('Service Worker registered with scope:', registration.scope))
+                .catch(error => console.log('Service Worker registration failed:', error));
+        }
+
+
+        // --- GAME LOGIC ---
+        const synth = new Tone.Synth().toDestination();
+        const playSound = (note, duration) => {
+            try {
+                Tone.start();
+                synth.triggerAttackRelease(note, duration);
+            } catch(e) {
+                console.error("Audio could not be played:", e);
             }
-            
-            function removePlayer(playerName) {
-                players = players.filter(p => p.name !== playerName);
+        };
+        const playSuccessSound = () => {
+            try {
+                Tone.start();
+                const now = Tone.now();
+                synth.triggerAttackRelease("C5", "8n", now);
+                synth.triggerAttackRelease("E5", "8n", now + 0.1);
+                synth.triggerAttackRelease("G5", "8n", now + 0.2);
+            } catch(e) {
+                console.error("Audio could not be played:", e);
+            }
+        };
+        
+        // Elemen UI
+        const screens = {
+            start: document.getElementById('start-screen'),
+            playerSetup: document.getElementById('player-setup-screen'),
+            category: document.getElementById('category-screen'),
+            mainGame: document.getElementById('main-game-screen'),
+        };
+        const modals = {
+            penalty: document.getElementById('penalty-modal'),
+            winner: document.getElementById('winner-modal'),
+            confirm: document.getElementById('confirm-modal'),
+        };
+
+        const playerNameInput = document.getElementById('player-name-input');
+        const addPlayerBtn = document.getElementById('add-player-btn');
+        const playerListDiv = document.getElementById('player-list');
+        const confirmPlayersBtn = document.getElementById('confirm-players-btn');
+        const startGameBtn = document.getElementById('start-game-btn');
+        const categoryButtonsContainer = document.getElementById('category-buttons');
+        const playerChipsContainer = document.getElementById('player-chips-container');
+        const turnIndicator = document.getElementById('turn-indicator');
+        const bottle = document.getElementById('bottle');
+        const spinResult = document.getElementById('spin-result');
+        const choiceContainer = document.getElementById('choice-container');
+        const playerChoiceIndicator = document.getElementById('player-choice-indicator');
+        const truthBtn = document.getElementById('truth-btn');
+        const dareBtn = document.getElementById('dare-btn');
+        const cardDisplay = document.getElementById('card-display');
+        const cardContainer = cardDisplay.querySelector('.card-container');
+        const cardType = document.getElementById('card-type');
+        const cardText = document.getElementById('card-text');
+        const actionButtons = document.getElementById('action-buttons');
+        const completeBtn = document.getElementById('complete-btn');
+        const failBtn = document.getElementById('fail-btn');
+        const penaltyText = document.getElementById('penalty-text');
+        const closePenaltyModalBtn = document.getElementById('close-penalty-modal');
+        const winnerName = document.getElementById('winner-name');
+        const winnerScore = document.getElementById('winner-score');
+        const playAgainBtn = document.getElementById('play-again-btn');
+        const backToStartBtn = document.getElementById('back-to-start-btn');
+        const backToPlayersBtn = document.getElementById('back-to-players-btn');
+        const exitGameBtn = document.getElementById('exit-game-btn');
+        const confirmTitle = document.getElementById('confirm-title');
+        const confirmText = document.getElementById('confirm-text');
+        const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
+        const confirmOkBtn = document.getElementById('confirm-ok-btn');
+        
+        // State Game
+        let players = [];
+        let currentPlayerIndex = 0;
+        let selectedPlayerIndex = -1;
+        let currentCategory = '';
+        let isSpinning = false;
+        const WINNING_SCORE = 50;
+        let confirmCallback = null;
+
+        // Database Pertanyaan
+        const questions = {
+            "Classic Pack": {
+                truth: ["Apa hal paling memalukan yang pernah kamu lakukan di depan umum?", "Siapa orang yang paling kamu percaya saat ini?", "Apa ketakutan terbesarmu?", "Pernahkah kamu curang di sekolah?", "Apa kebohongan terbesar yang pernah kamu katakan?", "Siapa orang terakhir yang membuatmu kesal?", "Apa rahasia teraneh yang kamu punya?", "Siapa selebriti yang paling kamu kagumi?", "Apa kebiasaan burukmu yang orang lain tidak tahu?", "Pernahkah kamu pura-pura sakit agar tidak sekolah/kerja?"],
+                dare: ["Lakukan 10 push-up sekarang.", "Tiru suara hewan selama 30 detik.", "Kirim pesan “Aku kangen” ke kontak terakhir di WhatsApp.", "Jalan mundur mengelilingi ruangan.", "Bernyanyi lagu anak-anak dengan suara keras.", "Tulis status aneh di media sosialmu.", "Berjalan seperti robot selama 1 menit.", "Lakukan tarian lucu selama 20 detik.", "Buat ekspresi wajah paling aneh dan tahan 15 detik.", "Telepon teman dan ucapkan “Aku kangen” tanpa penjelasan."]
+            },
+            "Wild Dares": {
+                truth: ["Apa hal paling memalukan di ponselmu?", "Siapa orang terakhir yang kamu stalk di media sosial?", "Apa kebohongan terbodoh yang pernah kamu buat?", "Apa video terakhir yang kamu tonton di YouTube?", "Siapa orang yang paling sering muncul di pikiranmu?", "Apa hal paling aneh yang pernah kamu makan?", "Pernahkah kamu berbohong demi terlihat keren?", "Apa kenangan masa kecil yang paling konyol?", "Pernahkah kamu pura-pura kenal orang padahal tidak?", "Siapa orang terakhir yang bikin kamu ketawa keras?"],
+                dare: ["Menyanyi dengan suara aneh selama 1 menit.", "Tulis pesan acak ke 3 teman di kontakmu.", "Makan sesuatu yang rasanya aneh.", "Tiru gaya jalan orang di sebelahmu.", "Berjalan seperti kucing selama 30 detik.", "Lakukan tarian TikTok yang kamu tahu.", "Kirim emoji random ke 5 kontakmu.", "Bicara dengan suara bayi selama 2 menit.", "Buat pose aneh dan kirim foto ke grup.", "Pura-pura jadi presenter berita selama 30 detik."]
+            },
+            "Couple's Edition": {
+                truth: ["Kapan pertama kali kamu jatuh cinta?", "Siapa mantan yang paling sulit dilupakan?", "Apa hal paling romantis yang pernah kamu lakukan?", "Apa bagian tubuh pasangan yang paling kamu suka?", "Apakah kamu percaya pada cinta sejati?", "Apa hadiah terbaik yang pernah kamu berikan?", "Siapa orang yang pertama kali kamu chat hari ini?", "Apakah kamu masih ingat kata pertama pasanganmu saat PDKT?", "Apa momen paling lucu dengan pasanganmu?", "Apa kenangan kencan pertama yang kamu ingat?"],
+                dare: ["Cium tangan pasangan selama 10 detik.", "Kirim pesan manis ke pasanganmu sekarang.", "Katakan “Aku sayang kamu” dengan cara paling lucu.", "Peluk pasanganmu selama 20 detik.", "Kirim voice note romantis ke pasangan.", "Sebutkan 3 alasan kamu cinta pasanganmu.", "Nyanyikan lagu cinta untuk pasanganmu.", "Berikan pijatan 1 menit ke pasangan.", "Tulis pesan cinta di tangan pasanganmu.", "Tatap mata pasangan tanpa bicara selama 30 detik."]
+            },
+            "Romantic Prompts": {
+                truth: ["Apa hal paling romantis yang kamu bayangkan?", "Kapan terakhir kali kamu merasa sangat dicintai?", "Apakah kamu percaya pada takdir dalam cinta?", "Apa lagu yang paling mengingatkanmu pada seseorang spesial?", "Apa hadiah paling berkesan dari orang tersayang?", "Siapa yang paling sering membuatmu tersenyum?", "Apa film romantis favoritmu?", "Apa kejutan romantis impianmu?", "Apa kenangan paling manis dengan pasanganmu?", "Jika kamu bisa mengajak pasangan liburan ke mana saja, mau ke mana?"],
+                dare: ["Buat puisi singkat tentang cinta dalam 1 menit.", "Katakan 5 hal manis kepada pasanganmu.", "Tulis pesan cinta di kertas dan tunjukkan.", "Kirim emoji hati ke pasangan.", "Ceritakan kenangan romantis terbaik dalam 1 menit.", "Nyanyikan lagu cinta pilihanmu.", "Kirim selfie romantis ke pasangan.", "Peluk seseorang di ruangan ini.", "Kirim voice note “Aku sayang kamu” ke pasangan.", "Tatap mata pasangan dan katakan “Aku cinta kamu.”"]
+            },
+            "Late Night (21+)": {
+                truth: ["Apa bagian tubuh lawan jenis yang paling kamu sukai?", "Pernahkah kamu punya mimpi “nakal” tentang seseorang di ruangan ini?", "Apa fantasi terliarmu?", "Siapa orang paling seksi menurutmu di sini?", "Pernahkah kamu kirim pesan atau foto 'nakal' ke seseorang?", "Apa hal paling menggoda yang pernah kamu lakukan?", "Kapan terakhir kali kamu merasa “tertarik” secara fisik dengan seseorang?", "Siapa orang terakhir yang pernah kamu peluk dengan romantis?", "Pernahkah kamu menyukai seseorang diam-diam di grup teman ini?", "Apa momen paling “panas” yang pernah kamu alami?"],
+                dare: ["Bisikkan sesuatu yang menggoda ke telinga orang di sebelahmu.", "Kirim pesan “Aku kangen pelukanmu” ke kontak random lawan jenis.", "Tatap mata orang yang kamu pilih dengan intens selama 20 detik tanpa senyum.", "Ucapkan 3 kalimat paling romantis atau “menggoda” ke seseorang di sini.", "Tunjukkan pose paling seksi untuk difoto.", "Pura-pura rayu seseorang di ruangan ini selama 30 detik.", "Lakukan gerakan “slow dance” dengan orang yang kamu pilih.", "Ceritakan 1 pengalaman kencan paling romantis atau panas yang pernah kamu alami.", "Bisikkan rahasia terpanas yang kamu punya ke orang di sebelahmu.", "Pura-pura bilang 'Aku suka kamu' ke orang acak di grup."]
+            }
+        };
+        
+        const categoryIcons = {
+            "Classic Pack": `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mb-1" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>`,
+            "Wild Dares": `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mb-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.934l-6.796 12.04a1 1 0 00.385 1.451h.001c.154.086.325.13.5.13h12.822a1 1 0 00.958-1.287l-6.796-12.04a1.002 1.002 0 00-.822-.935zM10 14a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg>`,
+            "Couple's Edition": `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mb-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" /></svg>`,
+            "Romantic Prompts": `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mb-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 5a3 3 0 013-3h4a3 3 0 013 3v1h-1.172a1 1 0 00-.707.293l-1.414 1.414a1 1 0 01-1.414 0L8.88 6.293A1 1 0 008.172 6H7V5z" clip-rule="evenodd" /><path d="M4 9a2 2 0 012-2h8a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V9z" /></svg>`,
+            "Late Night (21+)": `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mb-1" viewBox="0 0 20 20" fill="currentColor"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" /></svg>`
+        };
+
+        const penalties = ["Nyanyikan lagu 'Balonku' dengan gaya rock.", "Push up 10 kali.", "Ucapkan 'aku ganteng/cantik' 10 kali dengan ekspresi narsis.", "Tiru gaya salah satu pemain sampai giliranmu berikutnya.", "Jongkok berdiri 15 kali.", "Puji 3 orang di ruangan ini dengan tulus.", "Ceritakan lelucon garing sampai ada yang tertawa."];
+
+        // Functions
+        const switchScreen = (screenName) => {
+            Object.values(screens).forEach(screen => screen.classList.add('hidden'));
+            if (screens[screenName]) {
+                screens[screenName].classList.remove('hidden');
+                screens[screenName].classList.remove('fade-out');
+                screens[screenName].classList.add('fade-in');
+            }
+        };
+
+        const updatePlayerList = () => {
+            playerListDiv.innerHTML = '';
+            players.forEach((player, index) => {
+                const playerTag = document.createElement('span');
+                playerTag.className = 'bg-gray-700 text-white text-sm font-medium me-2 px-2.5 py-0.5 rounded-full flex items-center gap-2';
+                playerTag.textContent = player.name;
+                const removeBtn = document.createElement('button');
+                removeBtn.innerHTML = '&times;';
+                removeBtn.className = 'text-lg font-bold leading-none';
+                removeBtn.onclick = () => removePlayer(index);
+                playerTag.appendChild(removeBtn);
+                playerListDiv.appendChild(playerTag);
+            });
+            confirmPlayersBtn.disabled = players.length < 2;
+        };
+        
+        const updatePlayerChips = () => {
+            playerChipsContainer.innerHTML = '';
+            players.forEach((player, index) => {
+                const chip = document.createElement('div');
+                chip.className = 'player-chip bg-black/30 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md';
+                chip.id = `player-chip-${index}`;
+                chip.innerHTML = `${player.name} <span class="font-bold text-yellow-300">${player.score}</span>`;
+                playerChipsContainer.appendChild(chip);
+            });
+            highlightCurrentPlayer();
+        };
+
+        const highlightCurrentPlayer = () => {
+            document.querySelectorAll('.player-chip').forEach(chip => chip.classList.remove('active'));
+            const activeChip = document.getElementById(`player-chip-${currentPlayerIndex}`);
+            if (activeChip) activeChip.classList.add('active');
+        };
+
+        const addPlayer = () => {
+            const name = playerNameInput.value.trim();
+            const isDuplicate = players.some(p => p.name.toLowerCase() === name.toLowerCase());
+
+            if (name && players.length < 8 && !isDuplicate) {
+                players.push({ name, score: 0 });
+                playerNameInput.value = '';
                 updatePlayerList();
-            }
-
-            function populatePackList() {
-                packList.innerHTML = '';
-                for (const packId in QUESTION_PACKS) {
-                    const pack = QUESTION_PACKS[packId];
-                    const packEl = document.createElement('button');
-                    packEl.className = 'pack-item w-full text-left glass-card p-4 rounded-lg flex items-center gap-4';
-                    packEl.dataset.pack = packId;
-                    packEl.innerHTML = `<span class="text-3xl">${pack.icon}</span><div><h3 class="font-bold text-lg">${pack.name}</h3><p class="text-sm text-gray-400">${pack.truths.length + pack.dares.length} kartu</p></div>`;
-                    packList.appendChild(packEl);
-                }
-            }
-
-            function selectPack(packId) {
-                selectedPackId = packId;
-                document.querySelectorAll('.pack-item').forEach(el => el.classList.remove('selected'));
-                document.querySelector(`.pack-item[data-pack="${packId}"]`).classList.add('selected');
-                goToSpinnerBtn.disabled = false;
-            }
-
-            const spinnerColors = ["#EC4899", "#8B5CF6", "#3B82F6", "#10B981", "#F59E0B", "#EF4444"];
-            function drawSpinner() {
-                const numPlayers = players.length;
-                const anglePerSlice = (2 * Math.PI) / numPlayers;
-                sCtx.clearRect(0, 0, 500, 500);
-                sCtx.save();
-                sCtx.translate(250, 250);
-                players.forEach((player, i) => {
-                    const startAngle = i * anglePerSlice;
-                    sCtx.beginPath();
-                    sCtx.moveTo(0, 0);
-                    sCtx.arc(0, 0, 240, startAngle, startAngle + anglePerSlice);
-                    sCtx.closePath();
-                    sCtx.fillStyle = spinnerColors[i % spinnerColors.length];
-                    sCtx.fill();
-                    sCtx.save();
-                    sCtx.rotate(startAngle + anglePerSlice / 2);
-                    sCtx.textAlign = "center";
-                    sCtx.fillStyle = "#FFFFFF";
-                    sCtx.font = "bold 24px Poppins";
-                    sCtx.fillText(player.name, 140, 10);
-                    sCtx.restore();
-                });
-                sCtx.restore();
-            }
-            
-            function spinTheWheel() {
-                spinBtn.disabled = true;
-                const randomSpins = Math.floor(Math.random() * 5) + 5;
-                const stopAngle = Math.random() * 2 * Math.PI;
-                const totalRotation = (randomSpins * 2 * Math.PI) + stopAngle;
-                spinnerCanvas.style.transform = `rotate(${totalRotation}rad)`;
+                playSound('C4', '8n');
+            } else if (isDuplicate) {
+                playSound('A3', '8n');
+                playerNameInput.classList.add('shake');
                 setTimeout(() => {
-                    const finalRotation = totalRotation % (2 * Math.PI);
-                    const pointerAngle = (2 * Math.PI) - finalRotation + (Math.PI / 2);
-                    const winnerIndex = Math.floor(pointerAngle / ((2 * Math.PI) / players.length)) % players.length;
-                    currentPlayerIndex = winnerIndex;
-                    winnerName.textContent = players[winnerIndex].name;
-                    showModal(spinnerWinnerModal);
-                }, 5100);
+                    playerNameInput.classList.remove('shake');
+                }, 500);
             }
+        };
 
-            function initializeGame() {
-                const pack = QUESTION_PACKS[selectedPackId];
-                availableTruths = [...pack.truths];
-                availableDares = [...pack.dares];
-                updateTurnDisplay();
-                resetCardView();
-            }
-            
-            function updateTurnDisplay() {
-                const player = players[currentPlayerIndex];
-                currentPlayerName.textContent = player.name;
-                currentPlayerScore.textContent = `Skor: ${player.score}`;
-            }
-            
-            function resetCardView() {
-                card.classList.remove('flipped');
-                mainMenuButtons.style.display = 'block';
-                actionButtons.style.display = 'none';
-                card.querySelector('.card-front').style.display = 'none';
-            }
-            
-            function selectCard(type) {
-                mainMenuButtons.style.display = 'none';
-                card.querySelector('.card-front').style.display = 'flex';
-                const isTruth = type === 'truth';
-                const questions = isTruth ? availableTruths : availableDares;
-                if (questions.length === 0) {
-                    questionText.textContent = `Maaf, semua kartu ${type.toUpperCase()} sudah habis!`;
-                    cardTypeTitle.textContent = "Oops!";
-                } else {
-                    const randomIndex = Math.floor(Math.random() * questions.length);
-                    questionText.textContent = questions.splice(randomIndex, 1)[0];
-                    cardTypeTitle.textContent = isTruth ? 'TRUTH' : 'DARE';
-                }
-                cardTypeTitle.className = `text-6xl title-font font-bold ${isTruth ? 'text-pink-400' : 'text-sky-400'}`;
-                cardBack.className = `card-face card-back transform rotate-y-180 ${isTruth ? 'bg-pink-500' : 'bg-sky-500'}`;
-                setTimeout(() => card.classList.add('flipped'), 100);
-                setTimeout(() => actionButtons.style.display = 'block', 900);
-            }
-            
-            function nextTurn(points) {
-                players[currentPlayerIndex].score += points;
-                currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
-                updateTurnDisplay();
-                resetCardView();
-            }
+        const removePlayer = (index) => {
+            players.splice(index, 1);
+            updatePlayerList();
+            playSound('A3', '8n');
+        };
 
-            function showScoreboard() {
-                scoreList.innerHTML = '';
-                const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
-                const medals = ['🥇', '🥈', '🥉'];
-                sortedPlayers.forEach((player, index) => {
-                    const rankEl = document.createElement('div');
-                    rankEl.className = 'flex items-center justify-between glass-card p-4 rounded-lg';
-                    rankEl.innerHTML = `
-                        <div class="flex items-center gap-4">
-                            <span class="text-2xl w-8">${medals[index] || (index + 1)}</span>
-                            <span class="text-lg font-semibold">${player.name}</span>
-                        </div>
-                        <span class="text-xl font-bold text-yellow-400">${player.score} Poin</span>
-                    `;
-                    scoreList.appendChild(rankEl);
-                });
-                showScreen('score');
-            }
+        const setupCategories = () => {
+            categoryButtonsContainer.innerHTML = '';
+            Object.keys(questions).forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = 'bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-semibold py-4 px-2 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300 text-center flex flex-col items-center justify-center';
+                btn.innerHTML = `
+                    ${categoryIcons[cat] || ''}
+                    <span class="text-sm">${cat}</span>
+                `;
+                btn.onclick = () => selectCategory(cat);
+                categoryButtonsContainer.appendChild(btn);
+            });
+        };
 
-            function showModal(modal) {
-                modal.classList.remove('hidden');
+        const selectCategory = (category) => {
+            currentCategory = category;
+            playSound('E5', '8n');
+            switchScreen('mainGame');
+            startTurn();
+        };
+
+        const startTurn = () => {
+            isSpinning = false;
+            selectedPlayerIndex = -1;
+            updatePlayerChips();
+            turnIndicator.textContent = `Giliran ${players[currentPlayerIndex].name} memutar botol!`;
+            spinResult.textContent = '';
+            document.getElementById('spinner-container').classList.remove('hidden');
+            choiceContainer.classList.add('hidden');
+            cardDisplay.classList.add('hidden');
+            actionButtons.classList.add('hidden');
+            cardContainer.classList.remove('is-flipped');
+        };
+
+        const spinBottle = () => {
+            if (isSpinning) return;
+            isSpinning = true;
+            playSound('C4', '0.1');
+            
+            const playerSegment = 360 / players.length;
+            let targetPlayerIndex;
+            do {
+                targetPlayerIndex = Math.floor(Math.random() * players.length);
+            } while (targetPlayerIndex === currentPlayerIndex);
+            
+            selectedPlayerIndex = targetPlayerIndex;
+
+            const randomOffset = (Math.random() - 0.5) * playerSegment * 0.8;
+            const targetRotation = (targetPlayerIndex * playerSegment) + randomOffset;
+            const extraRotations = (Math.floor(Math.random() * 3) + 3) * 360;
+            
+            bottle.style.transform = `rotate(${targetRotation + extraRotations}deg)`;
+            
+            setTimeout(() => {
+                playSound('G5', '0.2');
+                spinResult.textContent = `Botol menunjuk ke ${players[selectedPlayerIndex].name}!`;
+                setTimeout(showChoice, 1500);
+            }, 4000);
+        };
+
+        const showChoice = () => {
+            document.getElementById('spinner-container').classList.add('hidden');
+            choiceContainer.classList.remove('hidden');
+            playerChoiceIndicator.textContent = `${players[selectedPlayerIndex].name}, pilih...`;
+        };
+
+        const getQuestion = (type) => {
+            const qList = questions[currentCategory][type];
+            return qList[Math.floor(Math.random() * qList.length)];
+        };
+
+        const showCard = (type) => {
+            playSound('D5', '8n');
+            choiceContainer.classList.add('hidden');
+            cardDisplay.classList.remove('hidden');
+
+            const questionText = getQuestion(type.toLowerCase());
+            cardType.textContent = type;
+            cardText.textContent = questionText;
+            
+            if (type === 'Truth') {
+                cardType.parentElement.style.background = 'rgba(59, 130, 246, 0.5)'; // Blue
+                cardText.parentElement.style.background = 'rgba(59, 130, 246, 0.5)';
+            } else {
+                cardType.parentElement.style.background = 'rgba(220, 38, 38, 0.5)'; // Red
+                cardText.parentElement.style.background = 'rgba(220, 38, 38, 0.5)';
+            }
+        };
+
+        const nextTurn = () => {
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+            const winner = players.find(p => p.score >= WINNING_SCORE);
+            if (winner) {
+                showWinner(winner);
+            } else {
+                startTurn();
+            }
+        };
+
+        const showPenalty = () => {
+            playSound('C3', '4n');
+            const penalty = penalties[Math.floor(Math.random() * penalties.length)];
+            penaltyText.textContent = penalty;
+            modals.penalty.classList.remove('hidden');
+        };
+
+        const showWinner = (winner) => {
+            playSound('G5', '2n');
+            winnerName.textContent = winner.name;
+            winnerScore.textContent = `Dengan ${winner.score} Poin!`;
+            modals.winner.classList.remove('hidden');
+        };
+
+        const resetGame = () => {
+            players = [];
+            currentPlayerIndex = 0;
+            selectedPlayerIndex = -1;
+            currentCategory = '';
+            isSpinning = false;
+            updatePlayerList();
+            Object.values(modals).forEach(modal => modal.classList.add('hidden'));
+            switchScreen('start');
+        };
+        
+        const showConfirmation = (title, text, onConfirm) => {
+            confirmTitle.textContent = title;
+            confirmText.textContent = text;
+            confirmCallback = onConfirm;
+            modals.confirm.classList.remove('hidden');
+        };
+
+        // Event Listeners
+        startGameBtn.addEventListener('click', () => {
+            playSound('C4', '8n');
+            switchScreen('playerSetup');
+        });
+
+        addPlayerBtn.addEventListener('click', addPlayer);
+        playerNameInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') addPlayer();
+        });
+
+        confirmPlayersBtn.addEventListener('click', () => {
+            playSound('G4', '8n');
+            setupCategories();
+            switchScreen('category');
+        });
+
+        bottle.addEventListener('click', spinBottle);
+
+        truthBtn.addEventListener('click', () => showCard('Truth'));
+        dareBtn.addEventListener('click', () => showCard('Dare'));
+        
+        cardContainer.addEventListener('click', () => {
+            if (!cardContainer.classList.contains('is-flipped')) {
+                playSound('F#4', '16n');
+                cardContainer.classList.add('is-flipped');
                 setTimeout(() => {
-                    modal.classList.add('opacity-100');
-                    modal.querySelector('div').classList.add('scale-100');
-                }, 10);
+                    actionButtons.classList.remove('hidden');
+                }, 800);
             }
-            function hideModal(modal) {
-                modal.classList.remove('opacity-100');
-                modal.querySelector('div').classList.remove('scale-100');
-                setTimeout(() => modal.classList.add('hidden'), 300);
-            }
-            function showPenalty() {
-                const randomIndex = Math.floor(Math.random() * PENALTY_CHALLENGES.length);
-                penaltyText.textContent = PENALTY_CHALLENGES[randomIndex];
-                showModal(penaltyModal);
-                nextTurn(-5); // Langsung kurangi poin dan lanjut giliran
-            }
+        });
 
-            // --- EVENT LISTENERS ---
-            addPlayerBtn.addEventListener('click', addPlayer);
-            playerInput.addEventListener('keyup', (e) => e.key === 'Enter' && addPlayer());
-            playerList.addEventListener('click', (e) => {
-                const removeBtn = e.target.closest('.remove-player-btn');
-                if (removeBtn) {
-                    removePlayer(removeBtn.dataset.playerName);
-                }
-            });
-            goToPacksBtn.addEventListener('click', () => showScreen('pack'));
-            packList.addEventListener('click', (e) => {
-                const packItem = e.target.closest('.pack-item');
-                if (packItem) {
-                    selectPack(packItem.dataset.pack);
-                }
-            });
-            goToSpinnerBtn.addEventListener('click', () => { showScreen('spinner'); drawSpinner(); });
-            spinBtn.addEventListener('click', spinTheWheel);
-            startGameBtn.addEventListener('click', () => { hideModal(spinnerWinnerModal); showScreen('game'); initializeGame(); });
-            truthBtn.addEventListener('click', () => selectCard('truth'));
-            dareBtn.addEventListener('click', () => selectCard('dare'));
-            nextPlayerBtn.addEventListener('click', () => nextTurn(10));
-            penaltyBtn.addEventListener('click', showPenalty);
-            closePenaltyBtn.addEventListener('click', () => hideModal(penaltyModal));
-            endGameBtn.addEventListener('click', showScoreboard);
-            playAgainBtn.addEventListener('click', () => location.reload());
+        completeBtn.addEventListener('click', () => {
+            playSuccessSound();
+            players[selectedPlayerIndex].score += 10;
+            nextTurn();
+        });
 
-            // --- INISIALISASI ---
-            populatePackList();
-            showScreen('player');
+        failBtn.addEventListener('click', () => {
+            showPenalty();
+        });
+
+        closePenaltyModalBtn.addEventListener('click', () => {
+            modals.penalty.classList.add('hidden');
+            nextTurn();
+        });
+
+        playAgainBtn.addEventListener('click', () => {
+            playSound('C4', '8n');
+            resetGame();
         });
         
-        // PWA Service Worker
-        if ('serviceWorker' in navigator) { 
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(registration => {
-                        console.log('Service Worker registered successfully:', registration.scope);
-                    })
-                    .catch(error => {
-                        console.error('Service Worker registration failed:', error);
-                    });
-            }); 
-        }
+        // --- Tombol Kembali ---
+        backToStartBtn.addEventListener('click', () => {
+            playSound('A3', '8n');
+            players = []; // Hapus pemain saat kembali
+            updatePlayerList();
+            switchScreen('start');
+        });
+
+        backToPlayersBtn.addEventListener('click', () => {
+            playSound('A3', '8n');
+            switchScreen('playerSetup');
+        });
+
+        exitGameBtn.addEventListener('click', () => {
+            showConfirmation('Keluar dari Game?', 'Progres permainan akan hilang. Anda yakin?', () => {
+                playSound('A3', '8n');
+                resetGame();
+            });
+        });
+        
+        // --- Modal Konfirmasi ---
+        confirmCancelBtn.addEventListener('click', () => {
+            modals.confirm.classList.add('hidden');
+            confirmCallback = null;
+        });
+
+        confirmOkBtn.addEventListener('click', () => {
+            if (confirmCallback) {
+                confirmCallback();
+            }
+            modals.confirm.classList.add('hidden');
+            confirmCallback = null;
+        });
+
+    });
     </script>
 </body>
 </html>
