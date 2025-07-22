@@ -1,5 +1,5 @@
-// Nama cache diubah ke v3 untuk memaksa pembaruan
-const CACHE_NAME = 'truth-or-dare-cache-v3'; 
+// Nama cache diubah ke v5 untuk memaksa pembaruan
+const CACHE_NAME = 'truth-or-dare-cache-v5'; 
 const urlsToCache = [
     '/',
     './', // Menambahkan path root relatif
