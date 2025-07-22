@@ -7,6 +7,7 @@
     <meta name="theme-color" content="#121212"/>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
 
     <title>Truth or Dare - Game Paling Seru</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -19,6 +20,7 @@
             background-color: #121212;
             overflow: hidden;
             touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
         #background-animation {
             position: fixed;
@@ -88,13 +90,13 @@
 </head>
 <body class="text-white flex items-center justify-center min-h-screen p-4">
     <div id="background-animation"></div>
-    <div id="game-container" class="w-full max-w-lg mx-auto h-full relative">
+    <div id="game-container" class="w-full max-w-md mx-auto h-full relative">
 
         <!-- LAYAR 1: TAMBAH PEMAIN -->
         <div id="player-screen" class="screen active flex-col justify-between h-full p-2">
             <div class="text-center">
-                <h1 class="text-4xl title-font text-pink-400">Tambah Pemain</h1>
-                <p class="text-gray-300 mt-2">Masukkan nama pemain (min. 2)</p>
+                <h1 class="text-3xl sm:text-4xl title-font text-pink-400">Tambah Pemain</h1>
+                <p class="text-gray-300 mt-2 text-sm sm:text-base">Masukkan nama pemain (min. 2)</p>
             </div>
             <div class="my-4">
                 <div class="flex gap-2">
@@ -109,8 +111,8 @@
         <!-- LAYAR 2: PILIH KATEGORI -->
         <div id="pack-screen" class="screen flex-col justify-between h-full p-2">
              <div class="text-center">
-                <h1 class="text-4xl title-font text-sky-400">Pilih Kategori</h1>
-                <p class="text-gray-300 mt-2">Pilih satu paket pertanyaan untuk dimainkan.</p>
+                <h1 class="text-3xl sm:text-4xl title-font text-sky-400">Pilih Kategori</h1>
+                <p class="text-gray-300 mt-2 text-sm sm:text-base">Pilih satu paket pertanyaan untuk dimainkan.</p>
             </div>
             <div id="pack-list" class="flex-grow space-y-3 overflow-y-auto my-4 pr-2"></div>
             <button id="go-to-spinner-btn" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 rounded-lg py-4 font-bold text-lg transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed" disabled>Lanjutkan ke Undian</button>
@@ -118,8 +120,8 @@
 
         <!-- LAYAR 3: SPINNER -->
         <div id="spinner-screen" class="screen flex-col items-center justify-center h-full">
-            <h1 class="text-4xl title-font text-center mb-8">Putar Roda Keberuntungan!</h1>
-            <div class="spinner-container relative w-80 h-80 md:w-96 md:h-96">
+            <h1 class="text-3xl sm:text-4xl title-font text-center mb-8">Putar Roda Keberuntungan!</h1>
+            <div class="spinner-container relative w-72 h-72 sm:w-80 sm:h-80 md:w-96 md:h-96">
                 <canvas id="spinner-canvas" width="500" height="500"></canvas>
             </div>
             <button id="spin-btn" class="w-full max-w-xs mt-8 bg-pink-500 hover:bg-pink-600 rounded-lg py-4 font-bold text-lg transition-colors">PUTAR!</button>
@@ -134,12 +136,12 @@
             </div>
             <div class="card-container w-full h-[60vh] max-h-[450px]">
                 <div id="card" class="card rounded-3xl">
-                    <div class="card-face card-front flex-col justify-center items-center glass-card">
-                        <h2 id="card-type-title" class="text-6xl title-font font-bold"></h2>
-                        <p class="mt-4 text-xl text-gray-300">Ketuk untuk membuka</p>
+                    <div class="card-face card-front flex-col justify-center items-center glass-card p-4">
+                        <h2 id="card-type-title" class="text-5xl md:text-6xl title-font font-bold"></h2>
+                        <p class="mt-4 text-lg md:text-xl text-gray-300">Ketuk untuk membuka</p>
                     </div>
-                    <div id="card-back" class="card-face card-back transform rotate-y-180">
-                        <p id="question-text" class="text-2xl md:text-3xl font-semibold text-center"></p>
+                    <div id="card-back" class="card-face card-back transform rotate-y-180 p-6">
+                        <p id="question-text" class="text-xl md:text-2xl font-semibold text-center"></p>
                     </div>
                 </div>
             </div>
@@ -157,7 +159,7 @@
         <!-- LAYAR 5: SKOR AKHIR -->
         <div id="score-screen" class="screen flex-col justify-center h-full p-2">
             <div class="text-center">
-                <h1 class="text-5xl title-font text-yellow-400">Skor Akhir</h1>
+                <h1 class="text-4xl sm:text-5xl title-font text-yellow-400">Skor Akhir</h1>
                 <p class="text-gray-300 mt-2">Selamat kepada pemenang!</p>
             </div>
             <div id="score-list" class="w-full my-6 space-y-3 overflow-y-auto pr-2"></div>
@@ -471,4 +473,3 @@
     </script>
 </body>
 </html>
-s
