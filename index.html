@@ -11,7 +11,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="T or D">
     <meta name="description" content="Game Truth or Dare seru untuk dimainkan bersama teman-teman.">
-    <!-- PERBAIKAN: Path disesuaikan ke folder 'icons' -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icons/icon-192x192.png">
 
@@ -23,7 +22,7 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            touch-action: manipulation; /* Mencegah zoom saat double tap di mobile */
+            touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
         }
         .animated-gradient {
@@ -38,58 +37,97 @@
         }
         .card-container { perspective: 1000px; }
         .card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.8s;
-            transform-style: preserve-3d;
+            position: relative; width: 100%; height: 100%;
+            transition: transform 0.8s; transform-style: preserve-3d;
         }
         .card-container.is-flipped .card-inner { transform: rotateY(180deg); }
         .card-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            padding: 20px;
-            border-radius: 1.5rem;
+            position: absolute; width: 100%; height: 100%;
+            -webkit-backface-visibility: hidden; backface-visibility: hidden;
+            display: flex; justify-content: center; align-items: center;
+            flex-direction: column; padding: 20px; border-radius: 1.5rem;
         }
         .card-back { transform: rotateY(180deg); }
-        #bottle {
-            transition: transform 4s cubic-bezier(0.25, 1, 0.5, 1);
-            transform-origin: center;
+        
+        /* --- Gaya Spinner Roda Baru --- */
+        #wheel-container {
+            width: 300px; height: 300px;
+            position: relative;
         }
+        .player-on-wheel {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform-origin: center center;
+            font-weight: 600;
+            color: white;
+            text-shadow: 0 0 5px rgba(0,0,0,0.7);
+            background-color: rgba(0,0,0,0.4);
+            padding: 4px 8px;
+            border-radius: 8px;
+        }
+        #bottle-spinner {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px; height: 100px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        #bottle-spinner:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+        #bottle {
+            transition: transform 5s cubic-bezier(0.25, 1, 0.5, 1);
+            transform-origin: center;
+            width: 35px; /* Ukuran botol disesuaikan */
+            height: 100px;
+        }
+
         .fade-in { animation: fadeIn 0.5s ease-in-out; }
         .fade-out { animation: fadeOut 0.5s ease-in-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         @keyframes fadeOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.95); } }
-        .player-chip {
-            transition: all 0.3s ease;
-        }
         .player-chip.active {
             transform: scale(1.1);
             box-shadow: 0 0 15px 3px rgba(255, 255, 255, 0.7);
         }
-        /* Animasi untuk logo dan input error */
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        .logo-pulse {
-            animation: pulse 2.5s infinite ease-in-out;
-        }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .logo-pulse { animation: pulse 2.5s infinite ease-in-out; }
         @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-            40%, 60% { transform: translate3d(4px, 0, 0); }
+            10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); }
         }
-        .shake {
-            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        .shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+
+        /* --- Gaya Tombol Baru --- */
+        .btn-primary {
+            background: linear-gradient(to right, #ec4899, #f472b6);
+            box-shadow: 0 4px 15px 0 rgba(236, 72, 153, 0.4);
+        }
+        .btn-primary:hover {
+            background: linear-gradient(to right, #f472b6, #ec4899);
+        }
+        .btn-secondary {
+            background: linear-gradient(to right, #2563eb, #3b82f6);
+            box-shadow: 0 4px 15px 0 rgba(59, 130, 246, 0.4);
+        }
+        .btn-secondary:hover {
+             background: linear-gradient(to right, #3b82f6, #2563eb);
+        }
+         .btn-danger {
+            background: linear-gradient(to right, #dc2626, #ef4444);
+            box-shadow: 0 4px 15px 0 rgba(220, 38, 38, 0.4);
+        }
+        .btn-danger:hover {
+             background: linear-gradient(to right, #ef4444, #dc2626);
+        }
+        .btn-glow {
+            transition: all 0.3s ease;
+        }
+        .btn-glow:hover {
+            box-shadow: 0 0 20px 5px rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
         }
     </style>
 </head>
@@ -100,11 +138,10 @@
 
         <!-- Layar Awal -->
         <div id="start-screen" class="flex flex-col justify-center items-center h-full text-center fade-in">
-            <!-- PERBAIKAN: Path disesuaikan ke folder 'icons' (dengan 's') -->
             <img src="icons/icon-192x192.png" alt="Logo Game" class="w-32 h-32 mb-6 rounded-full shadow-lg logo-pulse" onerror="this.onerror=null;this.src='https://placehold.co/150x150/ffffff/4c1d95?text=Logo';">
             <h1 class="text-5xl md:text-6xl font-bold mb-2 text-shadow-lg">Truth or Dare</h1>
             <p class="text-lg md:text-xl mb-8">Edisi Paling Seru!</p>
-            <button id="start-game-btn" class="bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-8 rounded-full text-xl shadow-lg transform hover:scale-105 transition-transform duration-300">
+            <button id="start-game-btn" class="btn-primary btn-glow text-white font-bold py-4 px-10 rounded-full text-xl shadow-lg">
                 Mulai Main
             </button>
         </div>
@@ -143,41 +180,38 @@
 
         <!-- Layar Utama Permainan -->
         <main id="main-game-screen" class="hidden flex-col h-full w-full">
-            <!-- Header: Info Pemain & Poin -->
             <header class="flex-shrink-0 mb-2 relative h-16">
                  <button id="exit-game-btn" class="absolute top-0 left-0 text-white bg-red-700 hover:bg-red-800 rounded-full p-2 shadow-lg z-10">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd" />
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd" /></svg>
                 </button>
-                <div id="player-chips-container" class="flex flex-wrap gap-2 justify-center items-center w-full">
-                    <!-- Chips pemain akan ditambahkan oleh JS -->
-                </div>
+                <div id="player-chips-container" class="flex flex-wrap gap-2 justify-center items-center w-full"></div>
             </header>
 
-            <!-- Spinner Botol -->
+            <!-- Spinner Roda Baru -->
             <div id="spinner-container" class="flex-grow flex flex-col items-center justify-center relative">
                 <p id="turn-indicator" class="text-2xl font-bold mb-4 text-center"></p>
-                <div id="bottle-container" class="relative w-64 h-64 md:w-72 md:h-72 flex items-center justify-center">
-                    <img id="bottle" src="https://img.icons8.com/plasticine/200/000000/bottle-of-water.png" alt="Bottle Spinner" class="w-16 h-48 md:w-20 md:h-56 cursor-pointer transform hover:scale-110 transition-transform">
+                <div id="wheel-container">
+                    <!-- Nama pemain akan ditambahkan oleh JS -->
+                    <div id="bottle-spinner">
+                        <img id="bottle" src="https://api.iconify.design/mdi:bottle-soda-classic-outline.svg?color=white" alt="Bottle Spinner">
+                    </div>
                 </div>
                 <p id="spin-result" class="mt-4 text-xl font-semibold h-8"></p>
             </div>
 
             <!-- Kontrol Truth or Dare -->
             <div id="choice-container" class="hidden flex-col items-center justify-center flex-grow">
-                 <p id="player-choice-indicator" class="text-2xl font-bold mb-6 text-center"></p>
-                 <div class="flex gap-4">
-                    <button id="truth-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-10 rounded-full text-xl shadow-lg transform hover:scale-105 transition-transform duration-300">
+                 <p id="player-choice-indicator" class="text-2xl font-bold mb-8 text-center"></p>
+                 <div class="flex gap-6 justify-center w-full">
+                    <button id="truth-btn" class="btn-secondary btn-glow text-white font-bold py-4 px-12 rounded-full text-2xl shadow-lg">
                         Truth
                     </button>
-                    <button id="dare-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-10 rounded-full text-xl shadow-lg transform hover:scale-105 transition-transform duration-300">
+                    <button id="dare-btn" class="btn-danger btn-glow text-white font-bold py-4 px-12 rounded-full text-2xl shadow-lg">
                         Dare
                     </button>
                  </div>
             </div>
 
-            <!-- Tampilan Kartu -->
             <div id="card-display" class="hidden flex-grow items-center justify-center">
                 <div class="card-container w-full h-64 md:h-80">
                     <div class="card-inner">
@@ -192,91 +226,32 @@
                 </div>
             </div>
             
-            <!-- Tombol Selesai & Hukuman -->
             <div id="action-buttons" class="hidden flex-shrink-0 mt-4 flex justify-center gap-4">
                 <button id="complete-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-full shadow-lg">Selesai (+10 Poin)</button>
                 <button id="fail-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded-full shadow-lg">Gagal (Hukuman)</button>
             </div>
         </main>
 
-        <!-- Modal Hukuman -->
-        <div id="penalty-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4">
-            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl text-center w-full max-w-sm fade-in">
-                <h2 class="text-3xl font-bold text-yellow-400 mb-4">HUKUMAN!</h2>
-                <p id="penalty-text" class="text-lg mb-6"></p>
-                <button id="close-penalty-modal" class="bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-8 rounded-full">Tutup</button>
-            </div>
-        </div>
-
-        <!-- Modal Pemenang -->
-        <div id="winner-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4">
-            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl text-center w-full max-w-sm fade-in">
-                <h2 class="text-4xl font-bold text-yellow-400 mb-4">🎉 PEMENANG 🎉</h2>
-                <p id="winner-name" class="text-3xl font-bold mb-2"></p>
-                <p id="winner-score" class="text-xl text-gray-300 mb-6"></p>
-                <button id="play-again-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-full">Main Lagi</button>
-            </div>
-        </div>
-        
-        <!-- Modal Konfirmasi -->
-        <div id="confirm-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4">
-            <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl text-center w-full max-w-sm fade-in">
-                <h2 id="confirm-title" class="text-2xl font-bold mb-4"></h2>
-                <p id="confirm-text" class="text-lg mb-6"></p>
-                <div class="flex justify-end gap-4">
-                    <button id="confirm-cancel-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-full">Batal</button>
-                    <button id="confirm-ok-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full">Ya</button>
-                </div>
-            </div>
-        </div>
-
+        <!-- Modals (Tidak berubah) -->
+        <div id="penalty-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4"><div class="bg-gray-800 p-6 rounded-2xl shadow-2xl text-center w-full max-w-sm fade-in"><h2 class="text-3xl font-bold text-yellow-400 mb-4">HUKUMAN!</h2><p id="penalty-text" class="text-lg mb-6"></p><button id="close-penalty-modal" class="bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-8 rounded-full">Tutup</button></div></div>
+        <div id="winner-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4"><div class="bg-gray-800 p-6 rounded-2xl shadow-2xl text-center w-full max-w-sm fade-in"><h2 class="text-4xl font-bold text-yellow-400 mb-4">🎉 PEMENANG 🎉</h2><p id="winner-name" class="text-3xl font-bold mb-2"></p><p id="winner-score" class="text-xl text-gray-300 mb-6"></p><button id="play-again-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-full">Main Lagi</button></div></div>
+        <div id="confirm-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4"><div class="bg-gray-800 p-6 rounded-2xl shadow-2xl text-center w-full max-w-sm fade-in"><h2 id="confirm-title" class="text-2xl font-bold mb-4"></h2><p id="confirm-text" class="text-lg mb-6"></p><div class="flex justify-end gap-4"><button id="confirm-cancel-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-full">Batal</button><button id="confirm-ok-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full">Ya</button></div></div></div>
     </div>
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // --- PWA SETUP ---
-        // PERBAIKAN: Path disesuaikan ke folder 'icons'
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('service-worker.js')
-                .then(registration => console.log('Service Worker registered with scope:', registration.scope))
-                .catch(error => console.log('Service Worker registration failed:', error));
+                .then(reg => console.log('Service Worker registered'))
+                .catch(err => console.log('Service Worker registration failed:', err));
         }
 
-        // --- GAME LOGIC ---
         const synth = new Tone.Synth().toDestination();
-        const playSound = (note, duration) => {
-            try {
-                Tone.start();
-                synth.triggerAttackRelease(note, duration);
-            } catch(e) {
-                console.error("Audio could not be played:", e);
-            }
-        };
-        const playSuccessSound = () => {
-            try {
-                Tone.start();
-                const now = Tone.now();
-                synth.triggerAttackRelease("C5", "8n", now);
-                synth.triggerAttackRelease("E5", "8n", now + 0.1);
-                synth.triggerAttackRelease("G5", "8n", now + 0.2);
-            } catch(e) {
-                console.error("Audio could not be played:", e);
-            }
-        };
+        const playSound = (note, duration) => { try { Tone.start(); synth.triggerAttackRelease(note, duration); } catch(e) { console.error("Audio could not be played:", e); } };
+        const playSuccessSound = () => { try { Tone.start(); const now = Tone.now(); synth.triggerAttackRelease("C5", "8n", now); synth.triggerAttackRelease("E5", "8n", now + 0.1); synth.triggerAttackRelease("G5", "8n", now + 0.2); } catch(e) { console.error("Audio could not be played:", e); } };
         
-        // Elemen UI
-        const screens = {
-            start: document.getElementById('start-screen'),
-            playerSetup: document.getElementById('player-setup-screen'),
-            category: document.getElementById('category-screen'),
-            mainGame: document.getElementById('main-game-screen'),
-        };
-        const modals = {
-            penalty: document.getElementById('penalty-modal'),
-            winner: document.getElementById('winner-modal'),
-            confirm: document.getElementById('confirm-modal'),
-        };
-
+        const screens = { start: document.getElementById('start-screen'), playerSetup: document.getElementById('player-setup-screen'), category: document.getElementById('category-screen'), mainGame: document.getElementById('main-game-screen'), };
+        const modals = { penalty: document.getElementById('penalty-modal'), winner: document.getElementById('winner-modal'), confirm: document.getElementById('confirm-modal'), };
         const playerNameInput = document.getElementById('player-name-input');
         const addPlayerBtn = document.getElementById('add-player-btn');
         const playerListDiv = document.getElementById('player-list');
@@ -286,6 +261,8 @@
         const playerChipsContainer = document.getElementById('player-chips-container');
         const turnIndicator = document.getElementById('turn-indicator');
         const bottle = document.getElementById('bottle');
+        const bottleSpinner = document.getElementById('bottle-spinner');
+        const wheelContainer = document.getElementById('wheel-container');
         const spinResult = document.getElementById('spin-result');
         const choiceContainer = document.getElementById('choice-container');
         const playerChoiceIndicator = document.getElementById('player-choice-indicator');
@@ -311,7 +288,6 @@
         const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
         const confirmOkBtn = document.getElementById('confirm-ok-btn');
         
-        // State Game
         let players = [];
         let currentPlayerIndex = 0;
         let selectedPlayerIndex = -1;
@@ -320,325 +296,70 @@
         const WINNING_SCORE = 50;
         let confirmCallback = null;
 
-        // Database Pertanyaan
         const questions = {
-            "Classic Pack": {
-                truth: ["Apa hal paling memalukan yang pernah kamu lakukan di depan umum?", "Siapa orang yang paling kamu percaya saat ini?", "Apa ketakutan terbesarmu?", "Pernahkah kamu curang di sekolah?", "Apa kebohongan terbesar yang pernah kamu katakan?", "Siapa orang terakhir yang membuatmu kesal?", "Apa rahasia teraneh yang kamu punya?", "Siapa selebriti yang paling kamu kagumi?", "Apa kebiasaan burukmu yang orang lain tidak tahu?", "Pernahkah kamu pura-pura sakit agar tidak sekolah/kerja?"],
-                dare: ["Lakukan 10 push-up sekarang.", "Tiru suara hewan selama 30 detik.", "Kirim pesan “Aku kangen” ke kontak terakhir di WhatsApp.", "Jalan mundur mengelilingi ruangan.", "Bernyanyi lagu anak-anak dengan suara keras.", "Tulis status aneh di media sosialmu.", "Berjalan seperti robot selama 1 menit.", "Lakukan tarian lucu selama 20 detik.", "Buat ekspresi wajah paling aneh dan tahan 15 detik.", "Telepon teman dan ucapkan “Aku kangen” tanpa penjelasan."]
-            },
-            "Wild Dares": {
-                truth: ["Apa hal paling memalukan di ponselmu?", "Siapa orang terakhir yang kamu stalk di media sosial?", "Apa kebohongan terbodoh yang pernah kamu buat?", "Apa video terakhir yang kamu tonton di YouTube?", "Siapa orang yang paling sering muncul di pikiranmu?", "Apa hal paling aneh yang pernah kamu makan?", "Pernahkah kamu berbohong demi terlihat keren?", "Apa kenangan masa kecil yang paling konyol?", "Pernahkah kamu pura-pura kenal orang padahal tidak?", "Siapa orang terakhir yang bikin kamu ketawa keras?"],
-                dare: ["Menyanyi dengan suara aneh selama 1 menit.", "Tulis pesan acak ke 3 teman di kontakmu.", "Makan sesuatu yang rasanya aneh.", "Tiru gaya jalan orang di sebelahmu.", "Berjalan seperti kucing selama 30 detik.", "Lakukan tarian TikTok yang kamu tahu.", "Kirim emoji random ke 5 kontakmu.", "Bicara dengan suara bayi selama 2 menit.", "Buat pose aneh dan kirim foto ke grup.", "Pura-pura jadi presenter berita selama 30 detik."]
-            },
-            "Couple's Edition": {
-                truth: ["Kapan pertama kali kamu jatuh cinta?", "Siapa mantan yang paling sulit dilupakan?", "Apa hal paling romantis yang pernah kamu lakukan?", "Apa bagian tubuh pasangan yang paling kamu suka?", "Apakah kamu percaya pada cinta sejati?", "Apa hadiah terbaik yang pernah kamu berikan?", "Siapa orang yang pertama kali kamu chat hari ini?", "Apakah kamu masih ingat kata pertama pasanganmu saat PDKT?", "Apa momen paling lucu dengan pasanganmu?", "Apa kenangan kencan pertama yang kamu ingat?"],
-                dare: ["Cium tangan pasangan selama 10 detik.", "Kirim pesan manis ke pasanganmu sekarang.", "Katakan “Aku sayang kamu” dengan cara paling lucu.", "Peluk pasanganmu selama 20 detik.", "Kirim voice note romantis ke pasangan.", "Sebutkan 3 alasan kamu cinta pasanganmu.", "Nyanyikan lagu cinta untuk pasanganmu.", "Berikan pijatan 1 menit ke pasangan.", "Tulis pesan cinta di tangan pasanganmu.", "Tatap mata pasangan tanpa bicara selama 30 detik."]
-            },
-            "Romantic Prompts": {
-                truth: ["Apa hal paling romantis yang kamu bayangkan?", "Kapan terakhir kali kamu merasa sangat dicintai?", "Apakah kamu percaya pada takdir dalam cinta?", "Apa lagu yang paling mengingatkanmu pada seseorang spesial?", "Apa hadiah paling berkesan dari orang tersayang?", "Siapa yang paling sering membuatmu tersenyum?", "Apa film romantis favoritmu?", "Apa kejutan romantis impianmu?", "Apa kenangan paling manis dengan pasanganmu?", "Jika kamu bisa mengajak pasangan liburan ke mana saja, mau ke mana?"],
-                dare: ["Buat puisi singkat tentang cinta dalam 1 menit.", "Katakan 5 hal manis kepada pasanganmu.", "Tulis pesan cinta di kertas dan tunjukkan.", "Kirim emoji hati ke pasangan.", "Ceritakan kenangan romantis terbaik dalam 1 menit.", "Nyanyikan lagu cinta pilihanmu.", "Kirim selfie romantis ke pasangan.", "Peluk seseorang di ruangan ini.", "Kirim voice note “Aku sayang kamu” ke pasangan.", "Tatap mata pasangan dan katakan “Aku cinta kamu.”"]
-            },
-            "Late Night (21+)": {
-                truth: ["Apa bagian tubuh lawan jenis yang paling kamu sukai?", "Pernahkah kamu punya mimpi “nakal” tentang seseorang di ruangan ini?", "Apa fantasi terliarmu?", "Siapa orang paling seksi menurutmu di sini?", "Pernahkah kamu kirim pesan atau foto 'nakal' ke seseorang?", "Apa hal paling menggoda yang pernah kamu lakukan?", "Kapan terakhir kali kamu merasa “tertarik” secara fisik dengan seseorang?", "Siapa orang terakhir yang pernah kamu peluk dengan romantis?", "Pernahkah kamu menyukai seseorang diam-diam di grup teman ini?", "Apa momen paling “panas” yang pernah kamu alami?"],
-                dare: ["Bisikkan sesuatu yang menggoda ke telinga orang di sebelahmu.", "Kirim pesan “Aku kangen pelukanmu” ke kontak random lawan jenis.", "Tatap mata orang yang kamu pilih dengan intens selama 20 detik tanpa senyum.", "Ucapkan 3 kalimat paling romantis atau “menggoda” ke seseorang di sini.", "Tunjukkan pose paling seksi untuk difoto.", "Pura-pura rayu seseorang di ruangan ini selama 30 detik.", "Lakukan gerakan “slow dance” dengan orang yang kamu pilih.", "Ceritakan 1 pengalaman kencan paling romantis atau panas yang pernah kamu alami.", "Bisikkan rahasia terpanas yang kamu punya ke orang di sebelahmu.", "Pura-pura bilang 'Aku suka kamu' ke orang acak di grup."]
-            }
+            "Classic Pack": { truth: ["Apa hal paling memalukan yang pernah kamu lakukan di depan umum?", "Siapa orang yang paling kamu percaya saat ini?", "Apa ketakutan terbesarmu?", "Pernahkah kamu curang di sekolah?", "Apa kebohongan terbesar yang pernah kamu katakan?", "Siapa orang terakhir yang membuatmu kesal?", "Apa rahasia teraneh yang kamu punya?", "Siapa selebriti yang paling kamu kagumi?", "Apa kebiasaan burukmu yang orang lain tidak tahu?", "Pernahkah kamu pura-pura sakit agar tidak sekolah/kerja?"], dare: ["Lakukan 10 push-up sekarang.", "Tiru suara hewan selama 30 detik.", "Kirim pesan “Aku kangen” ke kontak terakhir di WhatsApp.", "Jalan mundur mengelilingi ruangan.", "Bernyanyi lagu anak-anak dengan suara keras.", "Tulis status aneh di media sosialmu.", "Berjalan seperti robot selama 1 menit.", "Lakukan tarian lucu selama 20 detik.", "Buat ekspresi wajah paling aneh dan tahan 15 detik.", "Telepon teman dan ucapkan “Aku kangen” tanpa penjelasan."] },
+            "Wild Dares": { truth: ["Apa hal paling memalukan di ponselmu?", "Siapa orang terakhir yang kamu stalk di media sosial?", "Apa kebohongan terbodoh yang pernah kamu buat?", "Apa video terakhir yang kamu tonton di YouTube?", "Siapa orang yang paling sering muncul di pikiranmu?", "Apa hal paling aneh yang pernah kamu makan?", "Pernahkah kamu berbohong demi terlihat keren?", "Apa kenangan masa kecil yang paling konyol?", "Pernahkah kamu pura-pura kenal orang padahal tidak?", "Siapa orang terakhir yang bikin kamu ketawa keras?"], dare: ["Menyanyi dengan suara aneh selama 1 menit.", "Tulis pesan acak ke 3 teman di kontakmu.", "Makan sesuatu yang rasanya aneh.", "Tiru gaya jalan orang di sebelahmu.", "Berjalan seperti kucing selama 30 detik.", "Lakukan tarian TikTok yang kamu tahu.", "Kirim emoji random ke 5 kontakmu.", "Bicara dengan suara bayi selama 2 menit.", "Buat pose aneh dan kirim foto ke grup.", "Pura-pura jadi presenter berita selama 30 detik."] },
+            "Couple's Edition": { truth: ["Kapan pertama kali kamu jatuh cinta?", "Siapa mantan yang paling sulit dilupakan?", "Apa hal paling romantis yang pernah kamu lakukan?", "Apa bagian tubuh pasangan yang paling kamu suka?", "Apakah kamu percaya pada cinta sejati?", "Apa hadiah terbaik yang pernah kamu berikan?", "Siapa orang yang pertama kali kamu chat hari ini?", "Apakah kamu masih ingat kata pertama pasanganmu saat PDKT?", "Apa momen paling lucu dengan pasanganmu?", "Apa kenangan kencan pertama yang kamu ingat?"], dare: ["Cium tangan pasangan selama 10 detik.", "Kirim pesan manis ke pasanganmu sekarang.", "Katakan “Aku sayang kamu” dengan cara paling lucu.", "Peluk pasanganmu selama 20 detik.", "Kirim voice note romantis ke pasangan.", "Sebutkan 3 alasan kamu cinta pasanganmu.", "Nyanyikan lagu cinta untuk pasanganmu.", "Berikan pijatan 1 menit ke pasangan.", "Tulis pesan cinta di tangan pasanganmu.", "Tatap mata pasangan tanpa bicara selama 30 detik."] },
+            "Romantic Prompts": { truth: ["Apa hal paling romantis yang kamu bayangkan?", "Kapan terakhir kali kamu merasa sangat dicintai?", "Apakah kamu percaya pada takdir dalam cinta?", "Apa lagu yang paling mengingatkanmu pada seseorang spesial?", "Apa hadiah paling berkesan dari orang tersayang?", "Siapa yang paling sering membuatmu tersenyum?", "Apa film romantis favoritmu?", "Apa kejutan romantis impianmu?", "Apa kenangan paling manis dengan pasanganmu?", "Jika kamu bisa mengajak pasangan liburan ke mana saja, mau ke mana?"], dare: ["Buat puisi singkat tentang cinta dalam 1 menit.", "Katakan 5 hal manis kepada pasanganmu.", "Tulis pesan cinta di kertas dan tunjukkan.", "Kirim emoji hati ke pasangan.", "Ceritakan kenangan romantis terbaik dalam 1 menit.", "Nyanyikan lagu cinta pilihanmu.", "Kirim selfie romantis ke pasangan.", "Peluk seseorang di ruangan ini.", "Kirim voice note “Aku sayang kamu” ke pasangan.", "Tatap mata pasangan dan katakan “Aku cinta kamu.”"] },
+            "Late Night (21+)": { truth: ["Apa bagian tubuh lawan jenis yang paling kamu sukai?", "Pernahkah kamu punya mimpi “nakal” tentang seseorang di ruangan ini?", "Apa fantasi terliarmu?", "Siapa orang paling seksi menurutmu di sini?", "Pernahkah kamu kirim pesan atau foto 'nakal' ke seseorang?", "Apa hal paling menggoda yang pernah kamu lakukan?", "Kapan terakhir kali kamu merasa “tertarik” secara fisik dengan seseorang?", "Siapa orang terakhir yang pernah kamu peluk dengan romantis?", "Pernahkah kamu menyukai seseorang diam-diam di grup teman ini?", "Apa momen paling “panas” yang pernah kamu alami?"], dare: ["Bisikkan sesuatu yang menggoda ke telinga orang di sebelahmu.", "Kirim pesan “Aku kangen pelukanmu” ke kontak random lawan jenis.", "Tatap mata orang yang kamu pilih dengan intens selama 20 detik tanpa senyum.", "Ucapkan 3 kalimat paling romantis atau “menggoda” ke seseorang di sini.", "Tunjukkan pose paling seksi untuk difoto.", "Pura-pura rayu seseorang di ruangan ini selama 30 detik.", "Lakukan gerakan “slow dance” dengan orang yang kamu pilih.", "Ceritakan 1 pengalaman kencan paling romantis atau panas yang pernah kamu alami.", "Bisikkan rahasia terpanas yang kamu punya ke orang di sebelahmu.", "Pura-pura bilang 'Aku suka kamu' ke orang acak di grup."] }
         };
-        
-        const categoryIcons = {
-            "Classic Pack": `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mb-1" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>`,
-            "Wild Dares": `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mb-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.934l-6.796 12.04a1 1 0 00.385 1.451h.001c.154.086.325.13.5.13h12.822a1 1 0 00.958-1.287l-6.796-12.04a1.002 1.002 0 00-.822-.935zM10 14a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg>`,
-            "Couple's Edition": `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mb-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" /></svg>`,
-            "Romantic Prompts": `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mb-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 5a3 3 0 013-3h4a3 3 0 013 3v1h-1.172a1 1 0 00-.707.293l-1.414 1.414a1 1 0 01-1.414 0L8.88 6.293A1 1 0 008.172 6H7V5z" clip-rule="evenodd" /><path d="M4 9a2 2 0 012-2h8a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V9z" /></svg>`,
-            "Late Night (21+)": `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mb-1" viewBox="0 0 20 20" fill="currentColor"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" /></svg>`
-        };
-
+        const categoryIcons = { "Classic Pack": `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mb-1" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>`, "Wild Dares": `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mb-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.934l-6.796 12.04a1 1 0 00.385 1.451h.001c.154.086.325.13.5.13h12.822a1 1 0 00.958-1.287l-6.796-12.04a1.002 1.002 0 00-.822-.935zM10 14a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg>`, "Couple's Edition": `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mb-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" /></svg>`, "Romantic Prompts": `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mb-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 5a3 3 0 013-3h4a3 3 0 013 3v1h-1.172a1 1 0 00-.707.293l-1.414 1.414a1 1 0 01-1.414 0L8.88 6.293A1 1 0 008.172 6H7V5z" clip-rule="evenodd" /><path d="M4 9a2 2 0 012-2h8a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V9z" /></svg>`, "Late Night (21+)": `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mb-1" viewBox="0 0 20 20" fill="currentColor"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" /></svg>` };
         const penalties = ["Nyanyikan lagu 'Balonku' dengan gaya rock.", "Push up 10 kali.", "Ucapkan 'aku ganteng/cantik' 10 kali dengan ekspresi narsis.", "Tiru gaya salah satu pemain sampai giliranmu berikutnya.", "Jongkok berdiri 15 kali.", "Puji 3 orang di ruangan ini dengan tulus.", "Ceritakan lelucon garing sampai ada yang tertawa."];
 
-        // Functions
-        const switchScreen = (screenName) => {
-            Object.values(screens).forEach(screen => screen.classList.add('hidden'));
-            if (screens[screenName]) {
-                screens[screenName].classList.remove('hidden');
-                screens[screenName].classList.remove('fade-out');
-                screens[screenName].classList.add('fade-in');
-            }
-        };
-
-        const updatePlayerList = () => {
-            playerListDiv.innerHTML = '';
-            players.forEach((player, index) => {
-                const playerTag = document.createElement('span');
-                playerTag.className = 'bg-gray-700 text-white text-sm font-medium me-2 px-2.5 py-0.5 rounded-full flex items-center gap-2';
-                playerTag.textContent = player.name;
-                const removeBtn = document.createElement('button');
-                removeBtn.innerHTML = '&times;';
-                removeBtn.className = 'text-lg font-bold leading-none';
-                removeBtn.onclick = () => removePlayer(index);
-                playerTag.appendChild(removeBtn);
-                playerListDiv.appendChild(playerTag);
-            });
-            confirmPlayersBtn.disabled = players.length < 2;
-        };
+        const switchScreen = (screenName) => { Object.values(screens).forEach(s => s.classList.add('hidden')); screens[screenName].classList.remove('hidden'); screens[screenName].classList.remove('fade-out'); screens[screenName].classList.add('fade-in'); };
+        const updatePlayerList = () => { playerListDiv.innerHTML = ''; players.forEach((p, i) => { const tag = document.createElement('span'); tag.className = 'bg-gray-700 text-white text-sm font-medium me-2 px-2.5 py-0.5 rounded-full flex items-center gap-2'; tag.textContent = p.name; const btn = document.createElement('button'); btn.innerHTML = '&times;'; btn.className = 'text-lg font-bold leading-none'; btn.onclick = () => removePlayer(i); tag.appendChild(btn); playerListDiv.appendChild(tag); }); confirmPlayersBtn.disabled = players.length < 2; };
+        const updatePlayerChips = () => { playerChipsContainer.innerHTML = ''; players.forEach((p, i) => { const c = document.createElement('div'); c.className = 'player-chip bg-black/30 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md'; c.id = `player-chip-${i}`; c.innerHTML = `${p.name} <span class="font-bold text-yellow-300">${p.score}</span>`; playerChipsContainer.appendChild(c); }); highlightCurrentPlayer(); };
+        const highlightCurrentPlayer = () => { document.querySelectorAll('.player-chip').forEach(c => c.classList.remove('active')); const ac = document.getElementById(`player-chip-${currentPlayerIndex}`); if (ac) ac.classList.add('active'); };
+        const addPlayer = () => { const name = playerNameInput.value.trim(); const isDup = players.some(p => p.name.toLowerCase() === name.toLowerCase()); if (name && players.length < 8 && !isDup) { players.push({ name, score: 0 }); playerNameInput.value = ''; updatePlayerList(); playSound('C4', '8n'); } else if (isDup) { playSound('A3', '8n'); playerNameInput.classList.add('shake'); setTimeout(() => playerNameInput.classList.remove('shake'), 500); } };
+        const removePlayer = (index) => { players.splice(index, 1); updatePlayerList(); playSound('A3', '8n'); };
+        const setupCategories = () => { categoryButtonsContainer.innerHTML = ''; Object.keys(questions).forEach(cat => { const btn = document.createElement('button'); btn.className = 'bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-semibold py-4 px-2 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300 text-center flex flex-col items-center justify-center'; btn.innerHTML = `${categoryIcons[cat] || ''}<span class="text-sm">${cat}</span>`; btn.onclick = () => selectCategory(cat); categoryButtonsContainer.appendChild(btn); }); };
+        const selectCategory = (category) => { currentCategory = category; playSound('E5', '8n'); switchScreen('mainGame'); startTurn(); };
         
-        const updatePlayerChips = () => {
-            playerChipsContainer.innerHTML = '';
-            players.forEach((player, index) => {
-                const chip = document.createElement('div');
-                chip.className = 'player-chip bg-black/30 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md';
-                chip.id = `player-chip-${index}`;
-                chip.innerHTML = `${player.name} <span class="font-bold text-yellow-300">${player.score}</span>`;
-                playerChipsContainer.appendChild(chip);
-            });
-            highlightCurrentPlayer();
-        };
-
-        const highlightCurrentPlayer = () => {
-            document.querySelectorAll('.player-chip').forEach(chip => chip.classList.remove('active'));
-            const activeChip = document.getElementById(`player-chip-${currentPlayerIndex}`);
-            if (activeChip) activeChip.classList.add('active');
-        };
-
-        const addPlayer = () => {
-            const name = playerNameInput.value.trim();
-            const isDuplicate = players.some(p => p.name.toLowerCase() === name.toLowerCase());
-
-            if (name && players.length < 8 && !isDuplicate) {
-                players.push({ name, score: 0 });
-                playerNameInput.value = '';
-                updatePlayerList();
-                playSound('C4', '8n');
-            } else if (isDuplicate) {
-                playSound('A3', '8n');
-                playerNameInput.classList.add('shake');
-                setTimeout(() => {
-                    playerNameInput.classList.remove('shake');
-                }, 500);
-            }
-        };
-
-        const removePlayer = (index) => {
-            players.splice(index, 1);
-            updatePlayerList();
-            playSound('A3', '8n');
-        };
-
-        const setupCategories = () => {
-            categoryButtonsContainer.innerHTML = '';
-            Object.keys(questions).forEach(cat => {
-                const btn = document.createElement('button');
-                btn.className = 'bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-semibold py-4 px-2 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300 text-center flex flex-col items-center justify-center';
-                btn.innerHTML = `
-                    ${categoryIcons[cat] || ''}
-                    <span class="text-sm">${cat}</span>
-                `;
-                btn.onclick = () => selectCategory(cat);
-                categoryButtonsContainer.appendChild(btn);
+        const createPlayerWheel = () => {
+            const existingNames = wheelContainer.querySelectorAll('.player-on-wheel');
+            existingNames.forEach(name => name.remove());
+            const radius = 120; // Jarak nama dari pusat
+            const angleStep = (2 * Math.PI) / players.length;
+            players.forEach((player, i) => {
+                const angle = i * angleStep - (Math.PI / 2); // Mulai dari atas
+                const x = radius * Math.cos(angle);
+                const y = radius * Math.sin(angle);
+                const nameEl = document.createElement('div');
+                nameEl.className = 'player-on-wheel';
+                nameEl.textContent = player.name;
+                nameEl.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
+                wheelContainer.appendChild(nameEl);
             });
         };
 
-        const selectCategory = (category) => {
-            currentCategory = category;
-            playSound('E5', '8n');
-            switchScreen('mainGame');
-            startTurn();
-        };
+        const startTurn = () => { isSpinning = false; selectedPlayerIndex = -1; updatePlayerChips(); createPlayerWheel(); turnIndicator.textContent = `Giliran ${players[currentPlayerIndex].name} memutar botol!`; spinResult.textContent = ''; document.getElementById('spinner-container').classList.remove('hidden'); choiceContainer.classList.add('hidden'); cardDisplay.classList.add('hidden'); actionButtons.classList.add('hidden'); cardContainer.classList.remove('is-flipped'); };
+        const spinBottle = () => { if (isSpinning) return; isSpinning = true; playSound('C4', '0.1'); let targetPlayerIndex; do { targetPlayerIndex = Math.floor(Math.random() * players.length); } while (targetPlayerIndex === currentPlayerIndex); selectedPlayerIndex = targetPlayerIndex; const anglePerPlayer = 360 / players.length; const targetRotation = (targetPlayerIndex * anglePerPlayer); const extraRotations = (Math.floor(Math.random() * 4) + 4) * 360; bottle.style.transform = `rotate(${targetRotation + extraRotations}deg)`; setTimeout(() => { playSound('G5', '0.2'); spinResult.textContent = `Botol menunjuk ke ${players[selectedPlayerIndex].name}!`; setTimeout(showChoice, 1500); }, 5000); };
+        const showChoice = () => { document.getElementById('spinner-container').classList.add('hidden'); choiceContainer.classList.remove('hidden'); playerChoiceIndicator.textContent = `${players[selectedPlayerIndex].name}, pilih...`; };
+        const getQuestion = (type) => { const qList = questions[currentCategory][type]; return qList[Math.floor(Math.random() * qList.length)]; };
+        const showCard = (type) => { playSound('D5', '8n'); choiceContainer.classList.add('hidden'); cardDisplay.classList.remove('hidden'); const questionText = getQuestion(type.toLowerCase()); cardType.textContent = type; cardText.textContent = questionText; if (type === 'Truth') { cardType.parentElement.style.background = 'rgba(59, 130, 246, 0.5)'; cardText.parentElement.style.background = 'rgba(59, 130, 246, 0.5)'; } else { cardType.parentElement.style.background = 'rgba(220, 38, 38, 0.5)'; cardText.parentElement.style.background = 'rgba(220, 38, 38, 0.5)'; } };
+        const nextTurn = () => { currentPlayerIndex = (currentPlayerIndex + 1) % players.length; const winner = players.find(p => p.score >= WINNING_SCORE); if (winner) { showWinner(winner); } else { startTurn(); } };
+        const showPenalty = () => { playSound('C3', '4n'); const penalty = penalties[Math.floor(Math.random() * penalties.length)]; penaltyText.textContent = penalty; modals.penalty.classList.remove('hidden'); };
+        const showWinner = (winner) => { playSound('G5', '2n'); winnerName.textContent = winner.name; winnerScore.textContent = `Dengan ${winner.score} Poin!`; modals.winner.classList.remove('hidden'); };
+        const resetGame = () => { players = []; currentPlayerIndex = 0; selectedPlayerIndex = -1; currentCategory = ''; isSpinning = false; updatePlayerList(); Object.values(modals).forEach(m => m.classList.add('hidden')); switchScreen('start'); };
+        const showConfirmation = (title, text, onConfirm) => { confirmTitle.textContent = title; confirmText.textContent = text; confirmCallback = onConfirm; modals.confirm.classList.remove('hidden'); };
 
-        const startTurn = () => {
-            isSpinning = false;
-            selectedPlayerIndex = -1;
-            updatePlayerChips();
-            turnIndicator.textContent = `Giliran ${players[currentPlayerIndex].name} memutar botol!`;
-            spinResult.textContent = '';
-            document.getElementById('spinner-container').classList.remove('hidden');
-            choiceContainer.classList.add('hidden');
-            cardDisplay.classList.add('hidden');
-            actionButtons.classList.add('hidden');
-            cardContainer.classList.remove('is-flipped');
-        };
-
-        const spinBottle = () => {
-            if (isSpinning) return;
-            isSpinning = true;
-            playSound('C4', '0.1');
-            
-            const playerSegment = 360 / players.length;
-            let targetPlayerIndex;
-            do {
-                targetPlayerIndex = Math.floor(Math.random() * players.length);
-            } while (targetPlayerIndex === currentPlayerIndex);
-            
-            selectedPlayerIndex = targetPlayerIndex;
-
-            const randomOffset = (Math.random() - 0.5) * playerSegment * 0.8;
-            const targetRotation = (targetPlayerIndex * playerSegment) + randomOffset;
-            const extraRotations = (Math.floor(Math.random() * 3) + 3) * 360;
-            
-            bottle.style.transform = `rotate(${targetRotation + extraRotations}deg)`;
-            
-            setTimeout(() => {
-                playSound('G5', '0.2');
-                spinResult.textContent = `Botol menunjuk ke ${players[selectedPlayerIndex].name}!`;
-                setTimeout(showChoice, 1500);
-            }, 4000);
-        };
-
-        const showChoice = () => {
-            document.getElementById('spinner-container').classList.add('hidden');
-            choiceContainer.classList.remove('hidden');
-            playerChoiceIndicator.textContent = `${players[selectedPlayerIndex].name}, pilih...`;
-        };
-
-        const getQuestion = (type) => {
-            const qList = questions[currentCategory][type];
-            return qList[Math.floor(Math.random() * qList.length)];
-        };
-
-        const showCard = (type) => {
-            playSound('D5', '8n');
-            choiceContainer.classList.add('hidden');
-            cardDisplay.classList.remove('hidden');
-
-            const questionText = getQuestion(type.toLowerCase());
-            cardType.textContent = type;
-            cardText.textContent = questionText;
-            
-            if (type === 'Truth') {
-                cardType.parentElement.style.background = 'rgba(59, 130, 246, 0.5)'; // Blue
-                cardText.parentElement.style.background = 'rgba(59, 130, 246, 0.5)';
-            } else {
-                cardType.parentElement.style.background = 'rgba(220, 38, 38, 0.5)'; // Red
-                cardText.parentElement.style.background = 'rgba(220, 38, 38, 0.5)';
-            }
-        };
-
-        const nextTurn = () => {
-            currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
-            const winner = players.find(p => p.score >= WINNING_SCORE);
-            if (winner) {
-                showWinner(winner);
-            } else {
-                startTurn();
-            }
-        };
-
-        const showPenalty = () => {
-            playSound('C3', '4n');
-            const penalty = penalties[Math.floor(Math.random() * penalties.length)];
-            penaltyText.textContent = penalty;
-            modals.penalty.classList.remove('hidden');
-        };
-
-        const showWinner = (winner) => {
-            playSound('G5', '2n');
-            winnerName.textContent = winner.name;
-            winnerScore.textContent = `Dengan ${winner.score} Poin!`;
-            modals.winner.classList.remove('hidden');
-        };
-
-        const resetGame = () => {
-            players = [];
-            currentPlayerIndex = 0;
-            selectedPlayerIndex = -1;
-            currentCategory = '';
-            isSpinning = false;
-            updatePlayerList();
-            Object.values(modals).forEach(modal => modal.classList.add('hidden'));
-            switchScreen('start');
-        };
-        
-        const showConfirmation = (title, text, onConfirm) => {
-            confirmTitle.textContent = title;
-            confirmText.textContent = text;
-            confirmCallback = onConfirm;
-            modals.confirm.classList.remove('hidden');
-        };
-
-        // Event Listeners
-        startGameBtn.addEventListener('click', () => {
-            playSound('C4', '8n');
-            switchScreen('playerSetup');
-        });
-
+        startGameBtn.addEventListener('click', () => { playSound('C4', '8n'); switchScreen('playerSetup'); });
         addPlayerBtn.addEventListener('click', addPlayer);
-        playerNameInput.addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') addPlayer();
-        });
-
-        confirmPlayersBtn.addEventListener('click', () => {
-            playSound('G4', '8n');
-            setupCategories();
-            switchScreen('category');
-        });
-
-        bottle.addEventListener('click', spinBottle);
-
+        playerNameInput.addEventListener('keyup', (e) => { if (e.key === 'Enter') addPlayer(); });
+        confirmPlayersBtn.addEventListener('click', () => { playSound('G4', '8n'); setupCategories(); switchScreen('category'); });
+        bottleSpinner.addEventListener('click', spinBottle);
         truthBtn.addEventListener('click', () => showCard('Truth'));
         dareBtn.addEventListener('click', () => showCard('Dare'));
-        
-        cardContainer.addEventListener('click', () => {
-            if (!cardContainer.classList.contains('is-flipped')) {
-                playSound('F#4', '16n');
-                cardContainer.classList.add('is-flipped');
-                setTimeout(() => {
-                    actionButtons.classList.remove('hidden');
-                }, 800);
-            }
-        });
-
-        completeBtn.addEventListener('click', () => {
-            playSuccessSound();
-            players[selectedPlayerIndex].score += 10;
-            nextTurn();
-        });
-
-        failBtn.addEventListener('click', () => {
-            showPenalty();
-        });
-
-        closePenaltyModalBtn.addEventListener('click', () => {
-            modals.penalty.classList.add('hidden');
-            nextTurn();
-        });
-
-        playAgainBtn.addEventListener('click', () => {
-            playSound('C4', '8n');
-            resetGame();
-        });
-        
-        // --- Tombol Kembali ---
-        backToStartBtn.addEventListener('click', () => {
-            playSound('A3', '8n');
-            players = []; // Hapus pemain saat kembali
-            updatePlayerList();
-            switchScreen('start');
-        });
-
-        backToPlayersBtn.addEventListener('click', () => {
-            playSound('A3', '8n');
-            switchScreen('playerSetup');
-        });
-
-        exitGameBtn.addEventListener('click', () => {
-            showConfirmation('Keluar dari Game?', 'Progres permainan akan hilang. Anda yakin?', () => {
-                playSound('A3', '8n');
-                resetGame();
-            });
-        });
-        
-        // --- Modal Konfirmasi ---
-        confirmCancelBtn.addEventListener('click', () => {
-            modals.confirm.classList.add('hidden');
-            confirmCallback = null;
-        });
-
-        confirmOkBtn.addEventListener('click', () => {
-            if (confirmCallback) {
-                confirmCallback();
-            }
-            modals.confirm.classList.add('hidden');
-            confirmCallback = null;
-        });
-
+        cardContainer.addEventListener('click', () => { if (!cardContainer.classList.contains('is-flipped')) { playSound('F#4', '16n'); cardContainer.classList.add('is-flipped'); setTimeout(() => { actionButtons.classList.remove('hidden'); }, 800); } });
+        completeBtn.addEventListener('click', () => { playSuccessSound(); players[selectedPlayerIndex].score += 10; nextTurn(); });
+        failBtn.addEventListener('click', () => { showPenalty(); });
+        closePenaltyModalBtn.addEventListener('click', () => { modals.penalty.classList.add('hidden'); nextTurn(); });
+        playAgainBtn.addEventListener('click', () => { playSound('C4', '8n'); resetGame(); });
+        backToStartBtn.addEventListener('click', () => { playSound('A3', '8n'); players = []; updatePlayerList(); switchScreen('start'); });
+        backToPlayersBtn.addEventListener('click', () => { playSound('A3', '8n'); switchScreen('playerSetup'); });
+        exitGameBtn.addEventListener('click', () => { showConfirmation('Keluar dari Game?', 'Progres permainan akan hilang. Anda yakin?', () => { playSound('A3', '8n'); resetGame(); }); });
+        confirmCancelBtn.addEventListener('click', () => { modals.confirm.classList.add('hidden'); confirmCallback = null; });
+        confirmOkBtn.addEventListener('click', () => { if (confirmCallback) { confirmCallback(); } modals.confirm.classList.add('hidden'); confirmCallback = null; });
     });
     </script>
 </body>
