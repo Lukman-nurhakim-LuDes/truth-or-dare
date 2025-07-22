@@ -1,11 +1,13 @@
-// Nama cache diubah ke v2 untuk memaksa pembaruan
-const CACHE_NAME = 'truth-or-dare-cache-v2'; 
+// Nama cache diubah ke v3 untuk memaksa pembaruan
+const CACHE_NAME = 'truth-or-dare-cache-v3'; 
 const urlsToCache = [
     '/',
+    './', // Menambahkan path root relatif
     'index.html',
     'manifest.json',
-    'icons/icon-192x192.png', // Pastikan path ini ada di cache
-    'icons/icon-512x512.png', // Pastikan path ini ada di cache
+    'icons/icon-192x192.png',
+    'icons/icon-512x512.png',
+    'README.md',
     'https://cdn.tailwindcss.com',
     'https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap',
     'https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js',
@@ -53,40 +55,3 @@ self.addEventListener('fetch', event => {
         )
     );
 });
-```
-
-### 2. Perbarui `manifest.json` (Penting)
-
-Pastikan juga path di `manifest.json` Anda sudah benar (menggunakan `icons/` bukan `ikon/`).
-
-```json
-{
-  "name": "Truth or Dare - Edisi Seru",
-  "short_name": "T or D",
-  "start_url": ".",
-  "display": "standalone",
-  "background_color": "#1e3a8a",
-  "theme_color": "#4c1d95",
-  "orientation": "portrait-primary",
-  "icons": [
-    {
-      "src": "icons/icon-192x192.png",
-      "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "icons/icon-512x512.png",
-      "type": "image/png",
-      "sizes": "512x512"
-    }
-  ]
-}
-```
-
-### Langkah Selanjutnya:
-
-1.  **Ganti** isi file `service-worker.js` dan `manifest.json` Anda dengan kode di atas.
-2.  **Commit dan deploy ulang** proyek Anda ke Netlify.
-3.  Setelah deploy selesai, buka kembali website Anda dan lakukan **Hard Refresh** dengan menekan `Ctrl + Shift + R` (atau `Cmd + Shift + R` di Mac). Ini akan memaksa browser untuk mengambil *service worker* yang baru.
-
-Logo Anda seharusnya sudah muncul sekarang. Jika Anda mengganti file lagi di masa depan, cukup ubah nama *cache* di `service-worker.js` (misalnya menjadi `v3`, `v4`, dst.) dan deploy ula
