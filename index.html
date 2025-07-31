@@ -71,14 +71,14 @@
             100% { transform: translateY(0px); }
         }
         .game-button {
-            background-color: #ff99bb; /* Pink */
-            color: white;
-            padding: 15px 30px;
-            border-radius: 9999px; /* Fully rounded */
+            background-color: transparent; /* Latar belakang transparan */
+            color: #ff5588; /* Warna teks pink yang lebih gelap agar terlihat */
+            padding: 10px 15px; /* Kurangi padding */
+            border-radius: 9999px; /* Tetap bulat */
             font-size: 1.25rem;
             font-weight: bold;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: none; /* Hilangkan bayangan */
             cursor: pointer;
             border: none;
             margin: 10px;
@@ -90,11 +90,12 @@
         .game-button img {
             width: 30px; /* Ukuran ikon */
             height: 30px;
+            /* Pastikan ikon tidak memiliki latar belakangnya sendiri jika PNG transparan */
         }
         .game-button:hover {
-            background-color: #ff77aa; /* Darker pink */
+            background-color: rgba(255, 255, 255, 0.3); /* Sedikit latar belakang saat hover */
             transform: translateY(-3px);
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Tambahkan sedikit bayangan saat hover */
         }
         .game-section {
             display: none; /* Sembunyikan semua game secara default */
