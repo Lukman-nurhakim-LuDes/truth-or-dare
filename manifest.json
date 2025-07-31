@@ -1,21 +1,21 @@
 {
-  "name": "Truth or Dare - Edisi Seru",
-  "short_name": "T or D",
-  "start_url": ".",
+  "name": "Couple's Playland",
+  "short_name": "Playland",
+  "description": "Game interaktif romantis dan playful untuk pasangan.",
+  "start_url": "/index.html",
   "display": "standalone",
-  "background_color": "#1e3a8a",
-  "theme_color": "#4c1d95",
-  "orientation": "portrait-primary",
+  "background_color": "#fce4ec",
+  "theme_color": "#ff99bb",
   "icons": [
     {
-      "src": "icons/icon-192x192.png",
-      "type": "image/png",
-      "sizes": "192x192"
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
     },
     {
-      "src": "icons/icon-512x512.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
     }
   ]
 }
