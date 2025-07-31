@@ -158,88 +158,61 @@
             color: #ff99bb;
         }
 
-        /* Styling spesifik untuk game Kiss or Dare */
-        #kiss-or-dare .wheel-container {
-            position: relative;
+        /* Styling spesifik untuk game Kiss or Dare (Kartu) */
+        #kiss-or-dare .card-container {
             width: 300px;
-            height: 300px;
+            height: 200px;
+            perspective: 1000px; /* Untuk efek 3D flip */
             margin: 30px auto;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 5px solid #ff99bb;
-            box-shadow: 0 0 15px rgba(255, 153, 187, 0.5);
         }
-        #kiss-or-dare .wheel {
+        #kiss-or-dare .card {
             width: 100%;
             height: 100%;
-            border-radius: 50%;
-            background: conic-gradient(
-                #ffe0f0 0% 50%,
-                #d0eaff 50% 100%
-            );
-            transition: transform 4s cubic-bezier(0.25, 0.1, 0.25, 1);
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
-        #kiss-or-dare .pointer {
+        #kiss-or-dare .card.flipped {
+            transform: rotateY(180deg);
+        }
+        #kiss-or-dare .card-front,
+        #kiss-or-dare .card-back {
             position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 20px solid transparent;
-            border-right: 20px solid transparent;
-            border-bottom: 30px solid #ff5588;
-            z-index: 10;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden; /* Sembunyikan sisi belakang saat tidak menghadap ke depan */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 1.5rem;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
         }
-        #kiss-or-dare .spin-button {
+        #kiss-or-dare .card-front {
+            background: linear-gradient(135deg, #ff99bb, #ff77aa); /* Warna pink */
+            color: white;
+            z-index: 2;
+            font-size: 2.5rem; /* Ukuran font disesuaikan */
+        }
+        #kiss-or-dare .card-back {
+            background: linear-gradient(135deg, #88ddff, #66ccff); /* Warna biru */
+            color: white;
+            transform: rotateY(180deg);
+            font-size: 1.2rem;
+        }
+        #kiss-or-dare .flip-button {
             margin-top: 20px;
             background-color: #88ddff;
         }
-        #kiss-or-dare .challenge-display {
-            margin-top: 20px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #ff5588;
-            min-height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 10px;
-            border: 2px dashed #ff99bb;
-            border-radius: 10px;
-        }
-        #kiss-or-dare .add-custom-challenge {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f0f8ff;
-            border-radius: 10px;
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
-        }
-        #kiss-or-dare .add-custom-challenge input[type="text"] {
-            width: calc(100% - 100px);
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-right: 10px;
-        }
-        #kiss-or-dare .add-custom-challenge select {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-right: 10px;
-        }
-        #kiss-or-dare .add-custom-challenge button {
+        #kiss-or-dare .reset-card-button {
+            margin-top: 10px;
             background-color: #aaffcc;
             color: #333;
-            padding: 8px 15px;
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        #kiss-or-dare .add-custom-challenge button:hover {
-            background-color: #88eeaa;
         }
 
         /* Styling spesifik untuk game Ular Tangga Romantis */
@@ -265,13 +238,16 @@
             border: 1px solid #eee;
             background-color: #fff;
             box-sizing: border-box;
-            position: relative;
+            position: relative; /* Penting untuk penempatan token pemain */
         }
         #snakes-and-ladders .cell.romantic {
             background-color: #ffe0f0; /* Pink pastel untuk kotak romantis */
         }
         #snakes-and-ladders .player {
-            position: absolute;
+            position: absolute; /* Sekarang relatif terhadap sel induk */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Pusatkan token di dalam sel */
             width: 20px;
             height: 20px;
             border-radius: 50%;
@@ -400,6 +376,13 @@
             color: white;
             margin-top: 20px;
         }
+        /* New turn display for Draw and Guess */
+        #draw-and-guess .turn-display {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
 
         /* Styling spesifik untuk game Tebak Kata Pasangan */
         #word-guess .clue-display {
@@ -459,6 +442,13 @@
             background-color: #ff99bb;
             color: white;
             margin-top: 20px;
+        }
+        /* New turn display for Word Guess */
+        #word-guess .turn-display {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
         }
 
 
@@ -529,6 +519,14 @@
             color: white;
             margin-top: 10px;
         }
+        /* New turn display for Who Is Most? */
+        #who-is-most .turn-display {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
 
         /* Modal styling */
         .modal {
@@ -629,19 +627,19 @@
         <h1 class="text-5xl font-bold text-pink-600 mb-4">Couple's Playland 💖</h1>
         <p class="text-xl text-gray-700 mb-8">Tempatnya game romantis dan playful untuk kalian berdua!</p>
         <div class="flex flex-wrap justify-center">
-            <button class="game-button" onclick="showGame('kiss-or-dare')">
+            <button class="game-button" onclick="window.showGame('kiss-or-dare')">
                 <img src="/icons/kiss.png" alt="Kiss or Dare Icon"> Kiss or Dare
             </button>
-            <button class="game-button" onclick="showGame('snakes-and-ladders')">
+            <button class="game-button" onclick="window.showGame('snakes-and-ladders')">
                 <img src="/icons/dadu.png" alt="Dice Icon"> Ular Tangga Romantis
             </button>
-            <button class="game-button" onclick="showGame('draw-and-guess')">
+            <button class="game-button" onclick="window.showGame('draw-and-guess')">
                 <img src="/icons/draw.png" alt="Draw Icon"> Tebak Gambar
             </button>
-            <button class="game-button" onclick="showGame('word-guess')">
+            <button class="game-button" onclick="window.showGame('word-guess')">
                 <img src="/icons/word.png" alt="Word Icon"> Tebak Kata Pasangan
             </button>
-            <button class="game-button" onclick="showGame('who-is-most')">
+            <button class="game-button" onclick="window.showGame('who-is-most')">
                 <img src="/icons/otak.png" alt="Brain Icon"> Siapa Paling?
             </button>
         </div>
@@ -651,15 +649,23 @@
     <div class="container">
         <!-- Kiss or Dare Game -->
         <section id="kiss-or-dare" class="game-section">
-            <button class="back-button" onclick="showLandingPage()">Kembali ke Menu</button>
+            <button class="back-button" onclick="window.showLandingPage()">Kembali ke Menu</button>
             <h2 class="text-3xl font-bold text-pink-600 mb-4 text-center">💋 Kiss or Dare</h2>
-            <p class="text-center mb-4">Putar roda untuk tantangan romantis atau lucu!</p>
-            <div class="wheel-container">
-                <div class="wheel" id="kiss-dare-wheel"></div>
-                <div class="pointer"></div>
+            <p class="text-center mb-4">Balik kartu untuk tantangan romantis atau lucu!</p>
+            
+            <div class="card-container">
+                <div class="card" id="kiss-dare-card">
+                    <div class="card-front">
+                        💋 KISS or DARE 🔥
+                    </div>
+                    <div class="card-back" id="card-challenge-display">
+                        Siap untuk tantangan?
+                    </div>
+                </div>
             </div>
-            <button class="game-button spin-button" onclick="spinWheel()">Putar Roda!</button>
-            <div class="challenge-display" id="challenge-display">Siap untuk tantangan?</div>
+
+            <button class="game-button flip-button" onclick="window.flipCard()">Balik Kartu!</button>
+            <button class="game-button reset-card-button" onclick="window.resetCard()">Kartu Baru</button>
 
             <div class="add-custom-challenge mt-8">
                 <h3 class="text-xl font-bold text-gray-700 mb-3">Tambah Tantangan Kustom</h3>
@@ -671,19 +677,19 @@
                     <option value="hot-2">Hot Level 2</option>
                     <option value="hot-3">Hot Level 3</option>
                 </select>
-                <button onclick="addCustomChallenge()">Tambah Tantangan</button>
+                <button onclick="window.addCustomChallenge()">Tambah Tantangan</button>
             </div>
         </section>
 
         <!-- Ular Tangga Romantis Game -->
         <section id="snakes-and-ladders" class="game-section">
-            <button class="back-button" onclick="showLandingPage()">Kembali ke Menu</button>
+            <button class="back-button" onclick="window.showLandingPage()">Kembali ke Menu</button>
             <h2 class="text-3xl font-bold text-pink-600 mb-4 text-center">🎲 Ular Tangga Romantis</h2>
             <p class="text-center mb-4">Mainkan versi romantis dari Ular Tangga!</p>
             <div class="board" id="snake-ladder-board"></div>
             <div class="dice-container">
                 <div class="dice" id="dice-display">1</div>
-                <button class="game-button roll-dice-button" onclick="rollDice()">Lempar Dadu!</button>
+                <button class="game-button roll-dice-button" onclick="window.rollDice()">Lempar Dadu!</button>
                 <div class="current-player-display" id="current-player-display">Giliran Pemain 1</div>
                 <div class="romantic-message" id="romantic-message"></div>
             </div>
@@ -691,9 +697,10 @@
 
         <!-- Tebak Gambar Game -->
         <section id="draw-and-guess" class="game-section">
-            <button class="back-button" onclick="showLandingPage()">Kembali ke Menu</button>
+            <button class="back-button" onclick="window.showLandingPage()">Kembali ke Menu</button>
             <h2 class="text-3xl font-bold text-pink-600 mb-4 text-center">🖼️ Tebak Gambar</h2>
             <p class="text-center mb-4">Satu menggambar, satu menebak!</p>
+            <div class="turn-display" id="draw-guess-turn-display"></div>
             <div class="text-center mb-2">
                 <span class="word-display" id="draw-word-display">Kata: _____</span> |
                 <span class="timer-display" id="draw-timer-display">Waktu: 30s</span>
@@ -702,54 +709,56 @@
             <div class="drawing-controls">
                 <input type="color" id="color-picker" value="#000000">
                 <input type="range" id="brush-size" min="1" max="10" value="3">
-                <button onclick="clearCanvas()">Bersihkan</button>
-                <button onclick="startDrawingRound()">Mulai Giliran Menggambar</button>
+                <button onclick="window.clearCanvas()">Bersihkan</button>
+                <button onclick="window.startDrawingRound()">Mulai Giliran Menggambar</button>
             </div>
             <div class="guess-input">
                 <input type="text" id="guess-input-draw" placeholder="Tebak gambarnya..." class="w-full">
-                <button onclick="submitGuessDraw()">Tebak!</button>
+                <button onclick="window.submitGuessDraw()">Tebak!</button>
             </div>
             <div class="score-display" id="draw-score-display">Pemain 1: 0 | Pemain 2: 0</div>
-            <button class="game-button next-round-button" onclick="nextDrawingRound()">Giliran Selanjutnya</button>
+            <button class="game-button next-round-button" onclick="window.nextDrawingRound()">Giliran Selanjutnya</button>
         </section>
 
         <!-- Tebak Kata Pasangan Game -->
         <section id="word-guess" class="game-section">
-            <button class="back-button" onclick="showLandingPage()">Kembali ke Menu</button>
+            <button class="back-button" onclick="window.showLandingPage()">Kembali ke Menu</button>
             <h2 class="text-3xl font-bold text-pink-600 mb-4 text-center">🔠 Tebak Kata Pasangan</h2>
             <p class="text-center mb-4">Satu memberi petunjuk, satu menebak!</p>
+            <div class="turn-display" id="word-guess-turn-display"></div>
             <div class="clue-display" id="clue-display"></div>
-            <button class="game-button give-clue-button" onclick="generateClue()">Berikan Petunjuk</button>
+            <button class="game-button give-clue-button" onclick="window.generateClue()">Berikan Petunjuk</button>
             <div class="guess-input-word">
                 <input type="text" id="guess-input-word" placeholder="Tebak katanya..." class="w-full">
-                <button onclick="submitGuessWord()">Tebak!</button>
+                <button onclick="window.submitGuessWord()">Tebak!</button>
             </div>
             <div class="score-display-word" id="word-score-display">Pemain 1: 0 | Pemain 2: 0</div>
-            <button class="game-button new-word-button" onclick="startNewWordRound()">Kata Baru</button>
-            <button class="game-button reset-score-button" onclick="resetWordScore()">Reset Skor</button>
+            <button class="game-button new-word-button" onclick="window.startNewWordRound()">Kata Baru</button>
+            <button class="game-button reset-score-button" onclick="window.resetWordScore()">Reset Skor</button>
         </section>
 
         <!-- Siapa Paling? Game -->
         <section id="who-is-most" class="game-section">
-            <button class="back-button" onclick="showLandingPage()">Kembali ke Menu</button>
+            <button class="back-button" onclick="window.showLandingPage()">Kembali ke Menu</button>
             <h2 class="text-3xl font-bold text-pink-600 mb-4 text-center">🧠 Siapa Paling?</h2>
             <p class="text-center mb-4">Siapa yang paling...?</p>
+            <div class="turn-display" id="who-is-most-turn-display"></div>
             <div class="question-display" id="who-is-most-question">Tekan 'Mulai' untuk pertanyaan!</div>
             <div class="answer-buttons">
-                <button class="player1" id="player1-answer-btn" onclick="recordChoice(1)">Pemain 1</button>
-                <button class="player2" id="player2-answer-btn" onclick="recordChoice(2)">Pemain 2</button>
+                <button class="player1" id="player1-answer-btn" onclick="window.recordChoice(1)">Pemain 1</button>
+                <button class="player2" id="player2-answer-btn" onclick="window.recordChoice(2)">Pemain 2</button>
             </div>
             <div class="result-display" id="who-is-most-result"></div>
             <div class="expression-animation" id="who-is-most-expression"></div>
-            <button class="game-button next-question-button" onclick="nextWhoIsMostQuestion()">Pertanyaan Selanjutnya</button>
-            <button class="game-button reset-game-button" onclick="resetWhoIsMostGame()">Mulai Ulang Game</button>
+            <button class="game-button next-question-button" onclick="window.nextWhoIsMostQuestion()">Pertanyaan Selanjutnya</button>
+            <button class="game-button reset-game-button" onclick="window.resetWhoIsMostGame()">Mulai Ulang Game</button>
         </section>
     </div>
 
     <!-- Modal for messages -->
     <div id="messageModal" class="modal">
         <div class="modal-content">
-            <span class="close-button" onclick="closeModal()">&times;</span>
+            <span class="close-button" onclick="window.closeModal()">&times;</span>
             <p id="modalMessage"></p>
         </div>
     </div>
@@ -843,15 +852,24 @@
             // Specific game setup when shown
             if (gameId === 'draw-and-guess') {
                 setupDrawingCanvas();
+                // Ensure turn display is initialized for new game
+                drawingPlayer = 1; // Reset drawing player for new game
+                window.startDrawingRound(); // Start the first round
             } else if (gameId === 'snakes-and-ladders') {
                 createBoard();
                 updatePlayerPositions();
             } else if (gameId === 'word-guess') {
                 updateWordScoreDisplay();
+                // Ensure turn display is initialized for new game
+                window.startNewWordRound(); // Start the first round
             } else if (gameId === 'who-is-most') {
                 updateWhoIsMostUI();
+                // Ensure turn display is initialized for new game
+                currentAnsweringPlayer = 1; // Reset answering player for new game
+                document.getElementById('who-is-most-turn-display').textContent = `Giliran Memilih: Pemain ${currentAnsweringPlayer}`;
             }
         }
+        window.showGame = showGame; // Expose to global scope
 
         function showLandingPage() {
             document.querySelectorAll('.game-section').forEach(section => {
@@ -859,6 +877,7 @@
             });
             document.getElementById('landing-page').style.display = 'flex';
         }
+        window.showLandingPage = showLandingPage; // Expose to global scope
 
         // Modal functions
         const messageModal = document.getElementById('messageModal');
@@ -874,13 +893,9 @@
             modalMessage.textContent = '';
             messageModal.style.display = 'none';
         }
+        window.closeModal = closeModal; // Expose to global scope
 
-        closeModalButton.onclick = closeModal;
-        window.onclick = function(event) {
-            if (event.target == messageModal) {
-                closeModal();
-            }
-        }
+        closeModalButton.onclick = window.closeModal; // Use window.closeModal
 
         // --- Background Music ---
         const backgroundMusic = document.getElementById('background-music');
@@ -911,8 +926,8 @@
 
 
         // --- Kiss or Dare Game Logic ---
-        const kissDareWheel = document.getElementById('kiss-dare-wheel');
-        const challengeDisplay = document.getElementById('challenge-display');
+        const kissDareCard = document.getElementById('kiss-dare-card');
+        const cardChallengeDisplay = document.getElementById('card-challenge-display');
         const customChallengeInput = document.getElementById('custom-challenge-input');
         const customChallengeCategory = document.getElementById('custom-challenge-category');
 
@@ -1030,42 +1045,42 @@
         };
 
         const categories = Object.keys(challenges);
-        const segments = categories.length; // Jumlah segmen pada roda
-        const segmentAngle = 360 / segments;
+        
+        function flipCard() {
+            if (kissDareCard.classList.contains('flipped')) {
+                // If already flipped, reset first
+                resetCard();
+                setTimeout(() => {
+                    performFlip();
+                }, 800); // Wait for reset animation to complete
+            } else {
+                performFlip();
+            }
+        }
+        window.flipCard = flipCard; // Expose to global scope
 
-        function updateWheelSegments() {
-            let gradientString = 'conic-gradient(';
-            let currentAngle = 0;
-            const colors = ['#ffe0f0', '#d0eaff', '#ffe0f0', '#d0eaff', '#ffe0f0']; // Warna pastel bergantian
+        function performFlip() {
+            const allChallenges = [];
+            for (const category in challenges) {
+                allChallenges.push(...challenges[category]);
+            }
+            
+            if (allChallenges.length === 0) {
+                cardChallengeDisplay.textContent = "Tidak ada tantangan. Tambahkan tantangan kustom!";
+                showMessage("Tidak ada tantangan untuk dimainkan. Mohon tambahkan tantangan kustom.");
+                return;
+            }
 
-            categories.forEach((category, index) => {
-                const startAngle = currentAngle;
-                const endAngle = currentAngle + segmentAngle;
-                gradientString += `${colors[index % colors.length]} ${startAngle}deg ${endAngle}deg${index < categories.length - 1 ? ',' : ''}`;
-                currentAngle = endAngle;
-            });
-            gradientString += ')';
-            kissDareWheel.style.background = gradientString;
+            const randomChallenge = allChallenges[Math.floor(Math.random() * allChallenges.length)];
+            cardChallengeDisplay.textContent = randomChallenge;
+            kissDareCard.classList.add('flipped');
         }
 
-        function spinWheel() {
-            const randomDegree = Math.floor(Math.random() * 3600) + 720; // Spin 2-10 kali
-            kissDareWheel.style.transform = `rotate(${randomDegree}deg)`;
-
-            setTimeout(() => {
-                const normalizedDegree = randomDegree % 360;
-                const segmentIndex = Math.floor(normalizedDegree / segmentAngle);
-                const chosenCategory = categories[segmentIndex];
-                const categoryChallenges = challenges[chosenCategory];
-                if (categoryChallenges && categoryChallenges.length > 0) {
-                    const randomChallenge = categoryChallenges[Math.floor(Math.random() * categoryChallenges.length)];
-                    challengeDisplay.textContent = randomChallenge;
-                    // TODO: Tambahkan logika poin jika diperlukan
-                } else {
-                    challengeDisplay.textContent = "Tidak ada tantangan untuk kategori ini. Coba tambahkan!";
-                }
-            }, 4000); // Sesuai dengan durasi transisi CSS
+        function resetCard() {
+            kissDareCard.classList.remove('flipped');
+            cardChallengeDisplay.textContent = "Siap untuk tantangan?"; // Reset text on back
         }
+        window.resetCard = resetCard; // Expose to global scope
 
         function addCustomChallenge() {
             const newChallenge = customChallengeInput.value.trim();
@@ -1080,6 +1095,7 @@
                 showMessage("Mohon masukkan tantangan dan pilih kategori yang valid.");
             }
         }
+        window.addCustomChallenge = addCustomChallenge; // Expose to global scope
 
         // Firestore functions for Kiss or Dare
         async function saveChallengesToFirestore() {
@@ -1125,7 +1141,6 @@
                     console.log("No challenges found in Firestore, using default.");
                     saveChallengesToFirestore(); // Save default if not present
                 }
-                updateWheelSegments(); // Update wheel after loading challenges
             } catch (e) {
                 console.error("Error loading challenges:", e);
                 showMessage("Gagal memuat tantangan. Menggunakan tantangan default.");
@@ -1172,12 +1187,15 @@
             99: "Rayakan kemenangan dengan ciuman panjang dan penuh gairah!"
         };
 
+        let player1Token; // Deklarasi global untuk token pemain
+        let player2Token;
 
         function createBoard() {
             const boardElement = document.getElementById('snake-ladder-board');
             boardElement.innerHTML = ''; // Clear existing board
 
             // Create cells in reverse order for correct numbering (bottom-left to top-right)
+            const cellsArray = [];
             for (let i = totalCells; i >= 1; i--) {
                 const cell = document.createElement('div');
                 cell.classList.add('cell');
@@ -1187,56 +1205,47 @@
                 if (romanticCellMessages[i]) {
                     cell.classList.add('romantic');
                 }
-
-                boardElement.appendChild(cell);
+                cellsArray.push(cell);
             }
 
             // Adjust cell order for snake-like numbering (alternating rows)
-            const cells = Array.from(boardElement.children);
             const orderedCells = [];
             for (let row = 0; row < boardSize; row++) {
                 if (row % 2 === 0) { // Even rows (from bottom) go left-to-right
                     for (let col = 0; col < boardSize; col++) {
-                        orderedCells.push(cells[cells.length - (row * boardSize + col + 1)]);
+                        orderedCells.push(cellsArray[row * boardSize + col]);
                     }
                 } else { // Odd rows (from bottom) go right-to-left
                     for (let col = boardSize - 1; col >= 0; col--) {
-                        orderedCells.push(cells[cells.length - (row * boardSize + col + 1)]);
+                        orderedCells.push(cellsArray[row * boardSize + col]);
                     }
                 }
             }
-            boardElement.innerHTML = '';
             orderedCells.forEach(cell => boardElement.appendChild(cell));
 
-            // Add player tokens
-            const player1Token = document.createElement('div');
-            player1Token.classList.add('player', 'player-1');
-            player1Token.id = 'player-token-1';
-            player1Token.textContent = 'P1';
-            boardElement.appendChild(player1Token);
-
-            const player2Token = document.createElement('div');
-            player2Token.classList.add('player', 'player-2');
-            player2Token.id = 'player-token-2';
-            player2Token.textContent = 'P2';
-            boardElement.appendChild(player2Token);
+            // Inisialisasi token pemain jika belum ada
+            if (!player1Token) {
+                player1Token = document.createElement('div');
+                player1Token.classList.add('player', 'player-1');
+                player1Token.id = 'player-token-1';
+                player1Token.textContent = 'P1';
+            }
+            if (!player2Token) {
+                player2Token = document.createElement('div');
+                player2Token.classList.add('player', 'player-2');
+                player2Token.id = 'player-token-2';
+                player2Token.textContent = 'P2';
+            }
+            
+            // Posisikan token di sel awal (1)
+            document.getElementById(`cell-${playerPositions.player1}`).appendChild(player1Token);
+            document.getElementById(`cell-${playerPositions.player2}`).appendChild(player2Token);
         }
 
         function updatePlayerPositions() {
-            for (const player in playerPositions) {
-                const position = playerPositions[player];
-                const token = document.getElementById(`player-token-${player === 'player1' ? 1 : 2}`);
-                const targetCell = document.getElementById(`cell-${position}`);
-
-                if (targetCell && token) {
-                    const cellRect = targetCell.getBoundingClientRect();
-                    const boardRect = document.getElementById('snake-ladder-board').getBoundingClientRect();
-
-                    // Calculate position relative to the board
-                    token.style.left = `${cellRect.left - boardRect.left + (cellRect.width / 2) - (token.offsetWidth / 2)}px`;
-                    token.style.top = `${cellRect.top - boardRect.top + (cellRect.height / 2) - (token.offsetHeight / 2)}px`;
-                }
-            }
+            // Pindahkan token ke sel yang sesuai
+            document.getElementById(`cell-${playerPositions.player1}`).appendChild(player1Token);
+            document.getElementById(`cell-${playerPositions.player2}`).appendChild(player2Token);
             saveSnakesAndLaddersState(); // Save state after updating positions
         }
 
@@ -1276,6 +1285,7 @@
                 currentPlayerDisplay.textContent = `Giliran Pemain ${currentPlayer}`;
             }
         }
+        window.rollDice = rollDice; // Expose to global scope
 
         function resetSnakesAndLaddersGame() {
             playerPositions = { player1: 1, player2: 1 };
@@ -1283,7 +1293,8 @@
             diceDisplay.textContent = '1';
             currentPlayerDisplay.textContent = 'Giliran Pemain 1';
             romanticMessageDisplay.textContent = '';
-            updatePlayerPositions();
+            createBoard(); // Re-create board to reset token positions
+            updatePlayerPositions(); // Ensure tokens are placed correctly
             saveSnakesAndLaddersState(); // Save reset state
         }
 
@@ -1324,7 +1335,8 @@
                     console.log("No Snakes and Ladders state found, starting new game.");
                     resetSnakesAndLaddersGame(); // Start new if no state
                 }
-                updatePlayerPositions();
+                // createBoard() is called in window.onload, which will place tokens.
+                // updatePlayerPositions() will then move them to loaded positions.
             } catch (e) {
                 console.error("Error loading Snakes and Ladders state:", e);
                 showMessage("Gagal memuat status Ular Tangga. Memulai game baru.");
@@ -1342,6 +1354,7 @@
         const drawTimerDisplay = document.getElementById('draw-timer-display');
         const guessInputDraw = document.getElementById('guess-input-draw');
         const drawScoreDisplay = document.getElementById('draw-score-display');
+        const drawGuessTurnDisplay = document.getElementById('draw-guess-turn-display'); // New turn display element
 
         let isDrawing = false;
         let lastX = 0;
@@ -1350,7 +1363,7 @@
         let timeLeft = 30;
         let currentDrawingWord = '';
         let drawScores = { player1: 0, player2: 0 };
-        let drawingPlayer = 1; // 1 for Player 1 (drawer), 2 for Player 2 (guesser)
+        let drawingPlayer = 1; // 1 for Player 1 (drawer), 2 for Player 2 (guesser) - this is who is currently drawing
 
         const drawingWords = {
             makanan: ["Pizza", "Es Krim", "Kopi", "Nasi Goreng", "Cokelat", "Burger", "Sushi", "Mie Ayam", "Roti", "Sup"],
@@ -1415,12 +1428,15 @@
         function clearCanvas() {
             ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
         }
+        window.clearCanvas = clearCanvas; // Expose to global scope
 
         function startDrawingRound() {
             if (timer) clearInterval(timer);
             clearCanvas();
             guessInputDraw.value = '';
-            drawingPlayer = 1; // Player 1 draws
+            
+            // Set the current drawing player's turn
+            drawGuessTurnDisplay.textContent = `Giliran Menggambar: Pemain ${drawingPlayer}`;
 
             // Pick a random category and word
             const categories = Object.keys(drawingWords);
@@ -1428,8 +1444,9 @@
             const wordsInCat = drawingWords[randomCategory];
             currentDrawingWord = wordsInCat[Math.floor(Math.random() * wordsInCat.length)].toLowerCase();
 
-            drawWordDisplay.textContent = `Kata: ${currentDrawingWord.split('').map(char => '_').join(' ')}`; // Hide word
-            showMessage(`Pemain 1: Gambar kata "${currentDrawingWord}"!`);
+            // Display the word to the drawing player (Pemain 1)
+            drawWordDisplay.textContent = `Kata: ${currentDrawingWord}`;
+            showMessage(`Pemain ${drawingPlayer}: Gambar kata "${currentDrawingWord}"! Pemain ${drawingPlayer === 1 ? 2 : 1} siap menebak.`);
 
             timeLeft = 30;
             drawTimerDisplay.textContent = `Waktu: ${timeLeft}s`;
@@ -1444,17 +1461,18 @@
                 }
             }, 1000);
         }
+        window.startDrawingRound = startDrawingRound; // Expose to global scope
 
         function submitGuessDraw() {
-            if (drawingPlayer !== 2) { // Only player 2 can guess
-                showMessage("Ini giliran pemain 1 untuk menggambar!");
-                return;
-            }
+            // The guesser is the player NOT currently drawing
+            const guesserPlayer = drawingPlayer === 1 ? 2 : 1;
+            drawGuessTurnDisplay.textContent = `Giliran Menebak: Pemain ${guesserPlayer}`;
+
             const guess = guessInputDraw.value.trim().toLowerCase();
             if (guess === currentDrawingWord) {
                 clearInterval(timer);
-                drawScores.player2++; // Player 2 gets point for guessing
-                drawScores.player1++; // Player 1 also gets point for drawing well
+                drawScores[guesserPlayer === 1 ? 'player1' : 'player2']++; // Guesser gets point
+                drawScores[drawingPlayer === 1 ? 'player1' : 'player2']++; // Drawer also gets point
                 updateDrawScoreDisplay();
                 showMessage(`Tebakan benar! Kata: ${currentDrawingWord}. Poin untuk kedua pemain!`);
                 nextDrawingRound();
@@ -1463,6 +1481,7 @@
             }
             guessInputDraw.value = '';
         }
+        window.submitGuessDraw = submitGuessDraw; // Expose to global scope
 
         function updateDrawScoreDisplay() {
             drawScoreDisplay.textContent = `Pemain 1: ${drawScores.player1} | Pemain 2: ${drawScores.player2}`;
@@ -1471,17 +1490,11 @@
 
         function nextDrawingRound() {
             // Switch roles for next round
-            drawingPlayer = drawingPlayer === 1 ? 2 : 1;
+            drawingPlayer = drawingPlayer === 1 ? 2 : 1; // The next player to draw
             showMessage(`Giliran selanjutnya! Pemain ${drawingPlayer} akan menggambar.`);
-            if (drawingPlayer === 1) {
-                startDrawingRound(); // Player 1 draws
-            } else {
-                // For player 2's turn to draw, we need to pick a new word and let them draw
-                // This game is designed for 1 device, so the "drawer" and "guesser" roles
-                // are more conceptual. We'll just pick a new word and clear for the next round.
-                startDrawingRound(); // Just restart the round, assuming players switch roles manually
-            }
+            startDrawingRound(); // Start the new round with the new drawing player
         }
+        window.nextDrawingRound = nextDrawingRound; // Expose to global scope
 
         // Firestore functions for Draw and Guess
         async function saveDrawAndGuessState() {
@@ -1495,7 +1508,7 @@
                     scores: drawScores,
                     drawingPlayer: drawingPlayer,
                     currentWord: currentDrawingWord,
-                    canvasData: drawingCanvas.toDataURL() // Save canvas image data
+                    // canvasData: drawingCanvas.toDataURL() // Saving canvas data can be very large
                 });
                 console.log("Draw and Guess state saved.");
             } catch (e) {
@@ -1518,17 +1531,18 @@
                     drawingPlayer = data.drawingPlayer || 1;
                     currentDrawingWord = data.currentWord || '';
 
-                    // Load canvas data
-                    if (data.canvasData) {
-                        const img = new Image();
-                        img.onload = () => {
-                            ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
-                            ctx.drawImage(img, 0, 0);
-                        };
-                        img.src = data.canvasData;
-                    }
+                    // Load canvas data - currently disabled as it can be large
+                    // if (data.canvasData) {
+                    //     const img = new Image();
+                    //     img.onload = () => {
+                    //         ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+                    //         ctx.drawImage(img, 0, 0);
+                    //     };
+                    //     img.src = data.canvasData;
+                    // }
                     updateDrawScoreDisplay();
-                    drawWordDisplay.textContent = `Kata: ${currentDrawingWord ? currentDrawingWord.split('').map(char => '_').join(' ') : '_____'}`;
+                    drawWordDisplay.textContent = `Kata: ${currentDrawingWord ? currentDrawingWord : '_____'}`;
+                    drawGuessTurnDisplay.textContent = `Giliran Menggambar: Pemain ${drawingPlayer}`;
                     console.log("Draw and Guess state loaded.");
                 } else {
                     console.log("No Draw and Guess state found, starting new game.");
@@ -1537,6 +1551,7 @@
                     currentDrawingWord = '';
                     clearCanvas();
                     updateDrawScoreDisplay();
+                    drawGuessTurnDisplay.textContent = `Giliran Menggambar: Pemain 1`;
                 }
             } catch (e) {
                 console.error("Error loading Draw and Guess state:", e);
@@ -1546,6 +1561,7 @@
                 currentDrawingWord = '';
                 clearCanvas();
                 updateDrawScoreDisplay();
+                drawGuessTurnDisplay.textContent = `Giliran Menggambar: Pemain 1`;
             }
         }
 
@@ -1554,10 +1570,12 @@
         const clueDisplay = document.getElementById('clue-display');
         const guessInputWord = document.getElementById('guess-input-word');
         const wordScoreDisplay = document.getElementById('word-score-display');
+        const wordGuessTurnDisplay = document.getElementById('word-guess-turn-display'); // New turn display element
 
         let wordScores = { player1: 0, player2: 0 };
         let currentWord = '';
         let currentClue = '';
+        let wordGameCurrentPlayer = 1; // 1 for clue giver, 2 for guesser
 
         const wordCategories = {
             cinta: ["Pelukan", "Ciuman", "Sayang", "Romantis", "Hati", "Kencan", "Setia", "Kasih", "Jodoh", "Momen", "Bahagia", "Impian", "Masa Depan", "Janji", "Bersama", "Cinta Sejati", "Kemesraan", "Gairah", "Hasrat", "Intim"],
@@ -1575,14 +1593,21 @@
 
             clueDisplay.textContent = 'Tekan "Berikan Petunjuk" untuk clue!';
             guessInputWord.value = '';
-            showMessage(`Kata baru telah dipilih. Pemain 1, berikan petunjuk untuk kata ini! (Kategori: ${randomCategory})`);
+            wordGameCurrentPlayer = wordGameCurrentPlayer === 1 ? 2 : 1; // Switch who gives clue
+            wordGuessTurnDisplay.textContent = `Giliran Pemberi Petunjuk: Pemain ${wordGameCurrentPlayer}`;
+            showMessage(`Kata baru telah dipilih. Pemain ${wordGameCurrentPlayer}, berikan petunjuk untuk kata ini! (Kategori: ${randomCategory})`);
             console.log("Kata yang harus ditebak (hanya untuk pengembang):", currentWord); // For debugging
         }
+        window.startNewWordRound = startNewWordRound; // Expose to global scope
 
         async function generateClue() {
             if (!currentWord) {
                 showMessage("Mulai putaran baru terlebih dahulu dengan 'Kata Baru'.");
                 return;
+            }
+            if (wordGuessTurnDisplay.textContent.includes('Penebak')) {
+                 showMessage("Ini giliran menebak, bukan memberi petunjuk!");
+                 return;
             }
             showMessage("Membuat petunjuk...");
             try {
@@ -1604,7 +1629,8 @@
                     result.candidates[0].content.parts.length > 0) {
                     currentClue = result.candidates[0].content.parts[0].text.trim();
                     clueDisplay.textContent = `Petunjuk: "${currentClue}"`;
-                    showMessage("Pemain 2: Tebak katanya!");
+                    wordGuessTurnDisplay.textContent = `Giliran Penebak: Pemain ${wordGameCurrentPlayer === 1 ? 2 : 1}`;
+                    showMessage(`Pemain ${wordGameCurrentPlayer === 1 ? 2 : 1}: Tebak katanya!`);
                 } else {
                     showMessage("Gagal membuat petunjuk. Coba lagi.");
                     console.error("API response error:", result);
@@ -1616,16 +1642,22 @@
                 showMessage("Terjadi kesalahan saat membuat petunjuk. Pastikan koneksi internet Anda stabil.");
             }
         }
+        window.generateClue = generateClue; // Expose to global scope
 
         function submitGuessWord() {
             if (!currentWord) {
                 showMessage("Mulai putaran baru terlebih dahulu.");
                 return;
             }
+            if (wordGuessTurnDisplay.textContent.includes('Pemberi Petunjuk')) {
+                showMessage("Ini giliran memberi petunjuk, bukan menebak!");
+                return;
+            }
+
             const guess = guessInputWord.value.trim().toLowerCase();
             if (guess === currentWord) {
-                wordScores.player2++; // Guesser gets point
-                wordScores.player1++; // Clue giver also gets point
+                wordScores[wordGameCurrentPlayer === 1 ? 'player2' : 'player1']++; // Guesser gets point
+                wordScores[wordGameCurrentPlayer === 1 ? 'player1' : 'player2']++; // Clue giver also gets point
                 updateWordScoreDisplay();
                 showMessage(`Tebakan benar! Kata: ${currentWord}. Poin untuk kedua pemain!`);
                 startNewWordRound(); // Start a new round automatically
@@ -1634,6 +1666,7 @@
             }
             guessInputWord.value = '';
         }
+        window.submitGuessWord = submitGuessWord; // Expose to global scope
 
         function updateWordScoreDisplay() {
             wordScoreDisplay.textContent = `Pemain 1: ${wordScores.player1} | Pemain 2: ${wordScores.player2}`;
@@ -1644,8 +1677,10 @@
             wordScores = { player1: 0, player2: 0 };
             updateWordScoreDisplay();
             showMessage("Skor tebak kata direset!");
+            wordGameCurrentPlayer = 1; // Reset to P1 for clue giver
             startNewWordRound();
         }
+        window.resetWordScore = resetWordScore; // Expose to global scope
 
         // Firestore functions for Word Guess
         async function saveWordGuessState() {
@@ -1658,7 +1693,8 @@
                 await setDoc(docRef, {
                     scores: wordScores,
                     currentWord: currentWord,
-                    currentClue: currentClue
+                    currentClue: currentClue,
+                    wordGameCurrentPlayer: wordGameCurrentPlayer
                 });
                 console.log("Word Guess state saved.");
             } catch (e) {
@@ -1680,7 +1716,9 @@
                     wordScores = data.scores || { player1: 0, player2: 0 };
                     currentWord = data.currentWord || '';
                     currentClue = data.currentClue || '';
+                    wordGameCurrentPlayer = data.wordGameCurrentPlayer || 1;
                     clueDisplay.textContent = currentClue ? `Petunjuk: "${currentClue}"` : 'Tekan "Berikan Petunjuk" untuk clue!';
+                    wordGuessTurnDisplay.textContent = currentClue ? `Giliran Penebak: Pemain ${wordGameCurrentPlayer === 1 ? 2 : 1}` : `Giliran Pemberi Petunjuk: Pemain ${wordGameCurrentPlayer}`;
                     updateWordScoreDisplay();
                     console.log("Word Guess state loaded.");
                 } else {
@@ -1701,6 +1739,7 @@
         const player2AnswerBtn = document.getElementById('player2-answer-btn');
         const whoIsMostResultDisplay = document.getElementById('who-is-most-result');
         const whoIsMostExpressionDisplay = document.getElementById('who-is-most-expression');
+        const whoIsMostTurnDisplay = document.getElementById('who-is-most-turn-display'); // New turn display element
 
         const whoIsMostQuestions = [
             "Siapa yang paling posesif?",
@@ -1725,7 +1764,6 @@
             "Siapa yang paling sering mencuci piring?",
             "Siapa yang paling sering menjemput/mengantar?",
             "Siapa yang paling sering mengucapkan 'Aku cinta kamu'?",
-            "Siapa yang paling sering memberi hadiah?",
             "Siapa yang paling suka memeluk?",
             "Siapa yang paling suka mencium?",
             "Siapa yang paling sering mengajak kencan?",
@@ -1748,8 +1786,9 @@
                 player1AnswerBtn.disabled = true;
                 player2AnswerBtn.disabled = false; // Aktifkan tombol untuk P2
                 // Perbarui teks tombol untuk menunjukkan pilihan P1
-                player1AnswerBtn.textContent = (chosenPlayer === 1 ? 'Pemain 1 (Pilihan Anda)' : 'Pemain 2 (Pilihan P1)');
-                player2AnswerBtn.textContent = (chosenPlayer === 2 ? 'Pemain 2 (Pilihan Anda)' : 'Pemain 1 (Pilihan P1)');
+                player1AnswerBtn.textContent = `Pemain 1 (Pilihan Anda: ${chosenPlayer === 1 ? 'Saya' : 'Dia'})`;
+                player2AnswerBtn.textContent = `Pemain 2`; // Reset P2 button for their turn
+                whoIsMostTurnDisplay.textContent = `Giliran Memilih: Pemain 2`;
                 currentAnsweringPlayer = 2; // Ganti giliran ke Pemain 2
             } else {
                 p2_choice = chosenPlayer;
@@ -1757,28 +1796,26 @@
                 player1AnswerBtn.disabled = true;
                 player2AnswerBtn.disabled = true; // Nonaktifkan kedua tombol setelah P2 memilih
                 // Perbarui teks tombol untuk menunjukkan pilihan P2
-                player1AnswerBtn.textContent = (chosenPlayer === 1 ? 'Pemain 1 (Pilihan P2)' : 'Pemain 2 (Pilihan P2)');
-                player2AnswerBtn.textContent = (chosenPlayer === 2 ? 'Pemain 2 (Pilihan P2)' : 'Pemain 1 (Pilihan P2)');
+                player2AnswerBtn.textContent = `Pemain 2 (Pilihan Anda: ${chosenPlayer === 1 ? 'Dia' : 'Saya'})`; // P2's perspective
                 compareWhoIsMostAnswers();
-                currentAnsweringPlayer = 1; // Reset giliran ke Pemain 1 untuk pertanyaan berikutnya
+                // currentAnsweringPlayer akan direset di updateWhoIsMostUI untuk pertanyaan berikutnya
             }
         }
+        window.recordChoice = recordChoice; // Expose to global scope
 
         function compareWhoIsMostAnswers() {
             // Kembalikan teks tombol ke "Pemain 1", "Pemain 2" sebelum menampilkan hasil
             player1AnswerBtn.textContent = 'Pemain 1';
             player2AnswerBtn.textContent = 'Pemain 2';
 
-            if (p1_choice === p2_choice) {
+            if (p1_choice === p2_choice) { // Both chose the same player
                 whoIsMostResultDisplay.textContent = "Kalian berdua setuju!";
                 whoIsMostExpressionDisplay.textContent = "😊💖"; // Happy, loving
-            } else {
+            } else { // They chose different players
                 whoIsMostResultDisplay.textContent = "Kalian tidak setuju!";
                 whoIsMostExpressionDisplay.textContent = "🤔😅"; // Thinking, slightly embarrassed/amused
             }
-            // Reset pilihan untuk putaran berikutnya
-            p1_choice = null;
-            p2_choice = null;
+            // Reset pilihan untuk putaran berikutnya akan dilakukan di nextWhoIsMostQuestion / updateWhoIsMostUI
             saveWhoIsMostState();
         }
 
@@ -1786,6 +1823,7 @@
             currentWhoIsMostQuestionIndex = (currentWhoIsMostQuestionIndex + 1) % whoIsMostQuestions.length;
             updateWhoIsMostUI();
         }
+        window.nextWhoIsMostQuestion = nextWhoIsMostQuestion; // Expose to global scope
 
         function resetWhoIsMostGame() {
             currentWhoIsMostQuestionIndex = 0;
@@ -1795,6 +1833,7 @@
             updateWhoIsMostUI();
             showMessage("Game 'Siapa Paling?' direset!");
         }
+        window.resetWhoIsMostGame = resetWhoIsMostGame; // Expose to global scope
 
         function updateWhoIsMostUI() {
             if (whoIsMostQuestions.length === 0) {
@@ -1813,6 +1852,13 @@
             player2AnswerBtn.style.backgroundColor = '#55aaff';
             player1AnswerBtn.textContent = 'Pemain 1'; // Pastikan teks asli
             player2AnswerBtn.textContent = 'Pemain 2'; // Pastikan teks asli
+            
+            // Reset choices and set initial turn display
+            p1_choice = null;
+            p2_choice = null;
+            currentAnsweringPlayer = 1;
+            whoIsMostTurnDisplay.textContent = `Giliran Memilih: Pemain ${currentAnsweringPlayer}`;
+
             saveWhoIsMostState();
         }
 
@@ -1869,25 +1915,30 @@
         // --- Initialize on Window Load ---
         window.onload = function() {
             initializeFirebase(); // Initialize Firebase first
-            updateWheelSegments(); // Initial setup for Kiss or Dare wheel
+            // No need to call updateWheelSegments as it's replaced by card logic
             createBoard(); // Initial setup for Snakes and Ladders board
             setupDrawingCanvas(); // Initial setup for Drawing Canvas
             startNewWordRound(); // Initial setup for Word Guess
             updateWhoIsMostUI(); // Initial setup for Who Is Most?
-
-            // Register Service Worker
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/service-worker.js')
-                        .then(registration => {
-                            console.log('Service Worker registered with scope:', registration.scope);
-                        })
-                        .catch(error => {
-                            console.error('Service Worker registration failed:', error);
-                        });
-                });
-            }
+            resetCard(); // Ensure card is in initial state
         };
+
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('DOMContentLoaded', () => { // Changed to DOMContentLoaded
+                const swUrl = '/service-worker.js';
+                console.log('Current origin for Service Worker registration:', window.location.origin);
+                console.log('Attempting to register Service Worker with URL:', swUrl);
+                navigator.serviceWorker.register(swUrl)
+                    .then(registration => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                        showMessage("Gagal mendaftarkan Service Worker. Pastikan file service-worker.js ada di root dan dapat diakses.");
+                    });
+            });
+        }
 
         // Ensure all Firestore calls are wrapped in checks for `isAuthReady`
         // and handle potential errors with `try/catch` and `showMessage`.
