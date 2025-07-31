@@ -433,11 +433,12 @@
             color: white;
             margin-top: 10px;
         }
-        #word-guess .give-clue-button {
+        /* Removed give-clue-button as it's now manual */
+        /* #word-guess .give-clue-button {
             background-color: #88ddff;
             color: white;
             margin-top: 20px;
-        }
+        } */
         #word-guess .new-word-button {
             background-color: #ff99bb;
             color: white;
@@ -450,7 +451,6 @@
             color: #333;
             margin-bottom: 10px;
         }
-
 
         /* Styling spesifik untuk game Siapa Paling? */
         #who-is-most .question-display {
@@ -693,6 +693,23 @@
                 <div class="current-player-display" id="current-player-display">Giliran Pemain 1</div>
                 <div class="romantic-message" id="romantic-message"></div>
             </div>
+
+            <!-- Modal Kartu Romantis untuk Ular Tangga -->
+            <div id="snakes-ladder-card-modal" class="modal">
+                <div class="modal-content">
+                    <div class="card-container">
+                        <div class="card" id="snakes-ladder-card">
+                            <div class="card-front">
+                                🎲 ROMANTIS! 💖
+                            </div>
+                            <div class="card-back" id="snakes-ladder-card-message">
+                                <!-- Pesan romantis akan muncul di sini -->
+                            </div>
+                        </div>
+                    </div>
+                    <button class="game-button mt-4" onclick="window.hideSnakesLadderCard()">Lanjutkan</button>
+                </div>
+            </div>
         </section>
 
         <!-- Tebak Gambar Game -->
@@ -727,7 +744,7 @@
             <p class="text-center mb-4">Satu memberi petunjuk, satu menebak!</p>
             <div class="turn-display" id="word-guess-turn-display"></div>
             <div class="clue-display" id="clue-display"></div>
-            <button class="game-button give-clue-button" onclick="window.generateClue()">Berikan Petunjuk</button>
+            <!-- Tombol "Berikan Petunjuk" dihapus, sekarang petunjuk diberikan secara verbal -->
             <div class="guess-input-word">
                 <input type="text" id="guess-input-word" placeholder="Tebak katanya..." class="w-full">
                 <button onclick="window.submitGuessWord()">Tebak!</button>
@@ -735,6 +752,16 @@
             <div class="score-display-word" id="word-score-display">Pemain 1: 0 | Pemain 2: 0</div>
             <button class="game-button new-word-button" onclick="window.startNewWordRound()">Kata Baru</button>
             <button class="game-button reset-score-button" onclick="window.resetWordScore()">Reset Skor</button>
+
+            <!-- Modal untuk menampilkan kata yang harus ditebak (hanya untuk pemberi petunjuk) -->
+            <div id="word-to-guess-modal" class="modal">
+                <div class="modal-content">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Kata untuk Ditebak:</h3>
+                    <p id="word-to-guess-display" class="text-4xl font-bold text-pink-600 mb-6"></p>
+                    <p class="text-gray-700 mb-4">Pemain pemberi petunjuk, lihat kata ini dan berikan petunjuk verbal kepada pasangan Anda!</p>
+                    <button class="game-button mt-4" onclick="window.hideWordToGuessModal()">Saya Mengerti</button>
+                </div>
+            </div>
         </section>
 
         <!-- Siapa Paling? Game -->
@@ -861,6 +888,7 @@
             } else if (gameId === 'word-guess') {
                 updateWordScoreDisplay();
                 // Ensure turn display is initialized for new game
+                wordGameCurrentPlayer = 1; // Reset to P1 for clue giver
                 window.startNewWordRound(); // Start the first round
             } else if (gameId === 'who-is-most') {
                 updateWhoIsMostUI();
@@ -1156,6 +1184,10 @@
         const diceDisplay = document.getElementById('dice-display');
         const currentPlayerDisplay = document.getElementById('current-player-display');
         const romanticMessageDisplay = document.getElementById('romantic-message');
+        const snakesLadderCardModal = document.getElementById('snakes-ladder-card-modal'); // Get modal element
+        const snakesLadderCard = document.getElementById('snakes-ladder-card'); // Get card element
+        const snakesLadderCardMessage = document.getElementById('snakes-ladder-card-message'); // Get card back message element
+
 
         // Snakes and Ladders (simplified for romantic twist)
         // Format: {startCell: endCell}
@@ -1249,6 +1281,26 @@
             saveSnakesAndLaddersState(); // Save state after updating positions
         }
 
+        function showSnakesLadderCard(message) {
+            snakesLadderCardMessage.textContent = message;
+            snakesLadderCard.classList.remove('flipped'); // Ensure it's unflipped initially
+            snakesLadderCardModal.style.display = 'flex'; // Show the modal
+            setTimeout(() => {
+                snakesLadderCard.classList.add('flipped'); // Flip the card after a short delay
+            }, 100); // Small delay for visual effect
+        }
+        window.showSnakesLadderCard = showSnakesLadderCard;
+
+        function hideSnakesLadderCard() {
+            snakesLadderCard.classList.remove('flipped'); // Unflip the card
+            setTimeout(() => {
+                snakesLadderCardModal.style.display = 'none'; // Hide the modal after animation
+                snakesLadderCardMessage.textContent = ''; // Clear message
+            }, 500); // Match card flip transition duration
+        }
+        window.hideSnakesLadderCard = hideSnakesLadderCard;
+
+
         function rollDice() {
             const diceRoll = Math.floor(Math.random() * 6) + 1;
             diceDisplay.textContent = diceRoll;
@@ -1273,8 +1325,8 @@
 
             // Check for romantic cell message
             if (romanticCellMessages[newPosition]) {
-                romanticMessageDisplay.textContent = romanticCellMessages[newPosition];
-                showMessage(`Pemain ${currentPlayer} mendarat di kotak romantis! ${romanticCellMessages[newPosition]}`);
+                // Display romantic message in a flip card
+                showSnakesLadderCard(romanticCellMessages[newPosition]);
             }
 
             if (newPosition === totalCells) {
@@ -1571,6 +1623,9 @@
         const guessInputWord = document.getElementById('guess-input-word');
         const wordScoreDisplay = document.getElementById('word-score-display');
         const wordGuessTurnDisplay = document.getElementById('word-guess-turn-display'); // New turn display element
+        const wordToGuessModal = document.getElementById('word-to-guess-modal');
+        const wordToGuessDisplay = document.getElementById('word-to-guess-display');
+
 
         let wordScores = { player1: 0, player2: 0 };
         let currentWord = '';
@@ -1591,58 +1646,26 @@
             currentWord = wordsInCat[Math.floor(Math.random() * wordsInCat.length)].toLowerCase();
             currentClue = ''; // Reset clue
 
-            clueDisplay.textContent = 'Tekan "Berikan Petunjuk" untuk clue!';
-            guessInputWord.value = '';
-            wordGameCurrentPlayer = wordGameCurrentPlayer === 1 ? 2 : 1; // Switch who gives clue
+            // Tampilkan modal dengan kata untuk pemberi petunjuk
+            wordToGuessDisplay.textContent = currentWord.toUpperCase();
+            wordToGuessModal.style.display = 'flex';
+            
             wordGuessTurnDisplay.textContent = `Giliran Pemberi Petunjuk: Pemain ${wordGameCurrentPlayer}`;
-            showMessage(`Kata baru telah dipilih. Pemain ${wordGameCurrentPlayer}, berikan petunjuk untuk kata ini! (Kategori: ${randomCategory})`);
+            showMessage(`Pemain ${wordGameCurrentPlayer}, lihat kata di layar dan berikan petunjuk verbal! (Kategori: ${randomCategory})`);
             console.log("Kata yang harus ditebak (hanya untuk pengembang):", currentWord); // For debugging
         }
         window.startNewWordRound = startNewWordRound; // Expose to global scope
 
-        async function generateClue() {
-            if (!currentWord) {
-                showMessage("Mulai putaran baru terlebih dahulu dengan 'Kata Baru'.");
-                return;
-            }
-            if (wordGuessTurnDisplay.textContent.includes('Penebak')) {
-                 showMessage("Ini giliran menebak, bukan memberi petunjuk!");
-                 return;
-            }
-            showMessage("Membuat petunjuk...");
-            try {
-                let chatHistory = [];
-                chatHistory.push({ role: "user", parts: [{ text: `Berikan petunjuk satu kata untuk kata "${currentWord}". Petunjuk harus singkat dan tidak menyebutkan kata aslinya. Contoh: Untuk 'apel', petunjuknya 'buah'.` }] });
-                const payload = { contents: chatHistory };
-                const apiKey = "";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const result = await response.json();
-
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    currentClue = result.candidates[0].content.parts[0].text.trim();
-                    clueDisplay.textContent = `Petunjuk: "${currentClue}"`;
-                    wordGuessTurnDisplay.textContent = `Giliran Penebak: Pemain ${wordGameCurrentPlayer === 1 ? 2 : 1}`;
-                    showMessage(`Pemain ${wordGameCurrentPlayer === 1 ? 2 : 1}: Tebak katanya!`);
-                } else {
-                    showMessage("Gagal membuat petunjuk. Coba lagi.");
-                    console.error("API response error:", result);
-                }
-            }
-            // Implement exponential backoff for API calls
-            catch (error) {
-                console.error("Error generating clue:", error);
-                showMessage("Terjadi kesalahan saat membuat petunjuk. Pastikan koneksi internet Anda stabil.");
-            }
+        function hideWordToGuessModal() {
+            wordToGuessModal.style.display = 'none';
+            // Setelah modal ditutup, giliran beralih ke penebak
+            wordGameCurrentPlayer = wordGameCurrentPlayer === 1 ? 2 : 1; // Switch to guesser
+            wordGuessTurnDisplay.textContent = `Giliran Penebak: Pemain ${wordGameCurrentPlayer}`;
+            showMessage(`Pemain ${wordGameCurrentPlayer}, tebak katanya berdasarkan petunjuk pasangan Anda!`);
         }
-        window.generateClue = generateClue; // Expose to global scope
+        window.hideWordToGuessModal = hideWordToGuessModal;
+
+        // Removed generateClue function as it's now manual
 
         function submitGuessWord() {
             if (!currentWord) {
@@ -1697,7 +1720,9 @@
                     wordGameCurrentPlayer: wordGameCurrentPlayer
                 });
                 console.log("Word Guess state saved.");
-            } catch (e) {
+            }
+            // Implement exponential backoff for API calls
+            catch (e) {
                 console.error("Error saving Word Guess state:", e);
                 showMessage("Gagal menyimpan status Tebak Kata. Silakan coba lagi.");
             }
@@ -1717,7 +1742,7 @@
                     currentWord = data.currentWord || '';
                     currentClue = data.currentClue || '';
                     wordGameCurrentPlayer = data.wordGameCurrentPlayer || 1;
-                    clueDisplay.textContent = currentClue ? `Petunjuk: "${currentClue}"` : 'Tekan "Berikan Petunjuk" untuk clue!';
+                    clueDisplay.textContent = currentClue ? `Petunjuk: "${currentClue}"` : 'Tekan "Kata Baru" untuk memulai!';
                     wordGuessTurnDisplay.textContent = currentClue ? `Giliran Penebak: Pemain ${wordGameCurrentPlayer === 1 ? 2 : 1}` : `Giliran Pemberi Petunjuk: Pemain ${wordGameCurrentPlayer}`;
                     updateWordScoreDisplay();
                     console.log("Word Guess state loaded.");
