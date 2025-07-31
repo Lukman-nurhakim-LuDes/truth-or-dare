@@ -789,13 +789,26 @@
                 auth = getAuth(app);
                 console.log("Firebase app and auth initialized."); // Debugging log
 
-                // Sign in anonymously if no custom token, or use custom token
-                if (typeof __initial_auth_token !== 'undefined') {
-                    console.log("Attempting sign-in with custom token..."); // Debugging log
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    console.log("Attempting anonymous sign-in..."); // Debugging log
+                let signedIn = false;
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token !== null && __initial_auth_token !== '') {
+                    try {
+                        console.log("Attempting sign-in with custom token..."); // Debugging log
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                        signedIn = true;
+                        console.log("Signed in with custom token successfully.");
+                    } catch (customTokenError) {
+                        console.warn("Custom token sign-in failed, attempting anonymous sign-in instead:", customTokenError);
+                        // Fallback to anonymous sign-in if custom token fails
+                        await signInAnonymously(auth);
+                        signedIn = true;
+                        console.log("Signed in anonymously after custom token failure.");
+                    }
+                }
+
+                if (!signedIn) {
+                    console.log("Custom token not provided or invalid, attempting anonymous sign-in...");
                     await signInAnonymously(auth);
+                    console.log("Signed in anonymously.");
                 }
 
                 onAuthStateChanged(auth, (user) => {
@@ -803,8 +816,9 @@
                         userId = user.uid;
                         console.log("Firebase authenticated. User ID:", userId);
                     } else {
+                        // This case should ideally not happen if signInAnonymously succeeds
                         userId = crypto.randomUUID(); // Fallback for unauthenticated
-                        console.log("Firebase not authenticated. Using random user ID:", userId);
+                        console.log("Firebase authentication state changed to unauthenticated. Using random user ID:", userId);
                     }
                     isAuthReady = true;
                     // You can now safely perform Firestore operations
@@ -814,8 +828,8 @@
                     loadWhoIsMostState();
                 });
             } catch (error) {
-                console.error("Error initializing Firebase or authenticating:", error);
-                showMessage("Terjadi kesalahan saat menginisialisasi game. Silakan coba lagi. Pastikan konfigurasi Firebase Anda benar dan layanan otentikasi diaktifkan.");
+                console.error("Critical error during Firebase initialization or fallback authentication:", error);
+                showMessage("Terjadi kesalahan fatal saat menginisialisasi game. Silakan coba lagi. Pastikan konfigurasi Firebase Anda benar dan layanan otentikasi diaktifkan.");
             }
         }
 
@@ -985,7 +999,7 @@
                 "Berikan ciuman di dada/payudara (sesuai kenyamanan).",
                 "Tanyakan satu hal yang ingin pasanganmu lakukan padamu.",
                 "Berikan pijatan sensual di area paha atau bokong.",
-                "Bisikkan 'Aku ingin kamu sekarang' ke telinga pasanganmu.",
+                "Bisikkan 'Aku ingin kamu sekarang' ke telinganya.",
                 "Berikan ciuman di punggung bawah.",
                 "Tanyakan posisi favorit pasanganmu.",
                 "Sentuh bibir pasanganmu dengan jarimu dan tarik perlahan.",
@@ -1595,7 +1609,9 @@
                     showMessage("Gagal membuat petunjuk. Coba lagi.");
                     console.error("API response error:", result);
                 }
-            } catch (error) {
+            }
+            // Implement exponential backoff for API calls
+            catch (error) {
                 console.error("Error generating clue:", error);
                 showMessage("Terjadi kesalahan saat membuat petunjuk. Pastikan koneksi internet Anda stabil.");
             }
