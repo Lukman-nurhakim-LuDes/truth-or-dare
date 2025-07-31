@@ -3,1389 +3,1877 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>💖 Game Romantis Pasangan 💖</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Couple's Playland 💖</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome for Icons (still included for other parts like music toggle) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* Custom CSS untuk tema pastel dan animasi */
         body {
             font-family: 'Inter', sans-serif;
-            overflow-x: hidden; /* Prevent horizontal scrolling */
+            background: linear-gradient(135deg, #fce4ec 0%, #e0f2f7 100%); /* Pastel pink to blue gradient */
+            color: #333;
+            overflow-x: hidden; /* Mencegah scroll horizontal */
         }
-        /* Custom pastel gradient background */
-        .bg-romantic-gradient {
-            background: linear-gradient(135deg, #FFB6C1 0%, #ADD8E6 100%); /* Pastel Pink to Pastel Blue */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        /* Soft animation for elements */
-        .animate-float {
+        .landing-page {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .landing-page::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            left: -50px;
+            width: 200px;
+            height: 200px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: bubble 15s infinite ease-in-out;
+            z-index: 0;
+        }
+        .landing-page::after {
+            content: '';
+            position: absolute;
+            bottom: -70px;
+            right: -70px;
+            width: 250px;
+            height: 250px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            animation: bubble 20s infinite reverse ease-in-out;
+            z-index: 0;
+        }
+        @keyframes bubble {
+            0% { transform: scale(1) translate(0, 0); opacity: 0.7; }
+            50% { transform: scale(1.2) translate(20px, -20px); opacity: 0.5; }
+            100% { transform: scale(1) translate(0, 0); opacity: 0.7; }
+        }
+        .couple-illustration {
+            width: 250px;
+            height: auto;
+            margin-bottom: 30px;
             animation: float 3s ease-in-out infinite;
+            z-index: 1;
         }
         @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
         }
-        .animate-fade-in {
-            animation: fadeIn 1s ease-out forwards;
+        .game-button {
+            background-color: #ff99bb; /* Pink */
+            color: white;
+            padding: 15px 30px;
+            border-radius: 9999px; /* Fully rounded */
+            font-size: 1.25rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            border: none;
+            margin: 10px;
+            display: flex; /* Untuk menempatkan ikon dan teks secara horizontal */
+            align-items: center;
+            justify-content: center;
+            gap: 10px; /* Jarak antara ikon dan teks */
+        }
+        .game-button img {
+            width: 30px; /* Ukuran ikon */
+            height: 30px;
+        }
+        .game-button:hover {
+            background-color: #ff77aa; /* Darker pink */
+            transform: translateY(-3px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        .game-section {
+            display: none; /* Sembunyikan semua game secara default */
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+            animation: fadeIn 0.5s ease-out;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .animate-pulse-light {
-            animation: pulseLight 2s infinite;
-        }
-        @keyframes pulseLight {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.02); opacity: 0.9; }
-        }
-        /* Game-specific styling */
-        .game-section {
-            display: none; /* Hidden by default */
-            animation: fadeIn 0.7s ease-out forwards; /* Add fade-in to game sections */
-        }
         .game-section.active {
-            display: block; /* Shown when active */
+            display: block;
         }
-        /* Spin Wheel specific styles */
-        #wheelCanvas {
+        .back-button {
+            background-color: #88ddff; /* Light blue */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 9999px;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            border: none;
+            margin-bottom: 20px;
+        }
+        .back-button:hover {
+            background-color: #66ccff; /* Darker blue */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+        }
+        .audio-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+        .audio-button {
+            background-color: rgba(255, 255, 255, 0.7);
+            border: none;
             border-radius: 50%;
-            background-color: #fff;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: background-color 0.3s ease;
         }
-        /* Snakes and Ladders specific styles */
-        #snakes-board {
+        .audio-button:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+        .audio-button i {
+            font-size: 24px;
+            color: #ff99bb;
+        }
+
+        /* Styling spesifik untuk game Kiss or Dare */
+        #kiss-or-dare .wheel-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 30px auto;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 5px solid #ff99bb;
+            box-shadow: 0 0 15px rgba(255, 153, 187, 0.5);
+        }
+        #kiss-or-dare .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                #ffe0f0 0% 50%,
+                #d0eaff 50% 100%
+            );
+            transition: transform 4s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+        #kiss-or-dare .pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-bottom: 30px solid #ff5588;
+            z-index: 10;
+        }
+        #kiss-or-dare .spin-button {
+            margin-top: 20px;
+            background-color: #88ddff;
+        }
+        #kiss-or-dare .challenge-display {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ff5588;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px;
+            border: 2px dashed #ff99bb;
+            border-radius: 10px;
+        }
+        #kiss-or-dare .add-custom-challenge {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f0f8ff;
+            border-radius: 10px;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+        }
+        #kiss-or-dare .add-custom-challenge input[type="text"] {
+            width: calc(100% - 100px);
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        #kiss-or-dare .add-custom-challenge select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        #kiss-or-dare .add-custom-challenge button {
+            background-color: #aaffcc;
+            color: #333;
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #kiss-or-dare .add-custom-challenge button:hover {
+            background-color: #88eeaa;
+        }
+
+        /* Styling spesifik untuk game Ular Tangga Romantis */
+        #snakes-and-ladders .board {
             display: grid;
             grid-template-columns: repeat(10, 1fr);
-            border: 2px solid #60A5FA;
-            background-color: #E0F2FE;
-            max-width: 600px;
-            margin: 0 auto;
+            width: 400px; /* Lebar papan */
+            height: 400px; /* Tinggi papan */
+            margin: 20px auto;
+            border: 2px solid #ff99bb;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        .snakes-cell {
+        #snakes-and-ladders .cell {
             width: 100%;
-            padding-top: 100%; /* Make cells square */
-            position: relative;
-            border: 1px solid #90CDF4;
+            height: 100%;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
+            font-size: 0.8rem;
             font-weight: bold;
-            font-size: 0.9rem;
-            color: #3B82F6;
+            border: 1px solid #eee;
+            background-color: #fff;
+            box-sizing: border-box;
+            position: relative;
         }
-        .snakes-cell span {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+        #snakes-and-ladders .cell.romantic {
+            background-color: #ffe0f0; /* Pink pastel untuk kotak romantis */
         }
-        .player-token {
+        #snakes-and-ladders .player {
             position: absolute;
-            width: 25px;
-            height: 25px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
             display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.7rem;
+            color: white;
+            font-weight: bold;
+            transition: all 0.5s ease-in-out;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        #snakes-and-ladders .player-1 { background-color: #ff5588; } /* Merah muda */
+        #snakes-and-ladders .player-2 { background-color: #55aaff; } /* Biru */
+        #snakes-and-ladders .dice-container {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #snakes-and-ladders .dice {
+            width: 60px;
+            height: 60px;
+            background-color: #fff;
+            border: 2px solid #ff99bb;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ff5588;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+        }
+        #snakes-and-ladders .roll-dice-button {
+            background-color: #aaffcc;
+            color: #333;
+        }
+        #snakes-and-ladders .current-player-display {
+            margin-top: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+        }
+        #snakes-and-ladders .romantic-message {
+            margin-top: 15px;
+            font-size: 1.1rem;
+            font-style: italic;
+            color: #ff5588;
+            min-height: 30px;
+        }
+
+        /* Styling spesifik untuk game Tebak Gambar */
+        #draw-and-guess canvas {
+            background-color: #fff;
+            border: 2px solid #ff99bb;
+            border-radius: 10px;
+            margin: 20px auto;
+            display: block;
+            touch-action: none; /* Mencegah scrolling saat menggambar di mobile */
+        }
+        #draw-and-guess .drawing-controls {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        #draw-and-guess .drawing-controls button {
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            background-color: #88ddff;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        #draw-and-guess .drawing-controls button:hover {
+            background-color: #66ccff;
+        }
+        #draw-and-guess .drawing-controls input[type="color"] {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #draw-and-guess .guess-input {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        #draw-and-guess .guess-input input[type="text"] {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #draw-and-guess .guess-input button {
+            background-color: #aaffcc;
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #draw-and-guess .guess-input button:hover {
+            background-color: #88eeaa;
+        }
+        #draw-and-guess .timer-display, #draw-and-guess .word-display {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 10px;
+            text-align: center;
+            color: #ff5588;
+        }
+        #draw-and-guess .score-display {
+            font-size: 1.1rem;
+            margin-top: 10px;
+            text-align: center;
+        }
+        #draw-and-guess .next-round-button {
+            background-color: #ff99bb;
+            color: white;
+            margin-top: 20px;
+        }
+
+        /* Styling spesifik untuk game Tebak Kata Pasangan */
+        #word-guess .clue-display {
+            margin-top: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            min-height: 50px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            text-align: center;
+            padding: 10px;
+            border: 2px dashed #88ddff;
+            border-radius: 10px;
+        }
+        #word-guess .guess-input-word {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        #word-guess .guess-input-word input[type="text"] {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #word-guess .guess-input-word button {
+            background-color: #aaffcc;
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #word-guess .guess-input-word button:hover {
+            background-color: #88eeaa;
+        }
+        #word-guess .score-display-word {
+            font-size: 1.1rem;
+            margin-top: 10px;
+            text-align: center;
+        }
+        #word-guess .reset-score-button {
+            background-color: #ff77aa;
             color: white;
-            z-index: 10;
-            transition: all 0.5s ease-in-out;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            margin-top: 10px;
         }
-        .player1 { background-color: #EF4444; } /* Red */
-        .player2 { background-color: #3B82F6; } /* Blue */
+        #word-guess .give-clue-button {
+            background-color: #88ddff;
+            color: white;
+            margin-top: 20px;
+        }
+        #word-guess .new-word-button {
+            background-color: #ff99bb;
+            color: white;
+            margin-top: 20px;
+        }
 
-        /* Drawing canvas */
-        #drawingCanvas {
-            border: 2px solid #9CA3AF;
-            background-color: white;
-            cursor: crosshair;
-            touch-action: none; /* Prevent scrolling on touch devices */
+
+        /* Styling spesifik untuk game Siapa Paling? */
+        #who-is-most .question-display {
+            margin-top: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px;
+            border: 2px dashed #ff99bb;
+            border-radius: 10px;
         }
-        /* Custom icon size for menu buttons */
-        .game-menu-btn img {
-            width: 60px; /* Adjust as needed */
-            height: 60px; /* Adjust as needed */
-            object-fit: contain;
-            margin-bottom: 8px;
+        #who-is-most .answer-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        #who-is-most .answer-buttons button {
+            flex-grow: 1;
+            padding: 15px 30px;
+            border-radius: 9999px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        #who-is-most .answer-buttons button.player1 {
+            background-color: #ff5588;
+            color: white;
+        }
+        #who-is-most .answer-buttons button.player2 {
+            background-color: #55aaff;
+            color: white;
+        }
+        #who-is-most .answer-buttons button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        #who-is-most .result-display {
+            margin-top: 30px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            text-align: center;
+            min-height: 50px;
+        }
+        #who-is-most .expression-animation {
+            margin-top: 20px;
+            font-size: 3rem;
+            text-align: center;
+            min-height: 80px;
+        }
+        #who-is-most .next-question-button {
+            background-color: #aaffcc;
+            color: #333;
+            margin-top: 20px;
+        }
+        #who-is-most .reset-game-button {
+            background-color: #ff77aa;
+            color: white;
+            margin-top: 10px;
+        }
+
+        /* Modal styling */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+        }
+        .close-button {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .landing-page h1 {
+                font-size: 2.5rem;
+            }
+            .landing-page p {
+                font-size: 1rem;
+            }
+            .game-button {
+                padding: 12px 25px;
+                font-size: 1rem;
+            }
+            #snakes-and-ladders .board {
+                width: 300px;
+                height: 300px;
+            }
+            #snakes-and-ladders .cell {
+                font-size: 0.7rem;
+            }
+            #draw-and-guess canvas {
+                width: 100%;
+                height: auto; /* Biarkan tinggi menyesuaikan agar tidak terdistorsi */
+            }
+            #draw-and-guess .drawing-controls,
+            #draw-and-guess .guess-input {
+                flex-direction: column;
+                gap: 5px;
+            }
+            #draw-and-guess .drawing-controls button,
+            #draw-and-guess .guess-input button,
+            #draw-and-guess .guess-input input[type="text"] {
+                width: 100%;
+            }
         }
     </style>
+    <!-- Font Awesome untuk ikon musik -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
-<body class="bg-romantic-gradient text-gray-800 min-h-screen flex flex-col items-center justify-center p-4">
-
-    <!-- Background Music -->
+<body>
+    <!-- Musik Latar -->
     <audio id="background-music" loop>
-        <!-- Placeholder for romantic music. Please replace with your own audio file. -->
         <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
 
-    <!-- Music Control Button -->
-    <button id="music-toggle" class="fixed top-4 right-4 bg-white text-pink-500 p-3 rounded-full shadow-lg z-50 hover:scale-105 transition-transform">
-        <i class="fas fa-music"></i>
-    </button>
+    <!-- Kontrol Musik -->
+    <div class="audio-controls">
+        <button id="music-toggle" class="audio-button">
+            <i class="fas fa-volume-up"></i>
+        </button>
+    </div>
 
     <!-- Landing Page -->
-    <div id="landing-page" class="flex flex-col items-center justify-center text-center p-8 bg-white bg-opacity-80 rounded-3xl shadow-2xl max-w-2xl w-full animate-fade-in">
-        <h1 class="text-5xl font-bold text-pink-600 mb-6 drop-shadow-md">💖 Game Pasangan Romantis 💖</h1>
-        <div class="relative w-48 h-48 mb-8 animate-float">
-            <!-- Image of the couple uploaded by the user -->
-            <img src="pasangan.png" onerror="this.src='https://placehold.co/200x200/FFB6C1/FFF?text=Couple'" alt="Ilustrasi Pasangan" class="w-full h-full object-cover rounded-full shadow-lg border-4 border-white">
-            <span class="absolute top-0 left-0 text-6xl transform -translate-x-1/2 -translate-y-1/2">💋</span>
-            <span class="absolute bottom-0 right-0 text-6xl transform translate-x-1/2 translate-y-1/2">✨</span>
-        </div>
-        <p class="text-xl text-gray-700 mb-8">Selamat datang di dunia game romantis kami! Siap untuk menciptakan kenangan indah bersama pasangan?</p>
-        <button id="start-playing-btn" class="bg-pink-500 text-white text-2xl font-semibold px-8 py-4 rounded-full shadow-xl hover:bg-pink-600 transform hover:scale-105 transition-all duration-300 animate-pulse-light">
-            Mulai Bermain! <i class="fas fa-heart ml-2"></i>
-        </button>
-    </div>
-
-    <!-- Main Game Container (initially hidden) -->
-    <div id="game-container" class="hidden flex flex-col items-center justify-center text-center p-8 bg-white bg-opacity-80 rounded-3xl shadow-2xl max-w-4xl w-full animate-fade-in">
-        <h2 class="text-4xl font-bold text-purple-600 mb-6">Pilih Game Anda!</h2>
-
-        <!-- Game Menu -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 w-full">
-            <button class="game-menu-btn bg-pink-400 text-white p-6 rounded-xl shadow-lg hover:bg-pink-500 transform hover:scale-105 transition-all duration-300 flex flex-col items-center" data-game="kiss-or-dare">
-                <img src="icon/kiss.png" onerror="this.src='https://placehold.co/60x60/FFB6C1/FFF?text=Kiss'" alt="Kiss or Dare Icon">
-                <span class="text-xl font-semibold">Kiss or Dare</span>
+    <section id="landing-page" class="landing-page">
+        <img src="/icons/pasangan.png" alt="Ilustrasi Pasangan" class="couple-illustration">
+        <h1 class="text-5xl font-bold text-pink-600 mb-4">Couple's Playland 💖</h1>
+        <p class="text-xl text-gray-700 mb-8">Tempatnya game romantis dan playful untuk kalian berdua!</p>
+        <div class="flex flex-wrap justify-center">
+            <button class="game-button" onclick="showGame('kiss-or-dare')">
+                <img src="/icons/kiss.png" alt="Kiss or Dare Icon"> Kiss or Dare
             </button>
-            <button class="game-menu-btn bg-blue-400 text-white p-6 rounded-xl shadow-lg hover:bg-blue-500 transform hover:scale-105 transition-all duration-300 flex flex-col items-center" data-game="snakes-and-ladders">
-                <img src="icon/dice.png" onerror="this.src='https://placehold.co/60x60/ADD8E6/FFF?text=Dice'" alt="Snakes and Ladders Icon">
-                <span class="text-xl font-semibold">Ular Tangga Romantis</span>
+            <button class="game-button" onclick="showGame('snakes-and-ladders')">
+                <img src="/icons/dadu.png" alt="Dice Icon"> Ular Tangga Romantis
             </button>
-            <button class="game-menu-btn bg-yellow-400 text-white p-6 rounded-xl shadow-lg hover:bg-yellow-500 transform hover:scale-105 transition-all duration-300 flex flex-col items-center" data-game="draw-and-guess">
-                <img src="icon/draw.png" onerror="this.src='https://placehold.co/60x60/FFFACD/8B4513?text=Draw'" alt="Draw and Guess Icon">
-                <span class="text-xl font-semibold">Tebak Gambar</span>
+            <button class="game-button" onclick="showGame('draw-and-guess')">
+                <img src="/icons/draw.png" alt="Draw Icon"> Tebak Gambar
             </button>
-            <button class="game-menu-btn bg-green-400 text-white p-6 rounded-xl shadow-lg hover:bg-green-500 transform hover:scale-105 transition-all duration-300 flex flex-col items-center" data-game="word-guess">
-                <img src="icon/word.png" onerror="this.src='https://placehold.co/60x60/C1FFB6/4A5568?text=Word'" alt="Word Guess Icon">
-                <span class="text-xl font-semibold">Tebak Kata Pasangan</span>
+            <button class="game-button" onclick="showGame('word-guess')">
+                <img src="/icons/word.png" alt="Word Icon"> Tebak Kata Pasangan
             </button>
-            <button class="game-menu-btn bg-purple-400 text-white p-6 rounded-xl shadow-lg hover:bg-purple-500 transform hover:scale-105 transition-all duration-300 flex flex-col items-center" data-game="who-is-most">
-                <img src="icon/brain.png" onerror="this.src='https://placehold.co/60x60/D8BFD8/4B0082?text=Brain'" alt="Who is Most Icon">
-                <span class="text-xl font-semibold">Siapa Paling?</span>
+            <button class="game-button" onclick="showGame('who-is-most')">
+                <img src="/icons/otak.png" alt="Brain Icon"> Siapa Paling?
             </button>
         </div>
+    </section>
 
-        <!-- Back to Menu Button -->
-        <button id="back-to-menu-btn" class="bg-gray-300 text-gray-700 px-6 py-3 rounded-full shadow-md hover:bg-gray-400 transition-colors mt-4">
-            <i class="fas fa-arrow-left mr-2"></i> Kembali ke Menu
-        </button>
-
-        <!-- Game Sections -->
-
+    <!-- Game Sections -->
+    <div class="container">
         <!-- Kiss or Dare Game -->
-        <div id="kiss-or-dare" class="game-section w-full mt-8 p-6 bg-white rounded-2xl shadow-xl">
-            <h3 class="text-3xl font-bold text-pink-600 mb-6">💋 Kiss or Dare 🔥</h3>
-            <div class="flex flex-col md:flex-row items-center justify-center gap-8">
-                <div class="relative w-64 h-64">
-                    <canvas id="wheelCanvas" width="256" height="256" class="shadow-lg"></canvas>
-                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-red-500 rounded-full z-10"></div>
-                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full text-5xl text-red-500">▼</div>
-                </div>
-                <div class="flex flex-col items-center">
-                    <button id="spin-wheel-btn" class="bg-pink-500 text-white text-xl font-semibold px-8 py-4 rounded-full shadow-lg hover:bg-pink-600 transform hover:scale-105 transition-transform mb-6">
-                        Putar Roda!
-                    </button>
-                    <div id="challenge-display" class="bg-purple-100 text-purple-800 p-6 rounded-xl shadow-inner min-h-[120px] w-full max-w-md flex flex-col items-center justify-center text-lg font-medium text-center">
-                        <p>Putar roda untuk tantanganmu!</p>
-                        <p id="challenge-points" class="text-sm text-gray-500 mt-2"></p>
-                    </div>
-                    <div class="mt-4 w-full max-w-md">
-                        <h4 class="text-xl font-semibold mb-2">Tambahkan Tantangan Kustom:</h4>
-                        <input type="text" id="custom-challenge-input" placeholder="Tantangan baru..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-300 mb-2">
-                        <select id="custom-challenge-category" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-300 mb-2">
-                            <option value="Romantis">Romantis</option>
-                            <option value="Lucu">Lucu</option>
-                            <option value="Hot (21+)">Hot (21+)</option>
-                            <option value="Kejutan">Kejutan</option>
-                            <option value="Kreatif">Kreatif</option>
-                        </select>
-                        <button id="add-custom-challenge-btn" class="bg-purple-500 text-white px-6 py-3 rounded-full shadow-md hover:bg-purple-600 transition-colors w-full">
-                            Tambah Tantangan
-                        </button>
-                    </div>
-                </div>
+        <section id="kiss-or-dare" class="game-section">
+            <button class="back-button" onclick="showLandingPage()">Kembali ke Menu</button>
+            <h2 class="text-3xl font-bold text-pink-600 mb-4 text-center">💋 Kiss or Dare</h2>
+            <p class="text-center mb-4">Putar roda untuk tantangan romantis atau lucu!</p>
+            <div class="wheel-container">
+                <div class="wheel" id="kiss-dare-wheel"></div>
+                <div class="pointer"></div>
             </div>
-        </div>
+            <button class="game-button spin-button" onclick="spinWheel()">Putar Roda!</button>
+            <div class="challenge-display" id="challenge-display">Siap untuk tantangan?</div>
+
+            <div class="add-custom-challenge mt-8">
+                <h3 class="text-xl font-bold text-gray-700 mb-3">Tambah Tantangan Kustom</h3>
+                <input type="text" id="custom-challenge-input" placeholder="Masukkan tantangan baru..." class="w-full mb-3">
+                <select id="custom-challenge-category" class="w-full mb-3 p-2 border rounded">
+                    <option value="romantic">Romantis</option>
+                    <option value="funny">Lucu</option>
+                    <option value="hot-1">Hot Level 1</option>
+                    <option value="hot-2">Hot Level 2</option>
+                    <option value="hot-3">Hot Level 3</option>
+                </select>
+                <button onclick="addCustomChallenge()">Tambah Tantangan</button>
+            </div>
+        </section>
 
         <!-- Ular Tangga Romantis Game -->
-        <div id="snakes-and-ladders" class="game-section w-full mt-8 p-6 bg-white rounded-2xl shadow-xl">
-            <h3 class="text-3xl font-bold text-blue-600 mb-6">🎲 Ular Tangga Romantis 💖</h3>
-            <div id="snakes-board" class="relative">
-                <!-- Board cells will be generated by JS -->
+        <section id="snakes-and-ladders" class="game-section">
+            <button class="back-button" onclick="showLandingPage()">Kembali ke Menu</button>
+            <h2 class="text-3xl font-bold text-pink-600 mb-4 text-center">🎲 Ular Tangga Romantis</h2>
+            <p class="text-center mb-4">Mainkan versi romantis dari Ular Tangga!</p>
+            <div class="board" id="snake-ladder-board"></div>
+            <div class="dice-container">
+                <div class="dice" id="dice-display">1</div>
+                <button class="game-button roll-dice-button" onclick="rollDice()">Lempar Dadu!</button>
+                <div class="current-player-display" id="current-player-display">Giliran Pemain 1</div>
+                <div class="romantic-message" id="romantic-message"></div>
             </div>
-            <div class="flex flex-col md:flex-row items-center justify-center gap-4 mt-6">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center text-white font-bold">P1</div>
-                    <span class="text-lg">Pemain 1: <span id="player1-pos">1</span></span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">P2</div>
-                    <span class="text-lg">Pemain 2: <span id="player2-pos">1</span></span>
-                </div>
-            </div>
-            <div class="flex flex-col items-center mt-6">
-                <div id="dice-display" class="text-6xl font-bold text-gray-700 mb-4 animate-bounce">?</div>
-                <button id="roll-dice-btn" class="bg-blue-500 text-white text-xl font-semibold px-8 py-4 rounded-full shadow-lg hover:bg-blue-600 transform hover:scale-105 transition-transform">
-                    Gulir Dadu!
-                </button>
-                <p id="snakes-turn-display" class="text-xl font-semibold mt-4">Giliran Pemain 1</p>
-                <div id="snakes-challenge-display" class="bg-yellow-100 text-yellow-800 p-4 rounded-xl shadow-inner min-h-[80px] w-full max-w-md flex items-center justify-center text-lg font-medium text-center mt-4">
-                    <p>Gulir dadu untuk memulai!</p>
-                </div>
-                <button id="snakes-reset-btn" class="bg-gray-300 text-gray-700 px-6 py-3 rounded-full shadow-md hover:bg-gray-400 transition-colors mt-4">
-                    Reset Game
-                </button>
-            </div>
-        </div>
+        </section>
 
         <!-- Tebak Gambar Game -->
-        <div id="draw-and-guess" class="game-section w-full mt-8 p-6 bg-white rounded-2xl shadow-xl">
-            <h3 class="text-3xl font-bold text-yellow-600 mb-6">🖼️ Tebak Gambar 🎨</h3>
-            <div class="flex flex-col md:flex-row items-center justify-center gap-8 w-full">
-                <div class="flex flex-col items-center">
-                    <canvas id="drawingCanvas" width="400" height="300" class="rounded-xl shadow-lg mb-4"></canvas>
-                    <div class="flex gap-2 mb-4">
-                        <button id="pen-tool" class="bg-gray-200 p-3 rounded-full hover:bg-gray-300 transition-colors" title="Pena"><i class="fas fa-pen"></i></button>
-                        <button id="eraser-tool" class="bg-gray-200 p-3 rounded-full hover:bg-gray-300 transition-colors" title="Penghapus"><i class="fas fa-eraser"></i></button>
-                        <input type="color" id="color-picker" value="#000000" class="w-10 h-10 rounded-full border-2 border-gray-300 cursor-pointer" title="Warna Pena">
-                        <button id="clear-canvas" class="bg-red-200 text-red-700 p-3 rounded-full hover:bg-red-300 transition-colors" title="Bersihkan Kanvas"><i class="fas fa-trash-alt"></i></button>
-                    </div>
-                </div>
-                <div class="flex flex-col items-center w-full max-w-md">
-                    <p class="text-xl font-semibold mb-2">Giliran: <span id="draw-player-turn" class="text-blue-600">Pemain 1</span></p>
-                    <p class="text-2xl font-bold mb-4">Waktu: <span id="draw-timer" class="text-red-500">30</span>s</p>
-                    <div id="word-to-draw-container" class="bg-yellow-100 text-yellow-800 p-4 rounded-xl shadow-inner mb-4 w-full">
-                        <p class="text-lg font-medium">Kata untuk digambar: <span id="word-to-draw" class="font-bold text-xl"></span></p>
-                    </div>
-                    <input type="text" id="guess-input" placeholder="Tebak di sini..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-300 mb-2">
-                    <button id="submit-guess-btn" class="bg-yellow-500 text-white px-6 py-3 rounded-full shadow-md hover:bg-yellow-600 transition-colors w-full mb-4">
-                        Kirim Tebakan
-                    </button>
-                    <button id="start-draw-game-btn" class="bg-green-500 text-white px-6 py-3 rounded-full shadow-md hover:bg-green-600 transition-colors w-full">
-                        Mulai Game
-                    </button>
-                    <button id="next-draw-round-btn" class="bg-blue-500 text-white px-6 py-3 rounded-full shadow-md hover:bg-blue-600 transition-colors w-full mt-2 hidden">
-                        Ronde Selanjutnya
-                    </button>
-                    <p id="draw-game-message" class="text-lg mt-4 font-semibold text-center"></p>
-                </div>
+        <section id="draw-and-guess" class="game-section">
+            <button class="back-button" onclick="showLandingPage()">Kembali ke Menu</button>
+            <h2 class="text-3xl font-bold text-pink-600 mb-4 text-center">🖼️ Tebak Gambar</h2>
+            <p class="text-center mb-4">Satu menggambar, satu menebak!</p>
+            <div class="text-center mb-2">
+                <span class="word-display" id="draw-word-display">Kata: _____</span> |
+                <span class="timer-display" id="draw-timer-display">Waktu: 30s</span>
             </div>
-        </div>
+            <canvas id="drawing-canvas" width="400" height="300"></canvas>
+            <div class="drawing-controls">
+                <input type="color" id="color-picker" value="#000000">
+                <input type="range" id="brush-size" min="1" max="10" value="3">
+                <button onclick="clearCanvas()">Bersihkan</button>
+                <button onclick="startDrawingRound()">Mulai Giliran Menggambar</button>
+            </div>
+            <div class="guess-input">
+                <input type="text" id="guess-input-draw" placeholder="Tebak gambarnya..." class="w-full">
+                <button onclick="submitGuessDraw()">Tebak!</button>
+            </div>
+            <div class="score-display" id="draw-score-display">Pemain 1: 0 | Pemain 2: 0</div>
+            <button class="game-button next-round-button" onclick="nextDrawingRound()">Giliran Selanjutnya</button>
+        </section>
 
         <!-- Tebak Kata Pasangan Game -->
-        <div id="word-guess" class="game-section w-full mt-8 p-6 bg-white rounded-2xl shadow-xl">
-            <h3 class="text-3xl font-bold text-green-600 mb-6">🔠 Tebak Kata Pasangan 💬</h3>
-            <div class="flex flex-col items-center justify-center gap-4 w-full max-w-lg mx-auto">
-                <div class="bg-green-100 text-green-800 p-6 rounded-xl shadow-inner w-full text-center mb-4">
-                    <p class="text-lg font-medium">Pemberi Petunjuk: <span id="clue-giver-player" class="font-bold text-xl">Pemain 1</span></p>
-                    <p class="text-xl font-bold mt-2">Kata Rahasia: <span id="secret-word-display" class="text-3xl tracking-widest">_ _ _ _ _</span></p>
-                </div>
-                <input type="text" id="clue-input" placeholder="Masukkan petunjuk di sini..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-300 mb-2">
-                <button id="give-clue-btn" class="bg-green-500 text-white px-6 py-3 rounded-full shadow-md hover:bg-green-600 transition-colors w-full mb-4">
-                    Berikan Petunjuk
-                </button>
-
-                <div class="bg-blue-100 text-blue-800 p-6 rounded-xl shadow-inner w-full text-center mb-4">
-                    <p class="text-lg font-medium">Penebak: <span id="guesser-player" class="font-bold text-xl">Pemain 2</span></p>
-                    <input type="text" id="guess-word-input" placeholder="Tebak kata di sini..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-300 mb-2">
-                    <button id="submit-word-guess-btn" class="bg-blue-500 text-white px-6 py-3 rounded-full shadow-md hover:bg-blue-600 transition-colors w-full">
-                        Kirim Tebakan
-                    </button>
-                </div>
-
-                <p class="text-2xl font-bold mt-4">Skor: <span id="word-guess-score" class="text-purple-600">0</span></p>
-                <p id="word-guess-message" class="text-lg mt-2 font-semibold text-center"></p>
-                <button id="reset-word-guess-btn" class="bg-gray-300 text-gray-700 px-6 py-3 rounded-full shadow-md hover:bg-gray-400 transition-colors mt-4">
-                    Reset Game
-                </button>
+        <section id="word-guess" class="game-section">
+            <button class="back-button" onclick="showLandingPage()">Kembali ke Menu</button>
+            <h2 class="text-3xl font-bold text-pink-600 mb-4 text-center">🔠 Tebak Kata Pasangan</h2>
+            <p class="text-center mb-4">Satu memberi petunjuk, satu menebak!</p>
+            <div class="clue-display" id="clue-display"></div>
+            <button class="game-button give-clue-button" onclick="generateClue()">Berikan Petunjuk</button>
+            <div class="guess-input-word">
+                <input type="text" id="guess-input-word" placeholder="Tebak katanya..." class="w-full">
+                <button onclick="submitGuessWord()">Tebak!</button>
             </div>
-        </div>
+            <div class="score-display-word" id="word-score-display">Pemain 1: 0 | Pemain 2: 0</div>
+            <button class="game-button new-word-button" onclick="startNewWordRound()">Kata Baru</button>
+            <button class="game-button reset-score-button" onclick="resetWordScore()">Reset Skor</button>
+        </section>
 
         <!-- Siapa Paling? Game -->
-        <div id="who-is-most" class="game-section w-full mt-8 p-6 bg-white rounded-2xl shadow-xl">
-            <h3 class="text-3xl font-bold text-purple-600 mb-6">🧠 Siapa Paling? 🤔</h3>
-            <div id="who-is-most-question" class="bg-purple-100 text-purple-800 p-6 rounded-xl shadow-inner w-full max-w-xl mx-auto text-center mb-6">
-                <p class="text-2xl font-bold" id="current-who-question">Tekan 'Mulai' untuk pertanyaan pertama!</p>
+        <section id="who-is-most" class="game-section">
+            <button class="back-button" onclick="showLandingPage()">Kembali ke Menu</button>
+            <h2 class="text-3xl font-bold text-pink-600 mb-4 text-center">🧠 Siapa Paling?</h2>
+            <p class="text-center mb-4">Siapa yang paling...?</p>
+            <div class="question-display" id="who-is-most-question">Tekan 'Mulai' untuk pertanyaan!</div>
+            <div class="answer-buttons">
+                <button class="player1" id="player1-answer-btn" onclick="recordChoice(1)">Pemain 1</button>
+                <button class="player2" id="player2-answer-btn" onclick="recordChoice(2)">Pemain 2</button>
             </div>
-
-            <div class="flex flex-col md:flex-row justify-center gap-8 w-full max-w-3xl mx-auto">
-                <!-- Player 1 Choices -->
-                <div class="flex flex-col items-center bg-red-100 p-6 rounded-xl shadow-md w-full md:w-1/2">
-                    <h4 class="text-xl font-semibold text-red-700 mb-4">Pemain 1</h4>
-                    <div class="flex flex-col gap-3 w-full">
-                        <label class="flex items-center p-3 bg-white rounded-lg shadow-sm cursor-pointer hover:bg-red-50">
-                            <input type="radio" name="player1-choice" value="player1" class="form-radio h-5 w-5 text-red-600 mr-3">
-                            <span class="text-lg">Saya</span>
-                        </label>
-                        <label class="flex items-center p-3 bg-white rounded-lg shadow-sm cursor-pointer hover:bg-red-50">
-                            <input type="radio" name="player1-choice" value="player2" class="form-radio h-5 w-5 text-red-600 mr-3">
-                            <span class="text-lg">Pasangan Saya</span>
-                        </label>
-                        <label class="flex items-center p-3 bg-white rounded-lg shadow-sm cursor-pointer hover:bg-red-50">
-                            <input type="radio" name="player1-choice" value="both" class="form-radio h-5 w-5 text-red-600 mr-3">
-                            <span class="text-lg">Keduanya</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Player 2 Choices -->
-                <div class="flex flex-col items-center bg-blue-100 p-6 rounded-xl shadow-md w-full md:w-1/2">
-                    <h4 class="text-xl font-semibold text-blue-700 mb-4">Pemain 2</h4>
-                    <div class="flex flex-col gap-3 w-full">
-                        <label class="flex items-center p-3 bg-white rounded-lg shadow-sm cursor-pointer hover:bg-blue-50">
-                            <input type="radio" name="player2-choice" value="player1" class="form-radio h-5 w-5 text-blue-600 mr-3">
-                            <span class="text-lg">Saya</span>
-                        </label>
-                        <label class="flex items-center p-3 bg-white rounded-lg shadow-sm cursor-pointer hover:bg-blue-50">
-                            <input type="radio" name="player2-choice" value="player2" class="form-radio h-5 w-5 text-blue-600 mr-3">
-                            <span class="text-lg">Pasangan Saya</span>
-                        </label>
-                        <label class="flex items-center p-3 bg-white rounded-lg shadow-sm cursor-pointer hover:bg-blue-50">
-                            <input type="radio" name="player2-choice" value="both" class="form-radio h-5 w-5 text-blue-600 mr-3">
-                            <span class="text-lg">Keduanya</span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <button id="submit-who-is-most-btn" class="bg-purple-500 text-white text-xl font-semibold px-8 py-4 rounded-full shadow-lg hover:bg-purple-600 transform hover:scale-105 transition-transform mt-8">
-                Lihat Hasil!
-            </button>
-            <p id="who-is-most-result" class="text-3xl font-bold mt-6"></p>
-            <div id="who-is-most-expression" class="text-6xl mt-4"></div>
-            <button id="next-who-is-most-btn" class="bg-gray-300 text-gray-700 px-6 py-3 rounded-full shadow-md hover:bg-gray-400 transition-colors mt-4">
-                Pertanyaan Selanjutnya
-            </button>
-            <button id="reset-who-is-most-btn" class="bg-red-300 text-red-700 px-6 py-3 rounded-full shadow-md hover:bg-red-400 transition-colors mt-2">
-                Reset Game
-            </button>
-        </div>
-
+            <div class="result-display" id="who-is-most-result"></div>
+            <div class="expression-animation" id="who-is-most-expression"></div>
+            <button class="game-button next-question-button" onclick="nextWhoIsMostQuestion()">Pertanyaan Selanjutnya</button>
+            <button class="game-button reset-game-button" onclick="resetWhoIsMostGame()">Mulai Ulang Game</button>
+        </section>
     </div>
 
-    <!-- JavaScript for Game Logic -->
-    <script>
-        // --- Global UI Elements ---
-        const landingPage = document.getElementById('landing-page');
-        const gameContainer = document.getElementById('game-container');
-        const startPlayingBtn = document.getElementById('start-playing-btn');
-        const gameMenuBtns = document.querySelectorAll('.game-menu-btn');
-        const backToMenuBtn = document.getElementById('back-to-menu-btn');
-        const gameSections = document.querySelectorAll('.game-section');
+    <!-- Modal for messages -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <p id="modalMessage"></p>
+        </div>
+    </div>
+
+    <script type="module">
+        // Firebase imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection, query, where, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global Firebase variables
+        let app;
+        let db;
+        let auth;
+        let userId;
+        let isAuthReady = false;
+
+        // Firebase config (from user prompt)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBcEZ9v0NN5JIbz2EvOsbKZekVCP5Kqi4o",
+            authDomain: "couplegame-834e5.firebaseapp.com",
+            projectId: "couplegame-834e5",
+            storageBucket: "couplegame-834e5.firebasestorage.app",
+            messagingSenderId: "524054755775",
+            appId: "1:524054755775:web:ea0239fbd097740fd5490a"
+        };
+
+        // App ID from Canvas environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        // Initialize Firebase and authenticate
+        async function initializeFirebase() {
+            try {
+                console.log("Initializing Firebase with config:", firebaseConfig); // Debugging log
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                console.log("Firebase app and auth initialized."); // Debugging log
+
+                // Sign in anonymously if no custom token, or use custom token
+                if (typeof __initial_auth_token !== 'undefined') {
+                    console.log("Attempting sign-in with custom token..."); // Debugging log
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    console.log("Attempting anonymous sign-in..."); // Debugging log
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        console.log("Firebase authenticated. User ID:", userId);
+                    } else {
+                        userId = crypto.randomUUID(); // Fallback for unauthenticated
+                        console.log("Firebase not authenticated. Using random user ID:", userId);
+                    }
+                    isAuthReady = true;
+                    // You can now safely perform Firestore operations
+                    loadChallengesFromFirestore();
+                    loadSnakesAndLaddersState();
+                    loadWordGuessState();
+                    loadWhoIsMostState();
+                });
+            } catch (error) {
+                console.error("Error initializing Firebase or authenticating:", error);
+                showMessage("Terjadi kesalahan saat menginisialisasi game. Silakan coba lagi. Pastikan konfigurasi Firebase Anda benar dan layanan otentikasi diaktifkan.");
+            }
+        }
+
+        // --- Global UI Functions ---
+        function showGame(gameId) {
+            document.querySelectorAll('.game-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById('landing-page').style.display = 'none';
+            document.getElementById(gameId).classList.add('active');
+            // Specific game setup when shown
+            if (gameId === 'draw-and-guess') {
+                setupDrawingCanvas();
+            } else if (gameId === 'snakes-and-ladders') {
+                createBoard();
+                updatePlayerPositions();
+            } else if (gameId === 'word-guess') {
+                updateWordScoreDisplay();
+            } else if (gameId === 'who-is-most') {
+                updateWhoIsMostUI();
+            }
+        }
+
+        function showLandingPage() {
+            document.querySelectorAll('.game-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById('landing-page').style.display = 'flex';
+        }
+
+        // Modal functions
+        const messageModal = document.getElementById('messageModal');
+        const modalMessage = document.getElementById('modalMessage');
+        const closeModalButton = document.querySelector('.close-button');
+
+        function showMessage(message) {
+            modalMessage.textContent = message;
+            messageModal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            modalMessage.textContent = '';
+            messageModal.style.display = 'none';
+        }
+
+        closeModalButton.onclick = closeModal;
+        window.onclick = function(event) {
+            if (event.target == messageModal) {
+                closeModal();
+            }
+        }
+
+        // --- Background Music ---
         const backgroundMusic = document.getElementById('background-music');
         const musicToggleButton = document.getElementById('music-toggle');
-        let isMusicPlaying = false; // Initial state
+        let isMusicPlaying = false;
 
-        // --- Music Control ---
         musicToggleButton.addEventListener('click', () => {
             if (isMusicPlaying) {
                 backgroundMusic.pause();
                 musicToggleButton.innerHTML = '<i class="fas fa-volume-mute"></i>';
             } else {
-                backgroundMusic.play();
-                musicToggleButton.innerHTML = '<i class="fas fa-music"></i>';
+                backgroundMusic.play().catch(e => console.error("Error playing music:", e));
+                musicToggleButton.innerHTML = '<i class="fas fa-volume-up"></i>';
             }
             isMusicPlaying = !isMusicPlaying;
         });
 
-        // Autoplay music on user interaction (after clicking start button)
-        startPlayingBtn.addEventListener('click', () => {
-            landingPage.classList.remove('animate-fade-in');
-            landingPage.classList.add('hidden');
-            gameContainer.classList.remove('hidden');
-            gameContainer.classList.add('animate-fade-in');
+        // Autoplay music on user interaction (e.g., first click)
+        document.addEventListener('click', function playMusicOnce() {
             if (!isMusicPlaying) {
-                backgroundMusic.play().catch(e => console.log("Autoplay prevented:", e));
-                isMusicPlaying = true;
-                musicToggleButton.innerHTML = '<i class="fas fa-music"></i>';
+                backgroundMusic.play().then(() => {
+                    isMusicPlaying = true;
+                    musicToggleButton.innerHTML = '<i class="fas fa-volume-up"></i>';
+                }).catch(e => console.error("Autoplay prevented:", e));
             }
+            document.removeEventListener('click', playMusicOnce);
         });
 
-        // --- Navigation Logic ---
-        gameMenuBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const gameId = btn.dataset.game;
-                gameSections.forEach(section => {
-                    section.classList.remove('active');
-                });
-                document.getElementById(gameId).classList.add('active');
-                gameContainer.querySelector('h2').classList.add('hidden'); // Hide "Pilih Game Anda!"
-                gameMenuBtns.forEach(b => b.classList.add('hidden')); // Hide game menu buttons
-                backToMenuBtn.classList.remove('hidden'); // Show back button
-            });
-        });
-
-        backToMenuBtn.addEventListener('click', () => {
-            gameSections.forEach(section => {
-                section.classList.remove('active');
-            });
-            gameContainer.querySelector('h2').classList.remove('hidden'); // Show "Pilih Game Anda!"
-            gameMenuBtns.forEach(b => b.classList.remove('hidden')); // Show game menu buttons
-            backToMenuBtn.classList.add('hidden'); // Hide back button
-        });
 
         // --- Kiss or Dare Game Logic ---
-        const wheelCanvas = document.getElementById('wheelCanvas');
-        const wheelCtx = wheelCanvas.getContext('2d');
-        const spinWheelBtn = document.getElementById('spin-wheel-btn');
+        const kissDareWheel = document.getElementById('kiss-dare-wheel');
         const challengeDisplay = document.getElementById('challenge-display');
-        const challengePointsDisplay = document.getElementById('challenge-points');
         const customChallengeInput = document.getElementById('custom-challenge-input');
         const customChallengeCategory = document.getElementById('custom-challenge-category');
-        const addCustomChallengeBtn = document.getElementById('add-custom-challenge-btn');
 
-        let kissOrDareChallenges = {
-            "Romantis": [
-                { text: "Berikan pijatan punggung selama 5 menit.", points: 30 },
-                { text: "Tuliskan 3 hal yang paling kamu cintai dari pasanganmu.", points: 40 },
-                { text: "Nyanyikan lagu cinta favorit kalian berdua.", points: 50 },
-                { text: "Buat janji kencan romantis untuk minggu depan.", points: 60 },
-                { text: "Peluk pasanganmu erat selama 30 detik.", points: 20 },
-                { text: "Bisikkan kata-kata manis di telinga pasanganmu.", points: 35 },
-                { text: "Berikan pujian tulus tentang penampilan pasanganmu.", points: 25 },
-                { text: "Ajak pasanganmu berdansa tanpa musik.", points: 45 },
-                { text: "Ceritakan kenangan romantis favorit kalian berdua.", points: 55 },
-                { text: "Buatkan minuman favorit pasanganmu.", points: 30 },
-                { text: "Tatap mata pasanganmu tanpa bicara selama 1 menit.", points: 40 },
-                { text: "Genggam tangan pasanganmu dan jangan dilepas selama 5 menit.", points: 20 },
-                { text: "Kirimkan pesan teks romantis sekarang juga.", points: 25 },
-                { text: "Sebutkan satu hal yang membuatmu jatuh cinta lagi padanya hari ini.", points: 50 },
-                { text: "Berikan ciuman di dahi.", points: 20 },
-                { text: "Tawarkan untuk melakukan tugas rumah tangga yang tidak disukai pasanganmu.", points: 30 },
-                { text: "Buat daftar 5 hal yang ingin kalian lakukan bersama di masa depan.", points: 60 },
-                { text: "Berikan ciuman kejutan saat pasanganmu tidak melihat.", points: 35 },
-                { text: "Ucapkan 'Aku mencintaimu' dalam 3 bahasa berbeda.", points: 45 },
-                { text: "Ajak pasanganmu melihat bintang malam ini (jika memungkinkan).", points: 70 }
+        let challenges = {
+            romantic: [
+                "Cium kening pasanganmu dengan lembut.",
+                "Berikan pelukan erat selama 10 detik.",
+                "Bisikkan 3 hal yang paling kamu sukai dari pasanganmu.",
+                "Tuliskan satu kalimat romantis di telapak tangannya.",
+                "Pijat pundak pasanganmu selama 1 menit.",
+                "Sanyikan lagu cinta favorit kalian berdua (walaupun fals!).",
+                "Buatkan minuman kesukaan pasanganmu.",
+                "Berikan 'high five' romantis.",
+                "Tatap mata pasanganmu selama 30 detik tanpa bicara.",
+                "Genggam tangan pasanganmu dan ceritakan kenangan favorit kalian.",
+                "Beri tahu pasanganmu satu hal yang kamu syukuri tentang dia hari ini.",
+                "Sebutkan julukan sayang kalian dan ceritakan asal-usulnya.",
+                "Berikan pujian tulus tentang penampilan pasanganmu.",
+                "Rencanakan kencan impian kalian berdua (secara lisan).",
+                "Tanyakan satu pertanyaan mendalam tentang masa depan hubungan kalian.",
+                "Berikan pijatan kaki singkat kepada pasanganmu.",
+                "Tuliskan 'I ❤️ U' di punggung pasanganmu dengan jari.",
+                "Buat janji kecil yang bisa kalian tepati minggu ini.",
+                "Ceritakan momen pertama kali kamu tahu kamu jatuh cinta padanya.",
+                "Berikan satu kecupan di pipi setiap kali kamu menyebutkan hal baik tentang dia."
             ],
-            "Lucu": [
-                { text: "Ceritakan lelucon paling garing yang kamu tahu.", points: 20 },
-                { text: "Imitasi suara hewan peliharaan (atau hewan favorit) pasanganmu.", points: 30 },
-                { text: "Berpose paling konyol untuk difoto.", points: 25 },
-                { text: "Coba berbicara dengan aksen lucu selama 1 menit.", points: 35 },
-                { text: "Gambarkan wajah pasanganmu dengan mata tertutup.", points: 40 },
-                { text: "Lakukan tarian konyol selama 15 detik.", points: 30 },
-                { text: "Ceritakan kejadian paling memalukan yang pernah kamu alami.", points: 45 },
-                { text: "Berikan nama panggilan lucu untuk pasanganmu.", points: 20 },
-                { text: "Coba makan tanpa menggunakan tangan (pasanganmu menyuapi).", points: 50 },
-                { text: "Berikan 'high-five' yang sangat berlebihan.", points: 15 },
-                { text: "Coba buat wajah paling jelek yang kamu bisa.", points: 25 },
-                { text: "Nyanyikan lagu anak-anak dengan suara opera.", points: 40 },
-                { text: "Berpura-pura menjadi robot selama 30 detik.", points: 30 },
-                { text: "Ceritakan mimpi paling aneh yang pernah kamu alami.", points: 35 },
-                { text: "Berikan 'air high-five' yang gagal.", points: 10 },
-                { text: "Coba berbicara mundur selama 10 detik.", points: 45 },
-                { text: "Buat suara kentut dengan ketiakmu.", points: 20 },
-                { text: "Berikan pelukan 'beruang' yang sangat erat.", points: 25 },
-                { text: "Coba sentuh hidungmu dengan lidahmu.", points: 30 },
-                { text: "Berpura-pura menjadi patung selama 1 menit.", points: 50 }
+            funny: [
+                "Ceritakan lelucon paling garing yang kamu tahu.",
+                "Tirukan suara binatang peliharaan favoritmu.",
+                "Berpose konyol dan biarkan pasanganmu memotretnya.",
+                "Berjalan mundur selama 10 langkah.",
+                "Bercerita tentang momen paling memalukan dalam hidupmu.",
+                "Tirukan gaya bicara karakter kartun favoritmu.",
+                "Buat wajah paling lucu yang kamu bisa.",
+                "Nyanyikan lagu anak-anak dengan suara opera.",
+                "Berpura-pura menjadi robot selama 1 menit.",
+                "Ceritakan mimpi paling aneh yang pernah kamu alami.",
+                "Lakukan tarian kemenangan yang konyol.",
+                "Berikan pasanganmu 'high five' dengan kaki.",
+                "Berpura-pura menjadi detektif dan coba pecahkan 'misteri' kecil di ruangan.",
+                "Bicara dengan aksen aneh selama 1 menit.",
+                "Buat suara kentut dengan ketiakmu (jika bisa!).",
+                "Ceritakan kisah hantu yang tidak menakutkan.",
+                "Berpura-pura menjadi patung selama 30 detik.",
+                "Tirukan cara pasanganmu tertawa.",
+                "Buat puisi dadakan tentang kaus kakimu.",
+                "Makan satu sendok sambal (jika tidak pedas!)."
             ],
-            "Hot (21+)": [
-                { text: "Berikan ciuman leher yang panjang.", points: 60 },
-                { text: "Bisikkan fantasi rahasiamu ke telinga pasanganmu.", points: 70 },
-                { text: "Lakukan 'lap dance' singkat untuk pasanganmu.", points: 80 },
-                { text: "Berikan pijatan sensual di bahu atau kaki.", points: 65 },
-                { text: "Tuliskan pesan nakal di bagian tubuh pasanganmu.", points: 75 },
-                { text: "Cium pasanganmu di 5 tempat berbeda (selain bibir).", points: 85 },
-                { text: "Deskripsikan pakaian dalam favorit pasanganmu.", points: 50 },
-                { text: "Mainkan 'truth or dare' versi dewasa (2 pertanyaan/tantangan).", points: 90 },
-                { text: "Berikan ciuman yang tidak akan pernah dilupakan pasanganmu.", points: 100 },
-                { text: "Ajak pasanganmu ke kamar tidur sekarang juga.", points: 95 },
-                { text: "Berikan ciuman di bagian tubuh yang paling sensitif (selain alat kelamin).", points: 80 },
-                { text: "Bisikkan 3 hal yang ingin kamu lakukan bersama pasanganmu malam ini.", points: 70 },
-                { text: "Berikan sentuhan lembut di paha pasanganmu.", points: 60 },
-                { text: "Mainkan 'never have I ever' versi dewasa (3 pernyataan).", points: 85 },
-                { text: "Berikan 'strip tease' singkat (sesuai kenyamanan).", points: 90 },
-                { text: "Tanyakan satu pertanyaan paling intim yang ingin kamu tahu dari pasanganmu.", points: 75 },
-                { text: "Berikan ciuman 'eskimo' (gosok hidung).", points: 50 },
-                { text: "Bisikkan apa yang paling kamu sukai dari tubuh pasanganmu.", points: 65 },
-                { text: "Ajak pasanganmu mandi bersama.", points: 95 },
-                { text: "Sentuh pasanganmu di tempat yang membuat mereka merinding.", points: 100 }
+            'hot-1': [
+                "Berikan ciuman leher yang lembut.",
+                "Bisikkan fantasi rahasiamu ke telinga pasanganmu.",
+                "Sentuh tangan pasanganmu dengan perlahan dan tatap matanya.",
+                "Berikan pijatan punggung dengan jari-jari lembut.",
+                "Tuliskan pesan 'nakal' di paha pasanganmu dengan jari.",
+                "Berikan ciuman di bagian tubuh yang jarang kamu cium.",
+                "Tanyakan satu hal yang paling membuat pasanganmu bergairah.",
+                "Tatap mata pasanganmu dan bayangkan momen paling intim kalian.",
+                "Berikan pelukan dari belakang dan bisikkan sesuatu yang genit.",
+                "Genggam tangan pasanganmu dan rasakan detak jantungnya.",
+                "Berikan ciuman singkat di bahu.",
+                "Tanyakan satu hal yang ingin kamu coba di ranjang.",
+                "Sentuh rambut pasanganmu dengan sensual.",
+                "Bisikkan 'Aku menginginkanmu' ke telinganya.",
+                "Berikan ciuman di pergelangan tangan.",
+                "Tanyakan kapan terakhir kali pasanganmu merasa paling seksi.",
+                "Sentuh pipi pasanganmu dengan lembut dan berikan ciuman singkat.",
+                "Berikan ciuman di telinga.",
+                "Tuliskan inisialmu di leher pasanganmu dengan lidahmu.",
+                "Berikan ciuman di jari kaki."
             ],
-            "Kejutan": [
-                { text: "Berikan hadiah kecil yang sudah kamu siapkan.", points: 50 },
-                { text: "Siapkan makanan ringan favorit pasanganmu.", points: 40 },
-                { text: "Putar lagu favorit pasanganmu dan ajak menari.", points: 35 },
-                { text: "Tuliskan 'Aku mencintaimu' di cermin kamar mandi.", points: 30 },
-                { text: "Sembunyikan pesan manis di tempat yang akan ditemukan pasanganmu.", points: 45 },
-                { text: "Berikan pijatan kaki kejutan.", points: 55 },
-                { text: "Siapkan sarapan di tempat tidur besok pagi.", points: 60 },
-                { text: "Buatkan kopi/teh favorit pasanganmu.", points: 25 },
-                { text: "Ajak pasanganmu melakukan hobi yang dia sukai (yang jarang kamu lakukan).", points: 70 },
-                { text: "Berikan 'voucher' untuk satu jam bebas dari tugas rumah tangga.", points: 65 },
-                { text: "Tuliskan daftar 'mengapa aku mencintaimu' dan berikan padanya.", points: 75 },
-                { text: "Berikan pelukan dari belakang secara tiba-tiba.", points: 30 },
-                { text: "Sembunyikan cokelat atau permen di tempat yang tidak terduga.", points: 20 },
-                { text: "Berikan kejutan dengan memutar film favorit pasanganmu.", points: 40 },
-                { text: "Tawarkan untuk mencuci piring atau membereskan sesuatu yang berantakan.", points: 35 },
-                { text: "Berikan 'komplimen acak' sepanjang hari.", points: 25 },
-                { text: "Siapkan air hangat untuk mandi pasanganmu.", points: 50 },
-                { text: "Berikan 'high five' yang sangat antusias.", points: 15 },
-                { text: "Tawarkan untuk mendengarkan semua keluh kesah pasanganmu tanpa menyela.", points: 80 },
-                { text: "Berikan 'voucher' untuk satu ciuman ekstra kapan saja.", points: 90 }
+            'hot-2': [
+                "Cium bibir pasanganmu dengan gairah selama 10 detik.",
+                "Lepaskan satu pakaian pasanganmu dengan mata tertutup.",
+                "Berikan 'lap dance' singkat untuk pasanganmu.",
+                "Bisikkan skenario fantasi terliar kamu ke telinga pasanganmu.",
+                "Berikan ciuman basah di leher.",
+                "Sentuh bagian tubuh pasanganmu yang paling kamu sukai.",
+                "Ceritakan momen paling seksi yang pernah kalian alami bersama.",
+                "Berikan ciuman di paha bagian dalam.",
+                "Tanyakan satu hal yang paling membuat pasanganmu 'turn on'.",
+                "Lakukan 'striptease' singkat (sesuai kenyamanan).",
+                "Berikan ciuman di perut bagian bawah.",
+                "Tuliskan pesan 'nakal' di tubuh pasanganmu dengan jari.",
+                "Berikan ciuman di dada/payudara (sesuai kenyamanan).",
+                "Tanyakan satu hal yang ingin pasanganmu lakukan padamu.",
+                "Berikan pijatan sensual di area paha atau bokong.",
+                "Bisikkan 'Aku ingin kamu sekarang' ke telinga pasanganmu.",
+                "Berikan ciuman di punggung bawah.",
+                "Tanyakan posisi favorit pasanganmu.",
+                "Sentuh bibir pasanganmu dengan jarimu dan tarik perlahan.",
+                "Berikan ciuman di area sensitif (sesuai kenyamanan)."
             ],
-            "Kreatif": [
-                { text: "Buat puisi singkat tentang pasanganmu.", points: 50 },
-                { text: "Gambarkan karikatur lucu pasanganmu.", points: 40 },
-                { text: "Buat cerita pendek tentang petualangan kalian berdua.", points: 60 },
-                { text: "Ciptakan gerakan tarian baru bersama.", points: 55 },
-                { text: "Tuliskan lagu singkat untuk pasanganmu.", points: 70 },
-                { text: "Buat 'hand-shadow puppet show' untuk pasanganmu.", points: 30 },
-                { text: "Rancang 'logo' untuk hubungan kalian.", points: 45 },
-                { text: "Buat daftar putar lagu yang menggambarkan hubungan kalian.", points: 65 },
-                { text: "Ciptakan resep minuman baru dan beri nama yang romantis.", points: 50 },
-                { text: "Buat 'kartu ucapan' dadakan dengan bahan seadanya.", points: 35 },
-                { text: "Tuliskan 'surat cinta' yang hanya boleh dibaca dalam hati.", points: 70 },
-                { text: "Buat 'meme' lucu tentang hubungan kalian.", points: 40 },
-                { text: "Rancang 'pakaian' dari selimut atau handuk.", points: 30 },
-                { text: "Ciptakan 'bahasa rahasia' kalian berdua.", points: 60 },
-                { text: "Buat 'patung' kecil dari benda-benda di sekitar.", points: 25 },
-                { text: "Rancang 'bendera' untuk 'negara' hubungan kalian.", points: 50 },
-                { text: "Ciptakan 'jingle' lucu untuk pasanganmu.", points: 45 },
-                { text: "Buat 'daftar keinginan' yang bisa kalian lakukan bersama.", points: 75 },
-                { text: "Rancang 'tato' sementara (pakai spidol) yang melambangkan cinta kalian.", points: 80 },
-                { text: "Ciptakan 'ritual' pagi atau malam yang romantis untuk kalian berdua.", points: 90 }
+            'hot-3': [
+                "Cium seluruh tubuh pasanganmu dari leher hingga kaki.",
+                "Lakukan 'oral sex' selama 2 menit (jika nyaman).",
+                "Berikan 'spanking' ringan pada bokong pasanganmu.",
+                "Bisikkan instruksi 'kotor' ke telinga pasanganmu.",
+                "Berikan ciuman di area intim pasanganmu.",
+                "Lakukan 'role play' singkat dengan skenario 'nakal'.",
+                "Tanyakan satu hal yang belum pernah kalian coba tapi ingin sekali.",
+                "Berikan pijatan seluruh tubuh dengan minyak pijat.",
+                "Gunakan es batu untuk menjelajahi tubuh pasanganmu.",
+                "Berikan 'deep kiss' yang panjang dan penuh gairah.",
+                "Tanyakan satu hal yang paling membuat pasanganmu 'orgasme'.",
+                "Berikan ciuman di area sensitif pasanganmu hingga ia merinding.",
+                "Lakukan 'edging' pada pasanganmu (jika nyaman).",
+                "Bisikkan 'Aku mencintaimu' saat kalian sedang dalam momen intim.",
+                "Berikan ciuman di bagian tubuh yang paling tersembunyi.",
+                "Tanyakan fantasi terliar pasanganmu yang belum terealisasi.",
+                "Gunakan bulu atau kain lembut untuk menyentuh tubuh pasanganmu.",
+                "Berikan ciuman yang mengarah ke area intim.",
+                "Tuliskan namamu di tubuh pasanganmu dengan lidahmu.",
+                "Berikan ciuman di area yang paling membuat pasanganmu bergairah."
             ]
         };
 
-        const categories = Object.keys(kissOrDareChallenges);
-        const colors = ['#FFB6C1', '#ADD8E6', '#D8BFD8', '#FFFACD', '#C1FFB6']; // Pastel colors for wheel segments
+        const categories = Object.keys(challenges);
+        const segments = categories.length; // Jumlah segmen pada roda
+        const segmentAngle = 360 / segments;
 
-        function drawWheel() {
-            const numSegments = categories.length;
-            const arcSize = (2 * Math.PI) / numSegments;
+        function updateWheelSegments() {
+            let gradientString = 'conic-gradient(';
+            let currentAngle = 0;
+            const colors = ['#ffe0f0', '#d0eaff', '#ffe0f0', '#d0eaff', '#ffe0f0']; // Warna pastel bergantian
 
-            wheelCtx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
-            wheelCtx.font = 'bold 16px Inter';
-            wheelCtx.textAlign = 'center';
-            wheelCtx.textBaseline = 'middle';
+            categories.forEach((category, index) => {
+                const startAngle = currentAngle;
+                const endAngle = currentAngle + segmentAngle;
+                gradientString += `${colors[index % colors.length]} ${startAngle}deg ${endAngle}deg${index < categories.length - 1 ? ',' : ''}`;
+                currentAngle = endAngle;
+            });
+            gradientString += ')';
+            kissDareWheel.style.background = gradientString;
+        }
 
-            for (let i = 0; i < numSegments; i++) {
-                const angle = i * arcSize;
-                wheelCtx.beginPath();
-                wheelCtx.arc(wheelCanvas.width / 2, wheelCanvas.height / 2, wheelCanvas.width / 2, angle, angle + arcSize);
-                wheelCtx.lineTo(wheelCanvas.width / 2, wheelCanvas.height / 2);
-                wheelCtx.fillStyle = colors[i % colors.length];
-                wheelCtx.fill();
-                wheelCtx.save();
-                wheelCtx.translate(wheelCanvas.width / 2 + Math.cos(angle + arcSize / 2) * (wheelCanvas.width / 2 - 40),
-                                   wheelCanvas.height / 2 + Math.sin(angle + arcSize / 2) * (wheelCanvas.width / 2 - 40));
-                wheelCtx.rotate(angle + arcSize / 2 + Math.PI / 2);
-                wheelCtx.fillStyle = '#4A5568'; // Darker text for contrast
-                wheelCtx.fillText(categories[i], 0, 0);
-                wheelCtx.restore();
+        function spinWheel() {
+            const randomDegree = Math.floor(Math.random() * 3600) + 720; // Spin 2-10 kali
+            kissDareWheel.style.transform = `rotate(${randomDegree}deg)`;
+
+            setTimeout(() => {
+                const normalizedDegree = randomDegree % 360;
+                const segmentIndex = Math.floor(normalizedDegree / segmentAngle);
+                const chosenCategory = categories[segmentIndex];
+                const categoryChallenges = challenges[chosenCategory];
+                if (categoryChallenges && categoryChallenges.length > 0) {
+                    const randomChallenge = categoryChallenges[Math.floor(Math.random() * categoryChallenges.length)];
+                    challengeDisplay.textContent = randomChallenge;
+                    // TODO: Tambahkan logika poin jika diperlukan
+                } else {
+                    challengeDisplay.textContent = "Tidak ada tantangan untuk kategori ini. Coba tambahkan!";
+                }
+            }, 4000); // Sesuai dengan durasi transisi CSS
+        }
+
+        function addCustomChallenge() {
+            const newChallenge = customChallengeInput.value.trim();
+            const category = customChallengeCategory.value;
+
+            if (newChallenge && challenges[category]) {
+                challenges[category].push(newChallenge);
+                customChallengeInput.value = '';
+                showMessage("Tantangan kustom berhasil ditambahkan!");
+                saveChallengesToFirestore(); // Simpan ke Firestore
+            } else {
+                showMessage("Mohon masukkan tantangan dan pilih kategori yang valid.");
             }
         }
 
-        let spinning = false;
-        spinWheelBtn.addEventListener('click', () => {
-            if (spinning) return;
-            spinning = true;
-            challengeDisplay.innerHTML = '<p>Memutar roda...</p>';
-            challengePointsDisplay.textContent = '';
+        // Firestore functions for Kiss or Dare
+        async function saveChallengesToFirestore() {
+            if (!isAuthReady) {
+                console.warn("Firebase not ready. Cannot save challenges.");
+                return;
+            }
+            try {
+                const docRef = doc(db, `artifacts/${appId}/users/${userId}/kiss-or-dare`, 'challenges');
+                await setDoc(docRef, { data: JSON.stringify(challenges) });
+                console.log("Challenges saved to Firestore.");
+            } catch (e) {
+                console.error("Error saving challenges:", e);
+                showMessage("Gagal menyimpan tantangan. Silakan coba lagi.");
+            }
+        }
 
-            const spinDuration = 3000; // 3 seconds
-            const startAngle = wheelCtx.getTransform().rotate || 0;
-            const randomSpins = Math.floor(Math.random() * 10) + 5; // 5-14 full spins
-            const targetSegmentIndex = Math.floor(Math.random() * categories.length);
-            const targetAngle = (2 * Math.PI * randomSpins) + (targetSegmentIndex * (2 * Math.PI / categories.length));
-
-            let startTime = null;
-            function animateSpin(currentTime) {
-                if (!startTime) startTime = currentTime;
-                const progress = (currentTime - startTime) / spinDuration;
-                if (progress < 1) {
-                    const easedProgress = 1 - Math.pow(1 - progress, 3); // Ease out cubic
-                    const currentAngle = startAngle + targetAngle * easedProgress;
-                    wheelCanvas.style.transform = `rotate(${currentAngle}rad)`;
-                    requestAnimationFrame(animateSpin);
+        async function loadChallengesFromFirestore() {
+            if (!isAuthReady) {
+                console.warn("Firebase not ready. Cannot load challenges.");
+                return;
+            }
+            try {
+                const docRef = doc(db, `artifacts/${appId}/users/${userId}/kiss-or-dare`, 'challenges');
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const loadedData = JSON.parse(docSnap.data().data);
+                    // Merge loaded challenges with default ones, prioritizing loaded custom ones
+                    for (const category in loadedData) {
+                        if (challenges[category]) {
+                            // Filter out duplicates if any, or just append
+                            loadedData[category].forEach(challenge => {
+                                if (!challenges[category].includes(challenge)) {
+                                    challenges[category].push(challenge);
+                                }
+                            });
+                        } else {
+                            challenges[category] = loadedData[category]; // Add new categories if they exist
+                        }
+                    }
+                    console.log("Challenges loaded from Firestore.");
                 } else {
-                    wheelCanvas.style.transform = `rotate(${targetAngle}rad)`;
-                    spinning = false;
-                    const finalAngle = (targetAngle % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
-                    let selectedIndex = Math.floor((2 * Math.PI - finalAngle + Math.PI / categories.length) / (2 * Math.PI / categories.length)) % categories.length;
-                    if (selectedIndex < 0) selectedIndex += categories.length; // Ensure positive index
-
-                    const selectedCategory = categories[selectedIndex];
-                    const challengesForCategory = kissOrDareChallenges[selectedCategory];
-                    const randomChallenge = challengesForCategory[Math.floor(Math.random() * challengesForCategory.length)];
-
-                    challengeDisplay.innerHTML = `<p class="text-xl font-bold">${selectedCategory}:</p><p>${randomChallenge.text}</p>`;
-                    challengePointsDisplay.textContent = `Poin: ${randomChallenge.points}`;
+                    console.log("No challenges found in Firestore, using default.");
+                    saveChallengesToFirestore(); // Save default if not present
                 }
+                updateWheelSegments(); // Update wheel after loading challenges
+            } catch (e) {
+                console.error("Error loading challenges:", e);
+                showMessage("Gagal memuat tantangan. Menggunakan tantangan default.");
             }
-            requestAnimationFrame(animateSpin);
-        });
-
-        addCustomChallengeBtn.addEventListener('click', () => {
-            const challengeText = customChallengeInput.value.trim();
-            const category = customChallengeCategory.value;
-            if (challengeText) {
-                // Assign a default point value for custom challenges
-                const points = 50;
-                if (!kissOrDareChallenges[category]) {
-                    kissOrDareChallenges[category] = [];
-                }
-                kissOrDareChallenges[category].push({ text: challengeText, points: points });
-                customChallengeInput.value = '';
-                // Instead of alert, use a custom modal or message
-                challengeDisplay.innerHTML = `<p class="text-green-600 font-bold">Tantangan kustom berhasil ditambahkan!</p>`;
-                setTimeout(() => {
-                    challengeDisplay.innerHTML = '<p>Putar roda untuk tantanganmu!</p>';
-                    challengePointsDisplay.textContent = '';
-                }, 2000);
-                // Redraw wheel if categories changed (though unlikely to change for custom adds)
-                drawWheel();
-            } else {
-                challengeDisplay.innerHTML = `<p class="text-red-600 font-bold">Silakan masukkan tantangan kustom.</p>`;
-                setTimeout(() => {
-                    challengeDisplay.innerHTML = '<p>Putar roda untuk tantanganmu!</p>';
-                    challengePointsDisplay.textContent = '';
-                }, 2000);
-            }
-        });
-
-        // Initial draw of the wheel
-        drawWheel();
+        }
 
 
         // --- Ular Tangga Romantis Game Logic ---
-        const snakesBoard = document.getElementById('snakes-board');
+        const boardSize = 10;
+        const totalCells = boardSize * boardSize;
+        let playerPositions = { player1: 1, player2: 1 };
+        let currentPlayer = 1; // 1 for Player 1, 2 for Player 2
         const diceDisplay = document.getElementById('dice-display');
-        const rollDiceBtn = document.getElementById('roll-dice-btn');
-        const player1PosDisplay = document.getElementById('player1-pos');
-        const player2PosDisplay = document.getElementById('player2-pos');
-        const snakesTurnDisplay = document.getElementById('snakes-turn-display');
-        const snakesChallengeDisplay = document.getElementById('snakes-challenge-display');
-        const snakesResetBtn = document.getElementById('snakes-reset-btn');
+        const currentPlayerDisplay = document.getElementById('current-player-display');
+        const romanticMessageDisplay = document.getElementById('romantic-message');
 
-        let playerPositions = { P1: 1, P2: 1 };
-        let currentPlayer = 'P1';
-        const boardSize = 100; // 10x10 board
-        const snakesAndLadders = {
-            // Ladders (start: end)
+        // Snakes and Ladders (simplified for romantic twist)
+        // Format: {startCell: endCell}
+        const romanticSnakesAndLadders = {
+            // Ladders (maju)
             4: 14, 9: 31, 20: 38, 28: 84, 40: 59, 51: 67, 63: 81, 71: 91,
-            // Snakes (start: end)
-            17: 7, 54: 34, 62: 19, 64: 60, 87: 24, 93: 73, 95: 75, 98: 78
+            // Snakes (mundur)
+            17: 7, 33: 11, 46: 25, 54: 34, 62: 19, 75: 56, 88: 68, 97: 79
         };
 
-        const romanticSquares = {
-            5: "Cium pasanganmu dengan penuh gairah!",
-            12: "Katakan 3 hal yang kamu sukai dari pasanganmu.",
-            18: "Berikan pelukan hangat selama 10 detik.",
-            23: "Bisikkan rahasia manis ke telinga pasanganmu.",
-            29: "Ajak pasanganmu berdansa sebentar.",
-            36: "Puji penampilan pasanganmu hari ini.",
-            42: "Berikan ciuman di dahi.",
-            48: "Ceritakan kenangan favorit kalian berdua.",
-            55: "Tatap mata pasanganmu tanpa bicara selama 30 detik.",
-            61: "Sebutkan satu hal yang membuatmu jatuh cinta lagi padanya.",
-            68: "Tawarkan untuk melakukan pijatan bahu.",
-            74: "Bisikkan fantasi rahasiamu ke pasanganmu (21+).",
-            79: "Berikan ciuman di leher.",
-            85: "Ajak pasanganmu ke tempat favorit kalian berdua.",
-            92: "Berikan ciuman yang tidak akan pernah dilupakan pasanganmu (21+).",
-            97: "Katakan 'Aku mencintaimu' dengan cara paling kreatif.",
-            // Add more hot adult questions for other squares
-            3: "Berikan ciuman singkat di pipi.",
-            7: "Sebutkan satu hal lucu tentang pasanganmu.",
-            10: "Berikan 'high five' yang antusias.",
-            13: "Ceritakan lelucon garing.",
-            15: "Berikan 'air kiss' ke pasanganmu.",
-            19: "Sebutkan warna favorit pasanganmu.",
-            21: "Berikan 'jempol' untuk pasanganmu.",
-            25: "Katakan 'terima kasih' untuk sesuatu yang kecil.",
-            27: "Berikan senyum paling manis.",
-            30: "Imitasi suara pasanganmu (dengan hormat!).",
-            32: "Berikan 'wink' ke pasanganmu.",
-            34: "Sebutkan makanan favorit pasanganmu.",
-            37: "Berikan 'virtual hug'.",
-            39: "Katakan 'kamu luar biasa!'",
-            41: "Berikan ciuman di tangan.",
-            44: "Sebutkan film favorit pasanganmu.",
-            46: "Berikan 'fist bump'.",
-            49: "Katakan 'aku bangga padamu'.",
-            50: "Berikan ciuman di hidung.",
-            52: "Sebutkan hobi pasanganmu.",
-            53: "Berikan 'pelukan beruang'.",
-            56: "Katakan 'kamu adalah duniaku'.",
-            57: "Berikan ciuman di telinga.",
-            58: "Sebutkan tempat impian pasanganmu.",
-            59: "Berikan 'pelukan samping'.",
-            60: "Katakan 'hidupku lebih baik denganmu'.",
-            65: "Berikan ciuman di bahu.",
-            66: "Sebutkan lagu favorit pasanganmu.",
-            69: "Berikan 'pelukan group' (jika ada orang lain).",
-            70: "Katakan 'kamu adalah segalanya bagiku'.",
-            72: "Berikan ciuman di punggung tangan.",
-            76: "Sebutkan minuman favorit pasanganmu.",
-            77: "Berikan 'pelukan erat'.",
-            80: "Katakan 'aku beruntung memilikimu'.",
-            82: "Berikan ciuman di pipi bagian bawah.",
-            83: "Sebutkan bau favorit pasanganmu.",
-            86: "Berikan 'pelukan kejutan'.",
-            88: "Katakan 'kamu membuatku bahagia'.",
-            89: "Berikan ciuman di pergelangan tangan.",
-            90: "Sebutkan warna rambut pasanganmu.",
-            94: "Berikan 'pelukan dari belakang'.",
-            96: "Katakan 'kamu adalah jiwaku'.",
-            99: "Berikan ciuman di jari kaki."
+        const romanticCellMessages = {
+            // Hot & Adult 21+ messages
+            5: "Cium pasanganmu dengan gairah!",
+            12: "Bisikkan fantasi 'nakal' ke telinganya.",
+            18: "Sentuh bagian tubuh pasanganmu yang paling kamu sukai.",
+            23: "Berikan pijatan sensual di area paha.",
+            29: "Tanyakan satu hal yang paling membuat pasanganmu 'turn on'.",
+            35: "Lakukan 'lap dance' singkat untuknya.",
+            42: "Cium leher pasanganmu dengan lembut dan penuh hasrat.",
+            48: "Berikan ciuman di paha bagian dalam.",
+            55: "Ceritakan momen paling seksi yang pernah kalian alami bersama.",
+            60: "Tuliskan pesan 'kotor' di punggung pasanganmu dengan jari.",
+            66: "Berikan ciuman di perut bagian bawah.",
+            72: "Tanyakan satu hal yang ingin pasanganmu lakukan padamu.",
+            78: "Berikan pijatan sensual di area bokong.",
+            83: "Bisikkan 'Aku ingin kamu sekarang' ke telinganya.",
+            89: "Cium punggung bawah pasanganmu.",
+            95: "Tanyakan posisi favorit pasanganmu di ranjang.",
+            99: "Rayakan kemenangan dengan ciuman panjang dan penuh gairah!"
         };
+
 
         function createBoard() {
-            snakesBoard.innerHTML = '';
-            // Create cells from 1 to 100
-            const cells = [];
-            for (let i = 1; i <= boardSize; i++) {
+            const boardElement = document.getElementById('snake-ladder-board');
+            boardElement.innerHTML = ''; // Clear existing board
+
+            // Create cells in reverse order for correct numbering (bottom-left to top-right)
+            for (let i = totalCells; i >= 1; i--) {
                 const cell = document.createElement('div');
-                cell.classList.add('snakes-cell');
+                cell.classList.add('cell');
                 cell.id = `cell-${i}`;
-                const span = document.createElement('span');
-                span.textContent = i;
-                cell.appendChild(span);
+                cell.textContent = i;
 
-                if (snakesAndLadders[i]) {
-                    if (snakesAndLadders[i] > i) { // Ladder
-                        cell.style.backgroundColor = '#C3DAFE'; // Light blue for ladders
-                        span.innerHTML += ' ⬆️';
-                    } else { // Snake
-                        cell.style.backgroundColor = '#FECACA'; // Light red for snakes
-                        span.innerHTML += ' ⬇️';
-                    }
+                if (romanticCellMessages[i]) {
+                    cell.classList.add('romantic');
                 }
-                if (romanticSquares[i]) {
-                    cell.style.backgroundColor = '#FEEBC8'; // Light yellow for romantic squares
-                    span.innerHTML += ' 💖';
-                }
-                cells.push(cell);
+
+                boardElement.appendChild(cell);
             }
 
-            // Arrange cells in snake-like pattern (bottom-left to top-right)
-            for (let row = 9; row >= 0; row--) { // Iterate rows from bottom to top
-                if (row % 2 === 0) { // Even rows (0-indexed from bottom) go left to right (1,2,3...)
-                    for (let col = 0; col < 10; col++) {
-                        snakesBoard.appendChild(cells[row * 10 + col]);
+            // Adjust cell order for snake-like numbering (alternating rows)
+            const cells = Array.from(boardElement.children);
+            const orderedCells = [];
+            for (let row = 0; row < boardSize; row++) {
+                if (row % 2 === 0) { // Even rows (from bottom) go left-to-right
+                    for (let col = 0; col < boardSize; col++) {
+                        orderedCells.push(cells[cells.length - (row * boardSize + col + 1)]);
                     }
-                } else { // Odd rows go right to left (20,19,18...)
-                    for (let col = 9; col >= 0; col--) {
-                        snakesBoard.appendChild(cells[row * 10 + col]);
+                } else { // Odd rows (from bottom) go right-to-left
+                    for (let col = boardSize - 1; col >= 0; col--) {
+                        orderedCells.push(cells[cells.length - (row * boardSize + col + 1)]);
                     }
                 }
             }
+            boardElement.innerHTML = '';
+            orderedCells.forEach(cell => boardElement.appendChild(cell));
+
+            // Add player tokens
+            const player1Token = document.createElement('div');
+            player1Token.classList.add('player', 'player-1');
+            player1Token.id = 'player-token-1';
+            player1Token.textContent = 'P1';
+            boardElement.appendChild(player1Token);
+
+            const player2Token = document.createElement('div');
+            player2Token.classList.add('player', 'player-2');
+            player2Token.id = 'player-token-2';
+            player2Token.textContent = 'P2';
+            boardElement.appendChild(player2Token);
         }
 
-        function updatePlayerPosition(player, newPos) {
-            const oldCell = document.getElementById(`cell-${playerPositions[player]}`);
-            const newCell = document.getElementById(`cell-${newPos}`);
+        function updatePlayerPositions() {
+            for (const player in playerPositions) {
+                const position = playerPositions[player];
+                const token = document.getElementById(`player-token-${player === 'player1' ? 1 : 2}`);
+                const targetCell = document.getElementById(`cell-${position}`);
 
-            let token = document.getElementById(`${player}-token`);
-            if (!token) {
-                token = document.createElement('div');
-                token.id = `${player}-token`;
-                token.classList.add('player-token', player === 'P1' ? 'player1' : 'player2');
-                token.textContent = player === 'P1' ? 'P1' : 'P2';
-                snakesBoard.appendChild(token);
+                if (targetCell && token) {
+                    const cellRect = targetCell.getBoundingClientRect();
+                    const boardRect = document.getElementById('snake-ladder-board').getBoundingClientRect();
+
+                    // Calculate position relative to the board
+                    token.style.left = `${cellRect.left - boardRect.left + (cellRect.width / 2) - (token.offsetWidth / 2)}px`;
+                    token.style.top = `${cellRect.top - boardRect.top + (cellRect.height / 2) - (token.offsetHeight / 2)}px`;
+                }
+            }
+            saveSnakesAndLaddersState(); // Save state after updating positions
+        }
+
+        function rollDice() {
+            const diceRoll = Math.floor(Math.random() * 6) + 1;
+            diceDisplay.textContent = diceRoll;
+            romanticMessageDisplay.textContent = ''; // Clear previous message
+
+            let currentPlayerKey = `player${currentPlayer}`;
+            let newPosition = playerPositions[currentPlayerKey] + diceRoll;
+
+            if (newPosition > totalCells) {
+                newPosition = totalCells; // Stay at 100 if overshoot
             }
 
-            // Get the actual cell element to calculate its position
-            const targetCellElement = document.getElementById(`cell-${newPos}`);
-            const targetCellRect = targetCellElement.getBoundingClientRect();
-            const boardRect = snakesBoard.getBoundingClientRect();
+            // Check for snakes/ladders
+            if (romanticSnakesAndLadders[newPosition]) {
+                const oldPosition = newPosition;
+                newPosition = romanticSnakesAndLadders[newPosition];
+                showMessage(`Pemain ${currentPlayer} bergerak dari ${oldPosition} ke ${newPosition} karena ada ${oldPosition < newPosition ? 'tangga romantis!' : 'ular romantis!'}`);
+            }
 
-            // Position the token relative to the board
-            // Adjust for padding/border if necessary, here we center it
-            token.style.left = `${targetCellRect.left - boardRect.left + (targetCellRect.width / 2) - (token.offsetWidth / 2)}px`;
-            token.style.top = `${targetCellRect.top - boardRect.top + (targetCellRect.height / 2) - (token.offsetHeight / 2)}px`;
+            playerPositions[currentPlayerKey] = newPosition;
+            updatePlayerPositions();
 
-            playerPositions[player] = newPos;
-            if (player === 'P1') player1PosDisplay.textContent = newPos;
-            else player2PosDisplay.textContent = newPos;
+            // Check for romantic cell message
+            if (romanticCellMessages[newPosition]) {
+                romanticMessageDisplay.textContent = romanticCellMessages[newPosition];
+                showMessage(`Pemain ${currentPlayer} mendarat di kotak romantis! ${romanticCellMessages[newPosition]}`);
+            }
 
-            // Check for snakes or ladders
-            if (snakesAndLadders[newPos]) {
-                const target = snakesAndLadders[newPos];
-                setTimeout(() => {
-                    snakesChallengeDisplay.textContent = target > newPos ? `Naik tangga ke ${target}!` : `Terperosok ular ke ${target}!`;
-                    updatePlayerPosition(player, target);
-                }, 700); // Short delay for visual effect
-            } else if (romanticSquares[newPos]) {
-                setTimeout(() => {
-                    snakesChallengeDisplay.textContent = `Tantangan Romantis: ${romanticSquares[newPos]}`;
-                }, 700);
+            if (newPosition === totalCells) {
+                showMessage(`Selamat! Pemain ${currentPlayer} memenangkan Ular Tangga Romantis!`);
+                resetSnakesAndLaddersGame();
             } else {
-                snakesChallengeDisplay.textContent = 'Giliran selanjutnya!';
-            }
-
-            // Check for win condition
-            if (newPos >= boardSize) {
-                snakesChallengeDisplay.textContent = `🎉 ${player} menang! Selamat! 🎉`;
-                rollDiceBtn.disabled = true;
+                currentPlayer = currentPlayer === 1 ? 2 : 1; // Switch player
+                currentPlayerDisplay.textContent = `Giliran Pemain ${currentPlayer}`;
             }
         }
 
-        function initializeSnakesGame() {
-            createBoard();
-            playerPositions = { P1: 1, P2: 1 };
-            currentPlayer = 'P1';
-            rollDiceBtn.disabled = false;
-            snakesTurnDisplay.textContent = 'Giliran Pemain 1';
-            snakesChallengeDisplay.textContent = 'Gulir dadu untuk memulai!';
-            player1PosDisplay.textContent = '1';
-            player2PosDisplay.textContent = '1';
-
-            // Place initial tokens
-            updatePlayerPosition('P1', 1);
-            updatePlayerPosition('P2', 1);
+        function resetSnakesAndLaddersGame() {
+            playerPositions = { player1: 1, player2: 1 };
+            currentPlayer = 1;
+            diceDisplay.textContent = '1';
+            currentPlayerDisplay.textContent = 'Giliran Pemain 1';
+            romanticMessageDisplay.textContent = '';
+            updatePlayerPositions();
+            saveSnakesAndLaddersState(); // Save reset state
         }
 
-        rollDiceBtn.addEventListener('click', () => {
-            const roll = Math.floor(Math.random() * 6) + 1;
-            diceDisplay.textContent = roll;
-            diceDisplay.classList.add('animate-bounce');
-            setTimeout(() => diceDisplay.classList.remove('animate-bounce'), 500);
-
-            let newPos = playerPositions[currentPlayer] + roll;
-            if (newPos > boardSize) {
-                newPos = playerPositions[currentPlayer]; // Stay if over 100
+        // Firestore functions for Snakes and Ladders
+        async function saveSnakesAndLaddersState() {
+            if (!isAuthReady) {
+                console.warn("Firebase not ready. Cannot save Snakes and Ladders state.");
+                return;
             }
-            updatePlayerPosition(currentPlayer, newPos);
-
-            // Switch player
-            currentPlayer = currentPlayer === 'P1' ? 'P2' : 'P1';
-            snakesTurnDisplay.textContent = `Giliran Pemain ${currentPlayer === 'P1' ? '1' : '2'}`;
-        });
-
-        snakesResetBtn.addEventListener('click', initializeSnakesGame);
-
-        // Initialize game when the section becomes active
-        document.getElementById('snakes-and-ladders').addEventListener('transitionend', (event) => {
-            if (event.propertyName === 'display' && document.getElementById('snakes-and-ladders').classList.contains('active')) {
-                initializeSnakesGame();
+            try {
+                const docRef = doc(db, `artifacts/${appId}/users/${userId}/snakes-and-ladders`, 'game-state');
+                await setDoc(docRef, {
+                    playerPositions: playerPositions,
+                    currentPlayer: currentPlayer
+                });
+                console.log("Snakes and Ladders state saved.");
+            } catch (e) {
+                console.error("Error saving Snakes and Ladders state:", e);
+                showMessage("Gagal menyimpan status Ular Tangga. Silakan coba lagi.");
             }
-        });
+        }
+
+        async function loadSnakesAndLaddersState() {
+            if (!isAuthReady) {
+                console.warn("Firebase not ready. Cannot load Snakes and Ladders state.");
+                return;
+            }
+            try {
+                const docRef = doc(db, `artifacts/${appId}/users/${userId}/snakes-and-ladders`, 'game-state');
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    playerPositions = data.playerPositions;
+                    currentPlayer = data.currentPlayer;
+                    currentPlayerDisplay.textContent = `Giliran Pemain ${currentPlayer}`;
+                    console.log("Snakes and Ladders state loaded.");
+                } else {
+                    console.log("No Snakes and Ladders state found, starting new game.");
+                    resetSnakesAndLaddersGame(); // Start new if no state
+                }
+                updatePlayerPositions();
+            } catch (e) {
+                console.error("Error loading Snakes and Ladders state:", e);
+                showMessage("Gagal memuat status Ular Tangga. Memulai game baru.");
+                resetSnakesAndLaddersGame();
+            }
+        }
 
 
         // --- Tebak Gambar Game Logic ---
-        const drawingCanvas = document.getElementById('drawingCanvas');
-        const drawCtx = drawingCanvas.getContext('2d');
-        const penTool = document.getElementById('pen-tool');
-        const eraserTool = document.getElementById('eraser-tool');
+        const drawingCanvas = document.getElementById('drawing-canvas');
+        const ctx = drawingCanvas.getContext('2d');
         const colorPicker = document.getElementById('color-picker');
-        const clearCanvasBtn = document.getElementById('clear-canvas');
-        const drawPlayerTurnDisplay = document.getElementById('draw-player-turn');
-        const drawTimerDisplay = document.getElementById('draw-timer');
-        const wordToDrawContainer = document.getElementById('word-to-draw-container');
-        const wordToDrawDisplay = document.getElementById('word-to-draw');
-        const guessInput = document.getElementById('guess-input');
-        const submitGuessBtn = document.getElementById('submit-guess-btn');
-        const startDrawGameBtn = document.getElementById('start-draw-game-btn');
-        const nextDrawRoundBtn = document.getElementById('next-draw-round-btn');
-        const drawGameMessage = document.getElementById('draw-game-message');
+        const brushSize = document.getElementById('brush-size');
+        const drawWordDisplay = document.getElementById('draw-word-display');
+        const drawTimerDisplay = document.getElementById('draw-timer-display');
+        const guessInputDraw = document.getElementById('guess-input-draw');
+        const drawScoreDisplay = document.getElementById('draw-score-display');
 
-        let drawing = false;
-        let currentColor = '#000000';
-        let currentTool = 'pen'; // 'pen' or 'eraser'
-        let lineWidth = 2;
-
-        let drawGameWords = {
-            "makanan": ["pizza", "sushi", "es krim", "kopi", "cokelat", "burger", "pasta", "roti", "buah", "sayur"],
-            "aktivitas couple": ["kencan", "pelukan", "ciuman", "nonton film", "jalan-jalan", "masak bersama", "piknik", "berdansa", "liburan", "bersepeda"],
-            "benda kenangan": ["cincin", "foto", "surat cinta", "tiket", "boneka", "buku", "jam tangan", "syal", "bunga kering", "gelang"]
-        };
-        let currentWord = '';
-        let drawTimer;
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        let timer;
         let timeLeft = 30;
-        let currentPlayerIndex = 0; // 0 for Player 1 (drawer), 1 for Player 2 (guesser)
-        const players = ['Pemain 1', 'Pemain 2']; // Player 1 draws, Player 2 guesses
-        let currentCategory = '';
-        let usedWords = [];
+        let currentDrawingWord = '';
+        let drawScores = { player1: 0, player2: 0 };
+        let drawingPlayer = 1; // 1 for Player 1 (drawer), 2 for Player 2 (guesser)
 
-        function getRandomWord() {
-            const categories = Object.keys(drawGameWords);
-            if (categories.length === 0) return null;
+        const drawingWords = {
+            makanan: ["Pizza", "Es Krim", "Kopi", "Nasi Goreng", "Cokelat", "Burger", "Sushi", "Mie Ayam", "Roti", "Sup"],
+            aktivitas_couple: ["Kencan", "Nonton Film", "Memasak", "Jalan-jalan", "Pelukan", "Ciuman", "Menari", "Piknik", "Bermain Game", "Bersepeda"],
+            benda_kenangan: ["Cincin", "Surat Cinta", "Foto", "Boneka", "Tiket Konser", "Bunga Kering", "Jam Tangan", "Buku", "Kalung", "Gantungan Kunci"]
+        };
 
-            // Cycle through categories
-            if (!currentCategory || drawGameWords[currentCategory].length === usedWords.length) {
-                const nextCategoryIndex = (categories.indexOf(currentCategory) + 1) % categories.length;
-                currentCategory = categories[nextCategoryIndex];
-                usedWords = []; // Reset used words for new category
-            }
+        function setupDrawingCanvas() {
+            // Adjust canvas size for responsiveness
+            const containerWidth = drawingCanvas.parentElement.clientWidth;
+            drawingCanvas.width = Math.min(containerWidth - 40, 600); // Max 600px, or container width - padding
+            drawingCanvas.height = drawingCanvas.width * 0.75; // Maintain aspect ratio
 
-            const availableWords = drawGameWords[currentCategory].filter(word => !usedWords.includes(word));
-            if (availableWords.length === 0) {
-                // All words in all categories used, reset all
-                usedWords = [];
-                currentCategory = categories[0];
-                return getRandomWord(); // Recursive call to get a new word
-            }
+            ctx.lineWidth = brushSize.value;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = colorPicker.value;
 
-            const randomIndex = Math.floor(Math.random() * availableWords.length);
-            const word = availableWords[randomIndex];
-            usedWords.push(word);
-            return word;
-        }
+            drawingCanvas.addEventListener('mousedown', startDrawing);
+            drawingCanvas.addEventListener('mousemove', draw);
+            drawingCanvas.addEventListener('mouseup', stopDrawing);
+            drawingCanvas.addEventListener('mouseout', stopDrawing); // Stop drawing if mouse leaves canvas
 
-        function clearCanvas() {
-            drawCtx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+            // Touch events for mobile
+            drawingCanvas.addEventListener('touchstart', (e) => {
+                e.preventDefault(); // Prevent scrolling
+                const touch = e.touches[0];
+                startDrawing({ offsetX: touch.clientX - drawingCanvas.getBoundingClientRect().left, offsetY: touch.clientY - drawingCanvas.getBoundingClientRect().top });
+            });
+            drawingCanvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                draw({ offsetX: touch.clientX - drawingCanvas.getBoundingClientRect().left, offsetY: touch.clientY - drawingCanvas.getBoundingClientRect().top });
+            });
+            drawingCanvas.addEventListener('touchend', stopDrawing);
+            drawingCanvas.addEventListener('touchcancel', stopDrawing);
+
+            colorPicker.addEventListener('input', () => ctx.strokeStyle = colorPicker.value);
+            brushSize.addEventListener('input', () => ctx.lineWidth = brushSize.value);
+
+            updateDrawScoreDisplay();
         }
 
         function startDrawing(e) {
-            if (currentPlayerIndex !== 0) return; // Only Player 1 can draw
-            drawing = true;
-            draw(e);
-        }
-
-        function endDrawing() {
-            drawing = false;
-            drawCtx.beginPath();
+            if (drawingPlayer !== 1) return; // Only player 1 can draw
+            isDrawing = true;
+            [lastX, lastY] = [e.offsetX, e.offsetY];
         }
 
         function draw(e) {
-            if (!drawing) return;
-
-            e.preventDefault(); // Prevent scrolling on touch
-
-            let x, y;
-            if (e.touches) { // Handle touch events
-                x = e.touches[0].clientX - drawingCanvas.getBoundingClientRect().left;
-                y = e.touches[0].clientY - drawingCanvas.getBoundingClientRect().top;
-            } else { // Handle mouse events
-                x = e.clientX - drawingCanvas.getBoundingClientRect().left;
-                y = e.clientY - drawingCanvas.getBoundingClientRect().top;
-            }
-
-            drawCtx.lineWidth = lineWidth;
-            drawCtx.lineCap = 'round';
-            drawCtx.strokeStyle = currentTool === 'pen' ? currentColor : '#FFFFFF'; // Eraser uses white color
-
-            drawCtx.lineTo(x, y);
-            drawCtx.stroke();
-            drawCtx.beginPath();
-            drawCtx.moveTo(x, y);
+            if (!isDrawing || drawingPlayer !== 1) return;
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.stroke();
+            [lastX, lastY] = [e.offsetX, e.offsetY];
         }
 
-        // Event Listeners for Drawing
-        drawingCanvas.addEventListener('mousedown', startDrawing);
-        drawingCanvas.addEventListener('mouseup', endDrawing);
-        drawingCanvas.addEventListener('mousemove', draw);
+        function stopDrawing() {
+            isDrawing = false;
+        }
 
-        drawingCanvas.addEventListener('touchstart', startDrawing, { passive: false });
-        drawingCanvas.addEventListener('touchend', endDrawing);
-        drawingCanvas.addEventListener('touchmove', draw, { passive: false });
+        function clearCanvas() {
+            ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+        }
 
-        penTool.addEventListener('click', () => { currentTool = 'pen'; lineWidth = 2; });
-        eraserTool.addEventListener('click', () => { currentTool = 'eraser'; lineWidth = 10; });
-        colorPicker.addEventListener('input', (e) => { currentColor = e.target.value; });
-        clearCanvasBtn.addEventListener('click', clearCanvas);
+        function startDrawingRound() {
+            if (timer) clearInterval(timer);
+            clearCanvas();
+            guessInputDraw.value = '';
+            drawingPlayer = 1; // Player 1 draws
 
-        function startDrawTimer() {
+            // Pick a random category and word
+            const categories = Object.keys(drawingWords);
+            const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+            const wordsInCat = drawingWords[randomCategory];
+            currentDrawingWord = wordsInCat[Math.floor(Math.random() * wordsInCat.length)].toLowerCase();
+
+            drawWordDisplay.textContent = `Kata: ${currentDrawingWord.split('').map(char => '_').join(' ')}`; // Hide word
+            showMessage(`Pemain 1: Gambar kata "${currentDrawingWord}"!`);
+
             timeLeft = 30;
-            drawTimerDisplay.textContent = timeLeft;
-            drawGameMessage.textContent = '';
-            clearInterval(drawTimer); // Clear any existing timer
-            drawTimer = setInterval(() => {
-                timeLeft--;
-                drawTimerDisplay.textContent = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(drawTimer);
-                    drawGameMessage.textContent = `Waktu habis! Kata yang benar adalah: "${currentWord}"`;
-                    submitGuessBtn.disabled = true;
-                    // Ensure drawing is disabled when time is up
-                    drawingCanvas.removeEventListener('mousedown', startDrawing);
-                    drawingCanvas.removeEventListener('mousemove', draw);
-                    drawingCanvas.removeEventListener('touchstart', startDrawing);
-                    drawingCanvas.removeEventListener('touchmove', draw);
+            drawTimerDisplay.textContent = `Waktu: ${timeLeft}s`;
 
-                    nextDrawRoundBtn.classList.remove('hidden');
-                    startDrawGameBtn.classList.add('hidden'); // Hide start button after first round
+            timer = setInterval(() => {
+                timeLeft--;
+                drawTimerDisplay.textContent = `Waktu: ${timeLeft}s`;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    showMessage(`Waktu habis! Kata yang benar adalah: ${currentDrawingWord}`);
+                    nextDrawingRound();
                 }
             }, 1000);
         }
 
-        function setupNewDrawRound() {
-            clearCanvas();
-            guessInput.value = '';
-            submitGuessBtn.disabled = false;
-            nextDrawRoundBtn.classList.add('hidden');
-            drawGameMessage.textContent = '';
-
-            currentWord = getRandomWord();
-            if (currentWord) {
-                drawPlayerTurnDisplay.textContent = players[currentPlayerIndex];
-                if (currentPlayerIndex === 0) { // Player 1 is drawer
-                    wordToDrawDisplay.textContent = currentWord;
-                    wordToDrawContainer.classList.remove('hidden');
-                    guessInput.placeholder = "Tunggu giliranmu menebak...";
-                    guessInput.disabled = true;
-                    submitGuessBtn.disabled = true;
-                    // Enable drawing for Player 1
-                    drawingCanvas.addEventListener('mousedown', startDrawing);
-                    drawingCanvas.addEventListener('mousemove', draw);
-                    drawingCanvas.addEventListener('touchstart', startDrawing, { passive: false });
-                    drawingCanvas.addEventListener('touchmove', draw, { passive: false });
-                } else { // Player 2 is guesser
-                    wordToDrawDisplay.textContent = '???'; // Hide word from guesser
-                    wordToDrawContainer.classList.add('hidden');
-                    guessInput.placeholder = "Tebak di sini...";
-                    guessInput.disabled = false;
-                    submitGuessBtn.disabled = false;
-                    // Disable drawing for Player 2
-                    drawingCanvas.removeEventListener('mousedown', startDrawing);
-                    drawingCanvas.removeEventListener('mousemove', draw);
-                    drawingCanvas.removeEventListener('touchstart', startDrawing);
-                    drawingCanvas.removeEventListener('touchmove', draw);
-                }
-                startDrawTimer();
+        function submitGuessDraw() {
+            if (drawingPlayer !== 2) { // Only player 2 can guess
+                showMessage("Ini giliran pemain 1 untuk menggambar!");
+                return;
+            }
+            const guess = guessInputDraw.value.trim().toLowerCase();
+            if (guess === currentDrawingWord) {
+                clearInterval(timer);
+                drawScores.player2++; // Player 2 gets point for guessing
+                drawScores.player1++; // Player 1 also gets point for drawing well
+                updateDrawScoreDisplay();
+                showMessage(`Tebakan benar! Kata: ${currentDrawingWord}. Poin untuk kedua pemain!`);
+                nextDrawingRound();
             } else {
-                drawGameMessage.textContent = "Tidak ada kata lagi untuk digambar! Reset game untuk bermain lagi.";
-                startDrawGameBtn.disabled = true;
+                showMessage("Tebakan salah. Coba lagi!");
+            }
+            guessInputDraw.value = '';
+        }
+
+        function updateDrawScoreDisplay() {
+            drawScoreDisplay.textContent = `Pemain 1: ${drawScores.player1} | Pemain 2: ${drawScores.player2}`;
+            saveDrawAndGuessState();
+        }
+
+        function nextDrawingRound() {
+            // Switch roles for next round
+            drawingPlayer = drawingPlayer === 1 ? 2 : 1;
+            showMessage(`Giliran selanjutnya! Pemain ${drawingPlayer} akan menggambar.`);
+            if (drawingPlayer === 1) {
+                startDrawingRound(); // Player 1 draws
+            } else {
+                // For player 2's turn to draw, we need to pick a new word and let them draw
+                // This game is designed for 1 device, so the "drawer" and "guesser" roles
+                // are more conceptual. We'll just pick a new word and clear for the next round.
+                startDrawingRound(); // Just restart the round, assuming players switch roles manually
             }
         }
 
-        startDrawGameBtn.addEventListener('click', () => {
-            currentPlayerIndex = 0; // Start with Player 1 drawing
-            setupNewDrawRound();
-            startDrawGameBtn.textContent = 'Mulai Ulang Game'; // Change text for subsequent resets
-        });
-
-        nextDrawRoundBtn.addEventListener('click', () => {
-            currentPlayerIndex = (currentPlayerIndex + 1) % players.length; // Switch roles
-            setupNewDrawRound();
-        });
-
-        submitGuessBtn.addEventListener('click', () => {
-            const guess = guessInput.value.trim().toLowerCase();
-            if (guessInput.disabled) return; // Prevent guessing if not guesser's turn
-
-            if (guess === currentWord.toLowerCase()) {
-                clearInterval(drawTimer);
-                drawGameMessage.textContent = `🎉 Benar! Kata: "${currentWord}" 🎉`;
-                submitGuessBtn.disabled = true;
-                nextDrawRoundBtn.classList.remove('hidden');
-                startDrawGameBtn.classList.add('hidden');
-                // Disable drawing after correct guess
-                drawingCanvas.removeEventListener('mousedown', startDrawing);
-                drawingCanvas.removeEventListener('mousemove', draw);
-                drawingCanvas.removeEventListener('touchstart', startDrawing);
-                drawingCanvas.removeEventListener('touchmove', draw);
-            } else {
-                drawGameMessage.textContent = "Tebakan salah, coba lagi!";
+        // Firestore functions for Draw and Guess
+        async function saveDrawAndGuessState() {
+            if (!isAuthReady) {
+                console.warn("Firebase not ready. Cannot save Draw and Guess state.");
+                return;
             }
-        });
+            try {
+                const docRef = doc(db, `artifacts/${appId}/users/${userId}/draw-and-guess`, 'game-state');
+                await setDoc(docRef, {
+                    scores: drawScores,
+                    drawingPlayer: drawingPlayer,
+                    currentWord: currentDrawingWord,
+                    canvasData: drawingCanvas.toDataURL() // Save canvas image data
+                });
+                console.log("Draw and Guess state saved.");
+            } catch (e) {
+                console.error("Error saving Draw and Guess state:", e);
+                showMessage("Gagal menyimpan status Tebak Gambar. Silakan coba lagi.");
+            }
+        }
+
+        async function loadDrawAndGuessState() {
+            if (!isAuthReady) {
+                console.warn("Firebase not ready. Cannot load Draw and Guess state.");
+                return;
+            }
+            try {
+                const docRef = doc(db, `artifacts/${appId}/users/${userId}/draw-and-guess`, 'game-state');
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    drawScores = data.scores || { player1: 0, player2: 0 };
+                    drawingPlayer = data.drawingPlayer || 1;
+                    currentDrawingWord = data.currentWord || '';
+
+                    // Load canvas data
+                    if (data.canvasData) {
+                        const img = new Image();
+                        img.onload = () => {
+                            ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+                            ctx.drawImage(img, 0, 0);
+                        };
+                        img.src = data.canvasData;
+                    }
+                    updateDrawScoreDisplay();
+                    drawWordDisplay.textContent = `Kata: ${currentDrawingWord ? currentDrawingWord.split('').map(char => '_').join(' ') : '_____'}`;
+                    console.log("Draw and Guess state loaded.");
+                } else {
+                    console.log("No Draw and Guess state found, starting new game.");
+                    drawScores = { player1: 0, player2: 0 };
+                    drawingPlayer = 1;
+                    currentDrawingWord = '';
+                    clearCanvas();
+                    updateDrawScoreDisplay();
+                }
+            } catch (e) {
+                console.error("Error loading Draw and Guess state:", e);
+                showMessage("Gagal memuat status Tebak Gambar. Memulai game baru.");
+                drawScores = { player1: 0, player2: 0 };
+                drawingPlayer = 1;
+                currentDrawingWord = '';
+                clearCanvas();
+                updateDrawScoreDisplay();
+            }
+        }
+
 
         // --- Tebak Kata Pasangan Game Logic ---
-        const clueGiverPlayerDisplay = document.getElementById('clue-giver-player');
-        const guesserPlayerDisplay = document.getElementById('guesser-player');
-        const secretWordDisplay = document.getElementById('secret-word-display');
-        const clueInput = document.getElementById('clue-input');
-        const giveClueBtn = document.getElementById('give-clue-btn');
-        const guessWordInput = document.getElementById('guess-word-input');
-        const submitWordGuessBtn = document.getElementById('submit-word-guess-btn');
-        const wordGuessScoreDisplay = document.getElementById('word-guess-score');
-        const wordGuessMessageDisplay = document.getElementById('word-guess-message');
-        const resetWordGuessBtn = document.getElementById('reset-word-guess-btn');
+        const clueDisplay = document.getElementById('clue-display');
+        const guessInputWord = document.getElementById('guess-input-word');
+        const wordScoreDisplay = document.getElementById('word-score-display');
 
-        let wordGuessWords = [
-            { word: "cinta", category: "cinta" },
-            { word: "pelukan", category: "cinta" },
-            { word: "romantis", category: "cinta" },
-            { word: "hati", category: "cinta" },
-            { word: "pasangan", category: "cinta" },
-            { word: "kencan", category: "cinta" },
-            { word: "berenang", category: "hobi berdua" },
-            { word: "memasak", category: "hobi berdua" },
-            { word: "mendaki", category: "hobi berdua" },
-            { word: "nonton", category: "hobi berdua" },
-            { word: "membaca", category: "hobi berdua" },
-            { word: "piknik", category: "hobi berdua" },
-            { word: "pertama", category: "kenangan" },
-            { word: "liburan", category: "kenangan" },
-            { word: "ulang tahun", category: "kenangan" },
-            { word: "kejutan", category: "kenangan" },
-            { word: "janji", category: "kenangan" },
-            { word: "canda", category: "lucu-lucuan" },
-            { word: "konyol", category: "lucu-lucuan" },
-            { word: "tertawa", category: "lucu-lucuan" },
-            { word: "imut", category: "lucu-lucuan" },
-            { word: "garing", category: "lucu-lucuan" }
-        ];
+        let wordScores = { player1: 0, player2: 0 };
+        let currentWord = '';
+        let currentClue = '';
 
-        let currentWordGuessWord = '';
-        let wordGuessScore = 0;
-        let wordGuessPlayerTurn = 0; // 0 for Player 1 (clue giver), 1 for Player 2 (guesser)
+        const wordCategories = {
+            cinta: ["Pelukan", "Ciuman", "Sayang", "Romantis", "Hati", "Kencan", "Setia", "Kasih", "Jodoh", "Momen", "Bahagia", "Impian", "Masa Depan", "Janji", "Bersama", "Cinta Sejati", "Kemesraan", "Gairah", "Hasrat", "Intim"],
+            hobi_berdua: ["Memasak", "Nonton", "Jalan-jalan", "Olahraga", "Membaca", "Traveling", "Berkebun", "Bermain Musik", "Fotografi", "Gaming", "Menulis", "Melukis", "Menari", "Bersepeda", "Mendaki", "Memancing", "Menonton Konser", "Piknik", "Berkemah", "Yoga"],
+            kenangan: ["Pertama", "Kencan", "Liburan", "Ulang Tahun", "Hadiah", "Foto", "Cerita", "Tawa", "Tangis", "Janji", "Tempat", "Lagu", "Film", "Makanan", "Momen", "Masa Lalu", "Masa Kecil", "Impian", "Rahasia", "Perjalanan"],
+            lucu_lucuan: ["Kentut", "Ngorok", "Jelek", "Konyol", "Garing", "Lucu", "Aneh", "Gila", "Malu", "Geli", "Terjatuh", "Tersandung", "Salah", "Kaget", "Berisik", "Jail", "Usil", "Kikuk", "Bodoh", "Kocak"]
+        };
 
-        function initializeWordGuessGame() {
-            wordGuessScore = 0;
-            wordGuessPlayerTurn = 0;
-            wordGuessScoreDisplay.textContent = wordGuessScore;
-            clueInput.value = '';
-            guessWordInput.value = '';
-            secretWordDisplay.textContent = '_ _ _ _ _';
+        function startNewWordRound() {
+            const categories = Object.keys(wordCategories);
+            const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+            const wordsInCat = wordCategories[randomCategory];
+            currentWord = wordsInCat[Math.floor(Math.random() * wordsInCat.length)].toLowerCase();
+            currentClue = ''; // Reset clue
 
-            // Set up initial player roles
-            clueGiverPlayerDisplay.textContent = 'Pemain 1';
-            guesserPlayerDisplay.textContent = 'Pemain 2';
-            clueInput.placeholder = "Masukkan petunjuk di sini...";
-            clueInput.disabled = false;
-            giveClueBtn.disabled = false;
-            guessWordInput.placeholder = "Tunggu petunjuk...";
-            guessWordInput.disabled = true;
-            submitWordGuessBtn.disabled = true;
-
-            startNewWordGuessRound();
+            clueDisplay.textContent = 'Tekan "Berikan Petunjuk" untuk clue!';
+            guessInputWord.value = '';
+            showMessage(`Kata baru telah dipilih. Pemain 1, berikan petunjuk untuk kata ini! (Kategori: ${randomCategory})`);
+            console.log("Kata yang harus ditebak (hanya untuk pengembang):", currentWord); // For debugging
         }
 
-        function startNewWordGuessRound() {
-            const randomIndex = Math.floor(Math.random() * wordGuessWords.length);
-            currentWordGuessWord = wordGuessWords[randomIndex].word;
-            console.log("Kata Rahasia (untuk pemberi petunjuk):", currentWordGuessWord); // For debugging
-            wordGuessMessageDisplay.textContent = `Pemain ${wordGuessPlayerTurn === 0 ? '1' : '2'}, kata rahasiamu adalah: "${currentWordGuessWord}". Berikan petunjuk!`;
-
-            if (wordGuessPlayerTurn === 0) { // Player 1 is clue giver
-                clueGiverPlayerDisplay.textContent = 'Pemain 1';
-                guesserPlayerDisplay.textContent = 'Pemain 2';
-                clueInput.disabled = false;
-                giveClueBtn.disabled = false;
-                guessWordInput.disabled = true;
-                submitWordGuessBtn.disabled = true;
-                secretWordDisplay.textContent = currentWordGuessWord.split('').map(char => char === ' ' ? ' ' : '_').join(' '); // Show hidden word for clue giver
-            } else { // Player 2 is clue giver
-                clueGiverPlayerDisplay.textContent = 'Pemain 2';
-                guesserPlayerDisplay.textContent = 'Pemain 1';
-                clueInput.disabled = false;
-                giveClueBtn.disabled = false;
-                guessWordInput.disabled = true;
-                submitWordGuessBtn.disabled = true;
-                secretWordDisplay.textContent = currentWordGuessWord.split('').map(char => char === ' ' ? ' ' : '_').join(' '); // Show hidden word for clue giver
+        async function generateClue() {
+            if (!currentWord) {
+                showMessage("Mulai putaran baru terlebih dahulu dengan 'Kata Baru'.");
+                return;
             }
-            clueInput.value = ''; // Clear previous clue
-            guessWordInput.value = ''; // Clear previous guess
+            showMessage("Membuat petunjuk...");
+            try {
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: `Berikan petunjuk satu kata untuk kata "${currentWord}". Petunjuk harus singkat dan tidak menyebutkan kata aslinya. Contoh: Untuk 'apel', petunjuknya 'buah'.` }] });
+                const payload = { contents: chatHistory };
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    currentClue = result.candidates[0].content.parts[0].text.trim();
+                    clueDisplay.textContent = `Petunjuk: "${currentClue}"`;
+                    showMessage("Pemain 2: Tebak katanya!");
+                } else {
+                    showMessage("Gagal membuat petunjuk. Coba lagi.");
+                    console.error("API response error:", result);
+                }
+            } catch (error) {
+                console.error("Error generating clue:", error);
+                showMessage("Terjadi kesalahan saat membuat petunjuk. Pastikan koneksi internet Anda stabil.");
+            }
         }
 
-
-        giveClueBtn.addEventListener('click', () => {
-            const clue = clueInput.value.trim();
-            if (clue) {
-                wordGuessMessageDisplay.textContent = `Pemain ${wordGuessPlayerTurn === 0 ? '1' : '2'} memberikan petunjuk: "${clue}". Pemain ${wordGuessPlayerTurn === 0 ? '2' : '1'}, tebak!`;
-                clueInput.disabled = true;
-                giveClueBtn.disabled = true;
-                guessWordInput.disabled = false;
-                submitWordGuessBtn.disabled = false;
-                secretWordDisplay.textContent = '_ _ _ _ _'; // Hide word for guesser
-                guessWordInput.focus();
-            } else {
-                wordGuessMessageDisplay.textContent = "Petunjuk tidak boleh kosong!";
+        function submitGuessWord() {
+            if (!currentWord) {
+                showMessage("Mulai putaran baru terlebih dahulu.");
+                return;
             }
-        });
-
-        submitWordGuessBtn.addEventListener('click', () => {
-            const guess = guessWordInput.value.trim().toLowerCase();
-            if (guess === currentWordGuessWord.toLowerCase()) {
-                wordGuessScore += 10; // Award points for correct guess
-                wordGuessScoreDisplay.textContent = wordGuessScore;
-                wordGuessMessageDisplay.textContent = `🎉 Benar! Kata: "${currentWordGuessWord}" 🎉. Poin +10!`;
-                wordGuessPlayerTurn = (wordGuessPlayerTurn + 1) % 2; // Switch clue giver
-                setTimeout(startNewWordGuessRound, 2000); // Start new round
+            const guess = guessInputWord.value.trim().toLowerCase();
+            if (guess === currentWord) {
+                wordScores.player2++; // Guesser gets point
+                wordScores.player1++; // Clue giver also gets point
+                updateWordScoreDisplay();
+                showMessage(`Tebakan benar! Kata: ${currentWord}. Poin untuk kedua pemain!`);
+                startNewWordRound(); // Start a new round automatically
             } else {
-                wordGuessMessageDisplay.textContent = `Tebakan salah: "${guess}". Coba lagi!`;
-                guessWordInput.value = '';
+                showMessage("Tebakan salah. Coba lagi!");
             }
-        });
+            guessInputWord.value = '';
+        }
 
-        resetWordGuessBtn.addEventListener('click', initializeWordGuessGame);
+        function updateWordScoreDisplay() {
+            wordScoreDisplay.textContent = `Pemain 1: ${wordScores.player1} | Pemain 2: ${wordScores.player2}`;
+            saveWordGuessState();
+        }
+
+        function resetWordScore() {
+            wordScores = { player1: 0, player2: 0 };
+            updateWordScoreDisplay();
+            showMessage("Skor tebak kata direset!");
+            startNewWordRound();
+        }
+
+        // Firestore functions for Word Guess
+        async function saveWordGuessState() {
+            if (!isAuthReady) {
+                console.warn("Firebase not ready. Cannot save Word Guess state.");
+                return;
+            }
+            try {
+                const docRef = doc(db, `artifacts/${appId}/users/${userId}/word-guess`, 'game-state');
+                await setDoc(docRef, {
+                    scores: wordScores,
+                    currentWord: currentWord,
+                    currentClue: currentClue
+                });
+                console.log("Word Guess state saved.");
+            } catch (e) {
+                console.error("Error saving Word Guess state:", e);
+                showMessage("Gagal menyimpan status Tebak Kata. Silakan coba lagi.");
+            }
+        }
+
+        async function loadWordGuessState() {
+            if (!isAuthReady) {
+                console.warn("Firebase not ready. Cannot load Word Guess state.");
+                return;
+            }
+            try {
+                const docRef = doc(db, `artifacts/${appId}/users/${userId}/word-guess`, 'game-state');
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    wordScores = data.scores || { player1: 0, player2: 0 };
+                    currentWord = data.currentWord || '';
+                    currentClue = data.currentClue || '';
+                    clueDisplay.textContent = currentClue ? `Petunjuk: "${currentClue}"` : 'Tekan "Berikan Petunjuk" untuk clue!';
+                    updateWordScoreDisplay();
+                    console.log("Word Guess state loaded.");
+                } else {
+                    console.log("No Word Guess state found, starting new game.");
+                    resetWordScore(); // This also calls startNewWordRound
+                }
+            } catch (e) {
+                console.error("Error loading Word Guess state:", e);
+                showMessage("Gagal memuat status Tebak Kata. Memulai game baru.");
+                resetWordScore();
+            }
+        }
+
 
         // --- Siapa Paling? Game Logic ---
-        const whoIsMostQuestionDisplay = document.getElementById('current-who-question');
-        const player1Choices = document.querySelectorAll('input[name="player1-choice"]');
-        const player2Choices = document.querySelectorAll('input[name="player2-choice']');
-        const submitWhoIsMostBtn = document.getElementById('submit-who-is-most-btn');
+        const whoIsMostQuestionDisplay = document.getElementById('who-is-most-question');
+        const player1AnswerBtn = document.getElementById('player1-answer-btn');
+        const player2AnswerBtn = document.getElementById('player2-answer-btn');
         const whoIsMostResultDisplay = document.getElementById('who-is-most-result');
         const whoIsMostExpressionDisplay = document.getElementById('who-is-most-expression');
-        const nextWhoIsMostBtn = document.getElementById('next-who-is-most-btn');
-        const resetWhoIsMostBtn = document.getElementById('reset-who-is-most-btn');
 
-        let whoIsMostQuestions = [
+        const whoIsMostQuestions = [
             "Siapa yang paling posesif?",
             "Siapa yang paling romantis?",
-            "Siapa yang paling suka makan?",
-            "Siapa yang paling sering lupa?",
-            "Siapa yang paling rapi?",
-            "Siapa yang paling suka begadang?",
-            "Siapa yang paling boros?",
+            "Siapa yang paling sering lupa tanggal penting?",
             "Siapa yang paling jago masak?",
-            "Siapa yang paling sering minta maaf?",
-            "Siapa yang paling suka berpetualang?",
-            "Siapa yang paling cepat marah?",
-            "Siapa yang paling sabar?",
-            "Siapa yang paling suka bercanda?",
-            "Siapa yang paling sering mengalah?",
-            "Siapa yang paling suka kejutan?",
+            "Siapa yang paling rapi?",
+            "Siapa yang paling boros?",
+            "Siapa yang paling sering memulai pertengkaran?",
+            "Siapa yang paling sering minta maaf duluan?",
+            "Siapa yang paling suka rebahan?",
+            "Siapa yang paling sering memberi kejutan?",
+            "Siapa yang paling cerewet?",
+            "Siapa yang paling pendiam?",
+            "Siapa yang paling suka traveling?",
+            "Siapa yang paling suka nonton film horor?",
+            "Siapa yang paling sering bangun pagi?",
+            "Siapa yang paling suka begadang?",
+            "Siapa yang paling jago nge-gombal?",
             "Siapa yang paling sering cemburu?",
-            "Siapa yang paling suka olahraga?",
-            "Siapa yang paling suka nonton film?",
-            "Siapa yang paling suka belanja?",
-            "Siapa yang paling suka tidur?"
+            "Siapa yang paling suka berpetualang?",
+            "Siapa yang paling sering mencuci piring?",
+            "Siapa yang paling sering menjemput/mengantar?",
+            "Siapa yang paling sering mengucapkan 'Aku cinta kamu'?",
+            "Siapa yang paling sering memberi hadiah?",
+            "Siapa yang paling suka memeluk?",
+            "Siapa yang paling suka mencium?",
+            "Siapa yang paling sering mengajak kencan?",
+            "Siapa yang paling suka mendengarkan?",
+            "Siapa yang paling sering curhat?",
+            "Siapa yang paling suka merencanakan masa depan?",
+            "Siapa yang paling suka hal-hal spontan?"
         ];
-        let currentWhoQuestionIndex = 0;
-        let whoIsMostScore = 0; // Maybe track a "compatibility score"
 
-        function displayWhoIsMostQuestion() {
-            if (currentWhoQuestionIndex < whoIsMostQuestions.length) {
-                whoIsMostQuestionDisplay.textContent = whoIsMostQuestions[currentWhoQuestionIndex];
-                whoIsMostResultDisplay.textContent = '';
-                whoIsMostExpressionDisplay.textContent = '';
-                submitWhoIsMostBtn.disabled = false;
-                nextWhoIsMostBtn.classList.add('hidden');
-                // Clear selections
-                player1Choices.forEach(radio => radio.checked = false);
-                player2Choices.forEach(radio => radio.checked = false);
+        let currentWhoIsMostQuestionIndex = 0;
+        let p1_choice = null;
+        let p2_choice = null;
+        let currentAnsweringPlayer = 1; // 1 for P1, 2 for P2
+
+        // Fungsi yang dipanggil saat tombol "Pemain 1" atau "Pemain 2" diklik
+        function recordChoice(chosenPlayer) {
+            if (currentAnsweringPlayer === 1) {
+                p1_choice = chosenPlayer;
+                showMessage("Pemain 1 telah memilih. Sekarang giliran Pemain 2 untuk memilih.");
+                player1AnswerBtn.disabled = true;
+                player2AnswerBtn.disabled = false; // Aktifkan tombol untuk P2
+                // Perbarui teks tombol untuk menunjukkan pilihan P1
+                player1AnswerBtn.textContent = (chosenPlayer === 1 ? 'Pemain 1 (Pilihan Anda)' : 'Pemain 2 (Pilihan P1)');
+                player2AnswerBtn.textContent = (chosenPlayer === 2 ? 'Pemain 2 (Pilihan Anda)' : 'Pemain 1 (Pilihan P1)');
+                currentAnsweringPlayer = 2; // Ganti giliran ke Pemain 2
             } else {
-                whoIsMostQuestionDisplay.textContent = "Game selesai! Tidak ada pertanyaan lagi.";
-                whoIsMostResultDisplay.textContent = `Skor Kecocokan: ${whoIsMostScore} / ${whoIsMostQuestions.length}`;
-                submitWhoIsMostBtn.disabled = true;
-                nextWhoIsMostBtn.classList.add('hidden');
+                p2_choice = chosenPlayer;
+                showMessage("Pemain 2 telah memilih.");
+                player1AnswerBtn.disabled = true;
+                player2AnswerBtn.disabled = true; // Nonaktifkan kedua tombol setelah P2 memilih
+                // Perbarui teks tombol untuk menunjukkan pilihan P2
+                player1AnswerBtn.textContent = (chosenPlayer === 1 ? 'Pemain 1 (Pilihan P2)' : 'Pemain 2 (Pilihan P2)');
+                player2AnswerBtn.textContent = (chosenPlayer === 2 ? 'Pemain 2 (Pilihan P2)' : 'Pemain 1 (Pilihan P2)');
+                compareWhoIsMostAnswers();
+                currentAnsweringPlayer = 1; // Reset giliran ke Pemain 1 untuk pertanyaan berikutnya
             }
         }
 
-        submitWhoIsMostBtn.addEventListener('click', () => {
-            let player1Choice = null;
-            player1Choices.forEach(radio => {
-                if (radio.checked) player1Choice = radio.value;
-            });
-            let player2Choice = null;
-            player2Choices.forEach(radio => {
-                if (radio.checked) player2Choice = radio.value;
-            });
+        function compareWhoIsMostAnswers() {
+            // Kembalikan teks tombol ke "Pemain 1", "Pemain 2" sebelum menampilkan hasil
+            player1AnswerBtn.textContent = 'Pemain 1';
+            player2AnswerBtn.textContent = 'Pemain 2';
 
-            if (player1Choice && player2Choice) {
-                if (player1Choice === player2Choice) {
-                    whoIsMostResultDisplay.textContent = "Cocok! 🎉";
-                    whoIsMostExpressionDisplay.textContent = "🥰";
-                    whoIsMostScore++;
-                } else {
-                    whoIsMostResultDisplay.textContent = "Tidak Cocok! 💔";
-                    whoIsMostExpressionDisplay.textContent = "😅";
-                }
-                submitWhoIsMostBtn.disabled = true;
-                nextWhoIsMostBtn.classList.remove('hidden');
+            if (p1_choice === p2_choice) {
+                whoIsMostResultDisplay.textContent = "Kalian berdua setuju!";
+                whoIsMostExpressionDisplay.textContent = "😊💖"; // Happy, loving
             } else {
-                whoIsMostResultDisplay.textContent = "Pilih jawaban kalian berdua!";
-                whoIsMostExpressionDisplay.textContent = "🤔";
+                whoIsMostResultDisplay.textContent = "Kalian tidak setuju!";
+                whoIsMostExpressionDisplay.textContent = "🤔😅"; // Thinking, slightly embarrassed/amused
             }
-        });
+            // Reset pilihan untuk putaran berikutnya
+            p1_choice = null;
+            p2_choice = null;
+            saveWhoIsMostState();
+        }
 
-        nextWhoIsMostBtn.addEventListener('click', () => {
-            currentWhoQuestionIndex++;
-            displayWhoIsMostQuestion();
-        });
+        function nextWhoIsMostQuestion() {
+            currentWhoIsMostQuestionIndex = (currentWhoIsMostQuestionIndex + 1) % whoIsMostQuestions.length;
+            updateWhoIsMostUI();
+        }
 
-        resetWhoIsMostBtn.addEventListener('click', () => {
-            currentWhoQuestionIndex = 0;
-            whoIsMostScore = 0;
-            displayWhoIsMostQuestion();
-        });
+        function resetWhoIsMostGame() {
+            currentWhoIsMostQuestionIndex = 0;
+            p1_choice = null; // Reset pilihan
+            p2_choice = null;
+            currentAnsweringPlayer = 1; // Reset pemain yang menjawab
+            updateWhoIsMostUI();
+            showMessage("Game 'Siapa Paling?' direset!");
+        }
 
-        // Initial setup for games when their section becomes active
-        document.getElementById('word-guess').addEventListener('transitionend', (event) => {
-            if (event.propertyName === 'display' && document.getElementById('word-guess').classList.contains('active')) {
-                initializeWordGuessGame();
+        function updateWhoIsMostUI() {
+            if (whoIsMostQuestions.length === 0) {
+                whoIsMostQuestionDisplay.textContent = "Tidak ada pertanyaan. Tambahkan pertanyaan baru!";
+                player1AnswerBtn.style.display = 'none';
+                player2AnswerBtn.style.display = 'none';
+                return;
             }
-        });
 
-        document.getElementById('who-is-most').addEventListener('transitionend', (event) => {
-            if (event.propertyName === 'display' && document.getElementById('who-is-most').classList.contains('active')) {
-                displayWhoIsMostQuestion();
+            whoIsMostQuestionDisplay.textContent = whoIsMostQuestions[currentWhoIsMostQuestionIndex];
+            whoIsMostResultDisplay.textContent = '';
+            whoIsMostExpressionDisplay.textContent = '';
+            player1AnswerBtn.disabled = false;
+            player2AnswerBtn.disabled = false;
+            player1AnswerBtn.style.backgroundColor = '#ff5588';
+            player2AnswerBtn.style.backgroundColor = '#55aaff';
+            player1AnswerBtn.textContent = 'Pemain 1'; // Pastikan teks asli
+            player2AnswerBtn.textContent = 'Pemain 2'; // Pastikan teks asli
+            saveWhoIsMostState();
+        }
+
+
+        // Firestore functions for Who Is Most?
+        async function saveWhoIsMostState() {
+            if (!isAuthReady) {
+                console.warn("Firebase not ready. Cannot save Who Is Most state.");
+                return;
             }
-        });
-
-        // PWA Ready (Basic Manifest)
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                // Create a Blob from the service worker content
-                const serviceWorkerContent = `
-                    const CACHE_NAME = 'romantic-games-cache-v1';
-                    const urlsToCache = [
-                        '/',
-                        '/index.html',
-                        'https://cdn.tailwindcss.com',
-                        'https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap',
-                        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css',
-                        'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-                        'pasangan.png', // Updated to the new couple image (PNG)
-                        'icon/kiss.png',
-                        'icon/dice.png',
-                        'icon/draw.png',
-                        'icon/word.png',
-                        'icon/brain.png'
-                    ];
-
-                    self.addEventListener('install', event => {
-                        event.waitUntil(
-                            caches.open(CACHE_NAME)
-                                .then(cache => {
-                                    console.log('Opened cache');
-                                    return cache.addAll(urlsToCache);
-                                })
-                        );
-                    });
-
-                    self.addEventListener('fetch', event => {
-                        event.respondWith(
-                            caches.match(event.request)
-                                .then(response => {
-                                    if (response) {
-                                        return response;
-                                    }
-                                    return fetch(event.request);
-                                })
-                        );
-                    });
-                `;
-                const blob = new Blob([serviceWorkerContent], { type: 'application/javascript' });
-                const serviceWorkerUrl = URL.createObjectURL(blob);
-
-                navigator.serviceWorker.register(serviceWorkerUrl).then(registration => {
-                    console.log('SW registered: ', registration);
-                }).catch(registrationError => {
-                    console.error('SW registration failed with blob:', error);
+            try {
+                const docRef = doc(db, `artifacts/${appId}/users/${userId}/who-is-most`, 'game-state');
+                await setDoc(docRef, {
+                    currentQuestionIndex: currentWhoIsMostQuestionIndex,
+                    p1_choice: p1_choice,
+                    p2_choice: p2_choice,
+                    currentAnsweringPlayer: currentAnsweringPlayer
                 });
-            });
+                console.log("Who Is Most state saved.");
+            } catch (e) {
+                console.error("Error saving Who Is Most state:", e);
+                showMessage("Gagal menyimpan status Siapa Paling?. Silakan coba lagi.");
+            }
         }
 
-        // Dynamically create manifest.json blob and link it
-        const manifestContent = `{
-            "name": "Game Romantis Pasangan",
-            "short_name": "Game Romantis",
-            "description": "Kumpulan game interaktif dan romantis untuk pasangan.",
-            "start_url": ".",
-            "display": "standalone",
-            "background_color": "#FFB6C1",
-            "theme_color": "#ADD8E6",
-            "icons": [
-                {
-                    "src": "icon/icon-192x192.png",
-                    "sizes": "192x192",
-                    "type": "image/png"
-                },
-                {
-                    "src": "icon/icon-512x512.png",
-                    "sizes": "512x512",
-                    "type": "image/png"
+        async function loadWhoIsMostState() {
+            if (!isAuthReady) {
+                console.warn("Firebase not ready. Cannot load Who Is Most state.");
+                return;
+            }
+            try {
+                const docRef = doc(db, `artifacts/${appId}/users/${userId}/who-is-most`, 'game-state');
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    currentWhoIsMostQuestionIndex = data.currentQuestionIndex || 0;
+                    p1_choice = data.p1_choice || null;
+                    p2_choice = data.p2_choice || null;
+                    currentAnsweringPlayer = data.currentAnsweringPlayer || 1;
+                    console.log("Who Is Most state loaded.");
+                } else {
+                    console.log("No Who Is Most state found, starting new game.");
+                    resetWhoIsMostGame();
                 }
-            ]
-        }`;
-        const manifestBlob = new Blob([manifestContent], { type: 'application/json' });
-        const manifestUrl = URL.createObjectURL(manifestBlob);
-        const linkElement = document.createElement('link');
-        linkElement.rel = 'manifest';
-        linkElement.href = manifestUrl;
-        document.head.appendChild(linkElement);
+                updateWhoIsMostUI(); // Update UI based on loaded state
+            } catch (e) {
+                console.error("Error loading Who Is Most state:", e);
+                showMessage("Gagal memuat status Siapa Paling?. Memulai game baru.");
+                resetWhoIsMostGame();
+            }
+        }
+
+
+        // --- Initialize on Window Load ---
+        window.onload = function() {
+            initializeFirebase(); // Initialize Firebase first
+            updateWheelSegments(); // Initial setup for Kiss or Dare wheel
+            createBoard(); // Initial setup for Snakes and Ladders board
+            setupDrawingCanvas(); // Initial setup for Drawing Canvas
+            startNewWordRound(); // Initial setup for Word Guess
+            updateWhoIsMostUI(); // Initial setup for Who Is Most?
+
+            // Register Service Worker
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/service-worker.js')
+                        .then(registration => {
+                            console.log('Service Worker registered with scope:', registration.scope);
+                        })
+                        .catch(error => {
+                            console.error('Service Worker registration failed:', error);
+                        });
+                });
+            }
+        };
+
+        // Ensure all Firestore calls are wrapped in checks for `isAuthReady`
+        // and handle potential errors with `try/catch` and `showMessage`.
     </script>
 </body>
 </html>
